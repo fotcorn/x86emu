@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["fotcorn <fotcorn@gmail.com>"]
 
 [dependencies]
+xmas-elf = "0.4.0"
+zero = "0.1.2"

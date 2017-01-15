@@ -2,7 +2,12 @@ use std::fs::File;
 use std::io::Read;
 use std::env;
 
-const MAGIC_NUMBER: [u8; 4] = [0x7F, 0x45, 0x4C, 0x46];
+extern crate zero;
+use zero::read_str;
+
+extern crate xmas_elf;
+use xmas_elf::{ElfFile, program, sections};
+use xmas_elf::symbol_table::Entry;
 
 fn main() {
     let filename = match env::args().nth(1) {
@@ -18,8 +23,46 @@ fn main() {
 
     file.read_to_end(&mut buffer).expect("Failed to read file.");
 
-    if &buffer[..4] != MAGIC_NUMBER {
-        println!("Not a valid ELF file");
-        return;
+    let elf_file = ElfFile::new(&buffer);
+
+    // get address where to load the text section
+    let load_address = get_load_address(&elf_file).expect("can not get load address");
+
+    // get the binary code from the .text section
+    let text_section = elf_file.find_section_by_name(".text").expect("text section not found.");
+    let code = text_section.raw_data(&elf_file);
+    let code_offset = text_section.offset();
+
+    // get the virtual address of the main function
+    let main_symbol_address = get_main_symbol_address(&elf_file);
+    // get the offset of the main function
+    let offset = main_symbol_address - code_offset - load_address;
+
+    println!("{:x}", code[offset as usize]);
+}
+
+fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
+    for sect in elf_file.program_iter() {
+        let t = sect.get_type().unwrap();
+        match t {
+            program::Type::Load if sect.flags() & program::FLAG_X == program::FLAG_X => {
+                return Some(sect.virtual_addr());
+            }
+            _ => {}
+        }
     }
+    return None
+}
+
+fn get_main_symbol_address(elf_file: &ElfFile) -> u64 {
+    let symbol_string_table = elf_file.find_section_by_name(".strtab").expect("strtab (String table) section not found, is this a stripped binary?");
+    let symbol_string_table = symbol_string_table.raw_data(&elf_file);
+
+    let symbol_table = elf_file.find_section_by_name(".symtab").expect("symtab (Symbol table) section not found");
+    if let sections::SectionData::SymbolTable64(data) = symbol_table.get_data(&elf_file).unwrap() {
+       let symbol = data.iter().find(|&symbol| read_str(&symbol_string_table[symbol.name() as usize..]) == "main").expect("main symbol not found");
+       return symbol.value();
+    } else {
+        unreachable!();
+    };
 }
