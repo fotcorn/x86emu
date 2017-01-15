@@ -34,11 +34,11 @@ fn main() {
     let code_offset = text_section.offset();
 
     // get the virtual address of the main function
-    let main_symbol_address = get_main_symbol_address(&elf_file);
+    let (main_symbol_address, main_size) = get_main_symbol_address(&elf_file);
     // get the offset of the main function
     let offset = main_symbol_address - code_offset - load_address;
 
-    println!("{:x}", code[offset as usize]);
+    let main_code = &code[offset as usize .. (offset + main_size) as usize];
 }
 
 fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
@@ -54,14 +54,14 @@ fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
     return None
 }
 
-fn get_main_symbol_address(elf_file: &ElfFile) -> u64 {
+fn get_main_symbol_address(elf_file: &ElfFile) -> (u64, u64) {
     let symbol_string_table = elf_file.find_section_by_name(".strtab").expect("strtab (String table) section not found, is this a stripped binary?");
     let symbol_string_table = symbol_string_table.raw_data(&elf_file);
 
     let symbol_table = elf_file.find_section_by_name(".symtab").expect("symtab (Symbol table) section not found");
     if let sections::SectionData::SymbolTable64(data) = symbol_table.get_data(&elf_file).unwrap() {
        let symbol = data.iter().find(|&symbol| read_str(&symbol_string_table[symbol.name() as usize..]) == "main").expect("main symbol not found");
-       return symbol.value();
+       return (symbol.value(), symbol.size());
     } else {
         unreachable!();
     };
