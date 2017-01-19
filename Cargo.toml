@@ -6,3 +6,4 @@ authors = ["fotcorn <fotcorn@gmail.com>"]
 [dependencies]
 xmas-elf = "0.4.0"
 zero = "0.1.2"
+bitflags = "0.7.0"
