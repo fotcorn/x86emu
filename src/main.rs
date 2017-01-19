@@ -122,6 +122,10 @@ fn disassemble(code: &[u8]) {
                 }
                 instruction_pointer += 2;
             },
+            0xC7 => {
+                let modrm = code[instruction_pointer + 1];
+                cpu::mov(get_two_register_argument(rex, modrm));
+            }
             _ => panic!("Unknown instruction"),
         }
         instruction_pointer += 1;
@@ -151,7 +155,10 @@ fn get_two_register_argument(rex: Option<REX>, modrm: u8) -> InstructionArgument
     let mode = Mod{ bits: modrm >> 6};
     match mode {
         EFFECTIVE_ADDRESS => panic!("effective address not implemented"),
-        EFFECTIVE_ADDRESS_8BIT_DEPLACEMENT => panic!("effective address with 8bit displacement not implemented"),
+        EFFECTIVE_ADDRESS_8BIT_DEPLACEMENT => {
+            let register = get_register(modrm & 0b00000111);
+            panic!("8bit deplacement not implemented");
+        }
         EFFECTIVE_ADDRESS_32BIT_DEPLACEMENT => panic!("effective address not 32bit displacement not implemented"),
         REGISTER => {
             let register1 = get_register((modrm & 0b00111000) >> 3);
