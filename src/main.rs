@@ -12,6 +12,10 @@ use xmas_elf::symbol_table::Entry;
 #[macro_use]
 extern crate bitflags;
 
+extern crate x86emu;
+use x86emu::instruction_set::*;
+use x86emu::cpu;
+
 fn main() {
     let filename = match env::args().nth(1) {
         Some(filename) => filename,
@@ -94,10 +98,10 @@ fn disassemble(code: &[u8]) {
 
         let first_byte = code[instruction_pointer];
         match first_byte {
-            opcode @ 0x50...0x57 => cpu_push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
+            opcode @ 0x50...0x57 => cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
             0x89 => { /* mov */ 
                 instruction_pointer += 1;
-                cpu_move(get_two_register_argument(rex, code[instruction_pointer]));
+                cpu::mov(get_two_register_argument(rex, code[instruction_pointer]));
             },
             0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                 let modrm = code[instruction_pointer + 1];
@@ -106,14 +110,14 @@ fn disassemble(code: &[u8]) {
                 let argument = InstructionArgument::Immediate8BitRegister { immediate: immediate, register: register };
                 assert!(modrm >> 6 == 0b11);
                 match (modrm & 0b00111000) >> 3 {
-                    0 => panic!("ADD not implemented"),
-                    1 => panic!("OR not implemented"),
-                    2 => panic!("ADC not implemented"),
-                    3 => panic!("SBB not implemented"),
-                    4 => panic!("AND not implemented"),
-                    5 => cpu_sub(argument),
-                    6 => panic!("XOR not implemented"),
-                    7 => panic!("CMP not implemented"),
+                    0 => cpu::add(argument),
+                    1 => cpu::or(argument),
+                    2 => cpu::adc(argument),
+                    3 => cpu::sbb(argument),
+                    4 => cpu::and(argument),
+                    5 => cpu::sub(argument),
+                    6 => cpu::xor(argument),
+                    7 => cpu::cmp(argument),
                     _ => unreachable!(),
                 }
                 instruction_pointer += 2;
@@ -143,25 +147,6 @@ bitflags! {
     }
 }
 
-#[derive(Debug)]
-enum Register {
-    RAX,
-    RBX,
-    RCX,
-    RDX,
-    RSP,
-    RBP,
-    RSI,
-    RDI,
-}
-
-#[derive(Debug)]
-enum InstructionArgument {
-    OneRegister { register: Register },
-    TwoRegister { register1: Register, register2: Register },
-    Immediate8BitRegister { immediate: u8, register: Register },
-}
-
 fn get_two_register_argument(rex: Option<REX>, modrm: u8) -> InstructionArgument {
     let mode = Mod{ bits: modrm >> 6};
     match mode {
@@ -189,16 +174,4 @@ fn get_register(num: u8) -> Register {
         7 => Register::RDI,
         _ => panic!("Unknown instruction argument"),
     }
-}
-
-fn cpu_push(arg: InstructionArgument) {
-    println!("PUSH {:?}", arg);
-}
-
-fn cpu_move(arg: InstructionArgument) {
-    println!("MOVE {:?}", arg);
-}
-
-fn cpu_sub(arg: InstructionArgument) {
-    println!("SUB {:?}", arg);
 }
