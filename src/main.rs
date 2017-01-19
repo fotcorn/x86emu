@@ -94,7 +94,7 @@ fn disassemble(code: &[u8]) {
 
         let first_byte = code[instruction_pointer];
         match first_byte {
-            opcode @ 0x50...0x57 => cpu_push(get_single_register_argument(opcode - 0x50)),
+            opcode @ 0x50...0x57 => cpu_push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
             0x89 => {
                 instruction_pointer += 1;
                 cpu_move(get_two_register_argument(rex, code[instruction_pointer]));
@@ -126,7 +126,8 @@ bitflags! {
         const REGISTER = 0b11,
     }
 }
-/*
+
+#[derive(Debug)]
 enum Register {
     RAX,
     RBX,
@@ -136,19 +137,12 @@ enum Register {
     RBP,
     RSI,
     RDI,
-}*/
+}
 
 #[derive(Debug)]
 enum InstructionArgument {
-    RAX,
-    RBX,
-    RCX,
-    RDX,
-    RSP,
-    RBP,
-    RSI,
-    RDI,
-    RAXRAX,
+    OneRegister { register: Register },
+    TwoRegister {register1: Register, register2: Register }
 }
 
 fn get_two_register_argument(rex: Option<REX>, modrm: u8) -> InstructionArgument {
@@ -157,21 +151,25 @@ fn get_two_register_argument(rex: Option<REX>, modrm: u8) -> InstructionArgument
         EFFECTIVE_ADDRESS => panic!("effective address not implemented"),
         EFFECTIVE_ADDRESS_8BIT_DEPLACEMENT => panic!("effective address with 8bit displacement not implemented"),
         EFFECTIVE_ADDRESS_32BIT_DEPLACEMENT => panic!("effective address not 32bit displacement not implemented"),
-        REGISTER => InstructionArgument::RAXRAX,
+        REGISTER => {
+            let register1 = get_register((modrm & 0b00111000) >> 3);
+            let register2 = get_register(modrm & 0b00000111);
+            InstructionArgument::TwoRegister{ register1: register1, register2: register2 }
+        }
         _ => unreachable!(),
     }
 }
 
-fn get_single_register_argument(num: u8) -> InstructionArgument {
+fn get_register(num: u8) -> Register {
     match num {
-        0 => InstructionArgument::RAX,
-        1 => InstructionArgument::RBX,
-        2 => InstructionArgument::RCX,
-        3 => InstructionArgument::RDX,
-        4 => InstructionArgument::RSP,
-        5 => InstructionArgument::RBP,
-        6 => InstructionArgument::RSI,
-        7 => InstructionArgument::RDI,
+        0 => Register::RAX,
+        1 => Register::RBX,
+        2 => Register::RCX,
+        3 => Register::RDX,
+        4 => Register::RSP,
+        5 => Register::RBP,
+        6 => Register::RSI,
+        7 => Register::RDI,
         _ => panic!("Unknown instruction argument"),
     }
 }
