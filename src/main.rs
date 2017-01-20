@@ -43,7 +43,8 @@ fn main() {
 
     let main_code = &code[offset as usize .. (offset + main_size) as usize];
 
-    decoder::disassemble(&main_code);
+    let mut cpu = decoder::CPU{code: main_code.to_vec(), instruction_pointer: 0};
+    cpu.disassemble();
 }
 
 fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
