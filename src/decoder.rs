@@ -105,9 +105,7 @@ enum RegOrOpcode {
 enum ImmediateSize {
     None,
     Bit8,
-    Bit16,
     Bit32,
-    Bit64,
 }
 
 bitflags! {
