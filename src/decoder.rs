@@ -31,26 +31,26 @@ impl CPU {
             match first_byte {
                 opcode @ 0x50...0x57 => cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
                 0x89 => { /* mov */
-                    cpu::mov(self.get_two_register_argument(rex, RegOrOpcode::Register, ImmediateSize::None));
-                    self.instruction_pointer += 1; // TODO: get_two_register_argument should return how much we need to increase the instruction pointer
+                    cpu::mov(self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None));
+                    self.instruction_pointer += 1; // TODO: get_argument should return how much we need to increase the instruction pointer
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
-                    cpu::arithmetic(self.get_two_register_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8));
+                    cpu::arithmetic(self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8));
                     self.instruction_pointer += 2;
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
-                    cpu::mov(self.get_two_register_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit32));
-                    self.instruction_pointer += 6;  // TODO: get_two_register_argument should return how much we need to increase the instruction pointer
+                    cpu::mov(self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit32));
+                    self.instruction_pointer += 6;  // TODO: get_argument should return how much we need to increase the instruction pointer
                 }
                 _ => panic!("Unknown instruction: {:x}", first_byte),
             }
             self.instruction_pointer += 1;
         }
     }
-    // TODO: rename function
-    fn get_two_register_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> InstructionArgument {
+
+    fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> InstructionArgument {
         let modrm = self.code[self.instruction_pointer + 1];
         match modrm >> 6 {
             /* effecive address */  0b00 => panic!("effective address not implemented"),
