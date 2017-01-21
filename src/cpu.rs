@@ -44,10 +44,10 @@ pub fn cmp(arg: InstructionArgument) {
 
 pub fn arithmetic(arg: InstructionArgument) {
     let opcode = match arg {
-        InstructionArgument::Immediate8BitRegisterOpcode { opcode: opcode, .. } => opcode,
-        _ => panic!("panic at the disco!!!"),
-
-        //InstructionArgument::Immediate8BitRegisterOpcode {operand: operand}
+        InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,
+        InstructionArgument::Immediate8BitRegister8BitDisplacement { opcode, .. } => opcode,
+        InstructionArgument::Immediate32BitRegister8BitDisplacement { opcode, .. } => opcode,
+        _ => panic!("Unsupported argument type for arithmetic"),
     };
     match opcode {
         0 => add(arg),

@@ -61,16 +61,16 @@ impl CPU {
 
                 assert!(reg_or_opcode == RegOrOpcode::Opcode);
 
-                let operand = modrm & 0b00000111;
+                let opcode = (modrm & 0b00111000) >> 3;
                 // TODO: based on REX, this could be a 64bit value
                 match immediate_size {
                    ImmediateSize::Bit8 => {
                         let immediate = *zero::read::<i8>(immediate);
-                        InstructionArgument::Immediate8BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate }
+                        InstructionArgument::Immediate8BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate, opcode: opcode }
                     },
                     ImmediateSize::Bit32 => {
                         let immediate = *zero::read::<i32>(immediate);
-                        InstructionArgument::Immediate32BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate }
+                        InstructionArgument::Immediate32BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate, opcode: opcode }
                     },
                     _ => panic!("Unsupported immediate size"),
                 }
@@ -85,7 +85,7 @@ impl CPU {
                     },
                     // TODO: why do we now here that this is an 8 bit immediate code?
                     RegOrOpcode::Opcode => 
-                        InstructionArgument::Immediate8BitRegisterOpcode{
+                        InstructionArgument::Immediate8BitRegister {
                             register: register1,
                             opcode: value2,
                             immediate: self.code[self.instruction_pointer + 2]
