@@ -32,6 +32,7 @@ impl CPU {
                 opcode @ 0x50...0x57 => cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
                 0x89 => { /* mov */
                     cpu::mov(self.get_two_register_argument(rex));
+                    self.instruction_pointer += 1; // TODO: get_two_register_argument should return how much we need to increase the instruction pointer
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     let modrm = self.code[self.instruction_pointer + 1];
@@ -54,8 +55,9 @@ impl CPU {
                 },
                 0xC7 => {
                     cpu::mov(self.get_two_register_argument(rex));
+                    self.instruction_pointer += 6;  // TODO: get_two_register_argument should return how much we need to increase the instruction pointer
                 }
-                _ => panic!("Unknown instruction"),
+                _ => panic!("Unknown instruction: {:x}", first_byte),
             }
             self.instruction_pointer += 1;
         }
@@ -68,7 +70,7 @@ impl CPU {
                 let register = get_register(modrm & 0b00000111);
                 let displacement = self.code[self.instruction_pointer + 2] as i8;
                 let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
-                let immediate = *zero::read::<i32>(immediate);
+                let immediate = *zero::read::<i32>(immediate);  // TODO: based on REX, this could be a 64bit value
                 InstructionArgument::Immediate32BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate }
             }
             /* effecive address + 32 bit displacement */ 0b10 => panic!("effective address 32bit displacement not implemented"),
