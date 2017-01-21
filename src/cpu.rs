@@ -8,6 +8,7 @@ pub fn mov(arg: InstructionArgument) {
     println!("MOV {:?}", arg);
 }
 
+/*
 pub fn add(arg: InstructionArgument) {
     println!("ADD {:?}", arg);
 }
@@ -38,4 +39,9 @@ pub fn xor(arg: InstructionArgument) {
 
 pub fn cmp(arg: InstructionArgument) {
     println!("CMP {:?}", arg);
+}
+*/
+
+pub fn arithmetic(arg: InstructionArgument) {
+    println!("ARITHMETIC {:?}", arg);
 }
