@@ -15,4 +15,6 @@ pub enum InstructionArgument {
     OneRegister { register: Register },
     TwoRegister { register1: Register, register2: Register },
     Immediate8BitRegister { immediate: u8, register: Register },
+    Immediate32BitRegister8BitDisplacement {immediate: i32, register: Register, displacement: i8 },
+    Immediate64BitRegister8BitDisplacement {immediate: i32, register: Register, displacement: i8 },
 }

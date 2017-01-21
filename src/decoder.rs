@@ -1,6 +1,7 @@
 use instruction_set::{Register, InstructionArgument};
 use cpu;
 
+use zero;
 
 pub struct CPU {
     pub instruction_pointer: usize,
@@ -29,9 +30,8 @@ impl CPU {
             let first_byte = self.code[self.instruction_pointer];
             match first_byte {
                 opcode @ 0x50...0x57 => cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
-                0x89 => { /* mov */ 
-                    self.instruction_pointer += 1;
-                    cpu::mov(self.get_two_register_argument(rex, self.code[self.instruction_pointer]));
+                0x89 => { /* mov */
+                    cpu::mov(self.get_two_register_argument(rex));
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     let modrm = self.code[self.instruction_pointer + 1];
@@ -53,20 +53,23 @@ impl CPU {
                     self.instruction_pointer += 2;
                 },
                 0xC7 => {
-                    let modrm = self.code[self.instruction_pointer + 1];
-                    cpu::mov(self.get_two_register_argument(rex, modrm));
+                    cpu::mov(self.get_two_register_argument(rex));
                 }
                 _ => panic!("Unknown instruction"),
             }
             self.instruction_pointer += 1;
         }
     }
-    fn get_two_register_argument(&self, rex: Option<REX>, modrm: u8) -> InstructionArgument {
+    fn get_two_register_argument(&self, rex: Option<REX>) -> InstructionArgument {
+        let modrm = self.code[self.instruction_pointer + 1];
         match modrm >> 6 {
             /* effecive address */  0b00 => panic!("effective address not implemented"),
             /* effecive address + 8 bit deplacement */ 0b01 => {
                 let register = get_register(modrm & 0b00000111);
-                panic!("8bit deplacement not implemented");
+                let displacement = self.code[self.instruction_pointer + 2] as i8;
+                let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
+                let immediate = *zero::read::<i32>(immediate);
+                InstructionArgument::Immediate32BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate }
             }
             /* effecive address + 32 bit displacement */ 0b10 => panic!("effective address 32bit displacement not implemented"),
             /* register */ 0b11 => {
