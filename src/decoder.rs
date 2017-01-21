@@ -59,8 +59,10 @@ impl CPU {
                 let displacement = self.code[self.instruction_pointer + 2] as i8;
                 let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
 
-                // TODO: based on REX, this could be a 64bit value
                 assert!(reg_or_opcode == RegOrOpcode::Opcode);
+
+                let operand = modrm & 0b00000111;
+                // TODO: based on REX, this could be a 64bit value
                 match immediate_size {
                    ImmediateSize::Bit8 => {
                         let immediate = *zero::read::<i8>(immediate);
@@ -75,8 +77,8 @@ impl CPU {
             }
             /* effecive address + 32 bit displacement */ 0b10 => panic!("effective address 32bit displacement not implemented"),
             /* register */ 0b11 => {
-                let register1 = get_register((modrm & 0b00111000) >> 3);
-                let value2 = modrm & 0b00000111;
+                let register1 = get_register(modrm & 0b00000111);
+                let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
                         InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2) }

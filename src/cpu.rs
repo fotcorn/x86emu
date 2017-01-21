@@ -8,7 +8,7 @@ pub fn mov(arg: InstructionArgument) {
     println!("MOV {:?}", arg);
 }
 
-/*
+
 pub fn add(arg: InstructionArgument) {
     println!("ADD {:?}", arg);
 }
@@ -40,8 +40,24 @@ pub fn xor(arg: InstructionArgument) {
 pub fn cmp(arg: InstructionArgument) {
     println!("CMP {:?}", arg);
 }
-*/
+
 
 pub fn arithmetic(arg: InstructionArgument) {
-    println!("ARITHMETIC {:?}", arg);
+    let opcode = match arg {
+        InstructionArgument::Immediate8BitRegisterOpcode { opcode: opcode, .. } => opcode,
+        _ => panic!("panic at the disco!!!"),
+
+        //InstructionArgument::Immediate8BitRegisterOpcode {operand: operand}
+    };
+    match opcode {
+        0 => add(arg),
+        1 => or(arg),
+        2 => adc(arg),
+        3 => sbb(arg),
+        4 => and(arg),
+        5 => sub(arg),
+        6 => xor(arg),
+        7 => cmp(arg),
+        _ => unreachable!(),
+    }
 }
