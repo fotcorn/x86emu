@@ -55,6 +55,11 @@ impl CPU {
                     cpu::mov(argument);
                     ip_offset
                 }
+                0xBF => {
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    cpu::mov(argument);
+                    ip_offset
+                }
                 _ => panic!("Unknown instruction: {:x}", first_byte)
             };
             self.instruction_pointer += ip_offset;
@@ -63,60 +68,71 @@ impl CPU {
 
     fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
-        match modrm >> 6 {
-            0b00 => panic!("effective address not implemented"), /* effecive address */
-            0b01 => { /* effecive address + 8 bit deplacement */
+        let address_mod = modrm >> 6;
+        match address_mod {
+            0b00 | 0b01 | 0b10 => { /* effective address / effecive address + 8 bit deplacement / effecive address + 32 bit deplacement */
                 let register = get_register(modrm & 0b00000111);
-                let displacement = self.code[self.instruction_pointer + 2] as i8;
+                
+                let (displacement, mut ip_offset) = match address_mod {
+                    0b00 => (0, 0),
+                    0b01 => (self.code[self.instruction_pointer + 2] as i32, 1),
+                    0b10 => {
+                        let displacement = &self.code[self.instruction_pointer + 2..self.instruction_pointer+6];
+                        let displacement = *zero::read::<i32>(displacement);
+                        (displacement, 4)
+                    },
+                    _ => unreachable!()
+                };
+                ip_offset += 2; // skip instruction + modrm byte
 
                 let register_or_opcode = (modrm & 0b00111000) >> 3;
                 // TODO: based on REX, this could be a 64bit value
                 match immediate_size {
                     ImmediateSize::Bit8 => {
                        assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                       let immediate = self.code[self.instruction_pointer + 3] as i8;
-                        (InstructionArgument::Immediate8BitRegister8BitDisplacement {
+                       let immediate = self.code[self.instruction_pointer + ip_offset];
+                        (InstructionArgument::Immediate8BitRegister {
                             register: register,
                             displacement: displacement,
                             immediate: immediate,
                             opcode: register_or_opcode },
-                        4)
+                        ip_offset + 1)
                     },
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                        let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
+                        let immediate = &self.code[self.instruction_pointer + ip_offset..self.instruction_pointer + ip_offset + 4];
                         let immediate = *zero::read::<i32>(immediate);
-                        (InstructionArgument::Immediate32BitRegister8BitDisplacement {
+                        (InstructionArgument::Immediate32BitRegister {
                             register: register,
                             displacement: displacement,
                             immediate: immediate,
                             opcode: register_or_opcode },
-                        7)
+                        ip_offset + 4)
                     },
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
-                        (InstructionArgument::TwoRegister8BitDisplacement {
+                        (InstructionArgument::TwoRegister {
                             register1: register,
                             register2: get_register(register_or_opcode),
                             displacement: displacement },
-                        3)
+                        ip_offset + 1)
                     }
                 }
             }
-            0b10 => panic!("effective address 32bit displacement not implemented"), /* effecive address + 32 bit displacement */
             0b11 => { /* register */
                 let register1 = get_register(modrm & 0b00000111);
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
-                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2) }, 2)
+                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2), displacement: 0 }, 2)
                     },
                     // TODO: why do we now here that this is an 8 bit immediate code?
                     RegOrOpcode::Opcode => 
                         (InstructionArgument::Immediate8BitRegister {
                             register: register1,
                             opcode: value2,
-                            immediate: self.code[self.instruction_pointer + 2]
+                            immediate: self.code[self.instruction_pointer + 2],
+                            displacement: 0,
                         },
                         3)
                 }

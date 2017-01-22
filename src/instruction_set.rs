@@ -13,9 +13,7 @@ pub enum Register {
 #[derive(Debug)]
 pub enum InstructionArgument {
     OneRegister { register: Register },
-    TwoRegister { register1: Register, register2: Register },
-    TwoRegister8BitDisplacement { register1: Register, register2: Register, displacement: i8 },
-    Immediate8BitRegister8BitDisplacement {immediate: i8, register: Register, displacement: i8, opcode: u8 },
-    Immediate32BitRegister8BitDisplacement {immediate: i32, register: Register, displacement: i8, opcode: u8 },
-    Immediate8BitRegister {immediate: u8, register: Register, opcode: u8 },
+    TwoRegister { register1: Register, register2: Register, displacement: i32 },
+    Immediate8BitRegister {immediate: u8, register: Register, opcode: u8, displacement: i32 },
+    Immediate32BitRegister {immediate: i32, register: Register, displacement: i32, opcode: u8 },
 }
