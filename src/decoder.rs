@@ -28,49 +28,63 @@ impl CPU {
             }
 
             let first_byte = self.code[self.instruction_pointer];
-            match first_byte {
-                opcode @ 0x50...0x57 => cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) }),
+            let ip_offset: usize = match first_byte {
+                opcode @ 0x50...0x57 => {
+                    cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) });
+                    1
+                },
                 0x89 => { /* mov */
-                    cpu::mov(self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None));
-                    self.instruction_pointer += 1; // TODO: get_argument should return how much we need to increase the instruction pointer
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    cpu::mov(argument);
+                    ip_offset
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
-                    cpu::arithmetic(self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8));
-                    self.instruction_pointer += 2;
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    cpu::arithmetic(argument);
+                    ip_offset
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
-                    cpu::mov(self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit32));
-                    self.instruction_pointer += 6;  // TODO: get_argument should return how much we need to increase the instruction pointer
-                }
-                _ => panic!("Unknown instruction: {:x}", first_byte),
-            }
-            self.instruction_pointer += 1;
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit32);
+                    cpu::mov(argument);
+                    ip_offset
+                },
+                _ => panic!("Unknown instruction: {:x}", first_byte)
+            };
+            self.instruction_pointer += ip_offset;
         }
     }
 
-    fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> InstructionArgument {
+    fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
         match modrm >> 6 {
             /* effecive address */  0b00 => panic!("effective address not implemented"),
             /* effecive address + 8 bit deplacement */ 0b01 => {
                 let register = get_register(modrm & 0b00000111);
                 let displacement = self.code[self.instruction_pointer + 2] as i8;
-                let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
-
                 assert!(reg_or_opcode == RegOrOpcode::Opcode);
-
                 let opcode = (modrm & 0b00111000) >> 3;
                 // TODO: based on REX, this could be a 64bit value
                 match immediate_size {
                    ImmediateSize::Bit8 => {
-                        let immediate = *zero::read::<i8>(immediate);
-                        InstructionArgument::Immediate8BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate, opcode: opcode }
+                       let immediate = self.code[self.instruction_pointer + 3] as i8;
+                        (InstructionArgument::Immediate8BitRegister8BitDisplacement {
+                            register: register,
+                            displacement: displacement,
+                            immediate: immediate,
+                            opcode: opcode },
+                        3)
                     },
                     ImmediateSize::Bit32 => {
+                        let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
                         let immediate = *zero::read::<i32>(immediate);
-                        InstructionArgument::Immediate32BitRegister8BitDisplacement { register: register, displacement: displacement, immediate: immediate, opcode: opcode }
+                        (InstructionArgument::Immediate32BitRegister8BitDisplacement {
+                            register: register,
+                            displacement: displacement,
+                            immediate: immediate,
+                            opcode: opcode },
+                        8)
                     },
                     _ => panic!("Unsupported immediate size"),
                 }
@@ -81,15 +95,16 @@ impl CPU {
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
-                        InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2) }
+                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2) }, 2)
                     },
                     // TODO: why do we now here that this is an 8 bit immediate code?
                     RegOrOpcode::Opcode => 
-                        InstructionArgument::Immediate8BitRegister {
+                        (InstructionArgument::Immediate8BitRegister {
                             register: register1,
                             opcode: value2,
                             immediate: self.code[self.instruction_pointer + 2]
                         },
+                        3)
                 }
             }
             _ => unreachable!(),
