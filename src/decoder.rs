@@ -84,7 +84,7 @@ impl CPU {
                             displacement: displacement,
                             immediate: immediate,
                             opcode: opcode },
-                        8)
+                        7)
                     },
                     _ => panic!("Unsupported immediate size"),
                 }
