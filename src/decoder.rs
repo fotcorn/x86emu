@@ -56,7 +56,7 @@ impl CPU {
                     ip_offset
                 }
                 0xBF => {
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::Bit32);
                     cpu::mov(argument);
                     ip_offset
                 }
@@ -115,7 +115,7 @@ impl CPU {
                             register1: register,
                             register2: get_register(register_or_opcode),
                             displacement: displacement },
-                        ip_offset + 1)
+                        ip_offset)
                     }
                 }
             }
