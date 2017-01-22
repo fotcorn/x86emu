@@ -50,6 +50,11 @@ impl CPU {
                     cpu::mov(argument);
                     ip_offset
                 },
+                0x8b => {
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    cpu::mov(argument);
+                    ip_offset
+                }
                 _ => panic!("Unknown instruction: {:x}", first_byte)
             };
             self.instruction_pointer += ip_offset;
@@ -59,38 +64,47 @@ impl CPU {
     fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
         match modrm >> 6 {
-            /* effecive address */  0b00 => panic!("effective address not implemented"),
-            /* effecive address + 8 bit deplacement */ 0b01 => {
+            0b00 => panic!("effective address not implemented"), /* effecive address */
+            0b01 => { /* effecive address + 8 bit deplacement */
                 let register = get_register(modrm & 0b00000111);
                 let displacement = self.code[self.instruction_pointer + 2] as i8;
-                assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                let opcode = (modrm & 0b00111000) >> 3;
+
+                let register_or_opcode = (modrm & 0b00111000) >> 3;
                 // TODO: based on REX, this could be a 64bit value
                 match immediate_size {
-                   ImmediateSize::Bit8 => {
+                    ImmediateSize::Bit8 => {
+                       assert!(reg_or_opcode == RegOrOpcode::Opcode);
                        let immediate = self.code[self.instruction_pointer + 3] as i8;
                         (InstructionArgument::Immediate8BitRegister8BitDisplacement {
                             register: register,
                             displacement: displacement,
                             immediate: immediate,
-                            opcode: opcode },
-                        3)
+                            opcode: register_or_opcode },
+                        4)
                     },
                     ImmediateSize::Bit32 => {
+                        assert!(reg_or_opcode == RegOrOpcode::Opcode);
                         let immediate = &self.code[self.instruction_pointer + 3..self.instruction_pointer+7];
                         let immediate = *zero::read::<i32>(immediate);
                         (InstructionArgument::Immediate32BitRegister8BitDisplacement {
                             register: register,
                             displacement: displacement,
                             immediate: immediate,
-                            opcode: opcode },
+                            opcode: register_or_opcode },
                         7)
                     },
-                    _ => panic!("Unsupported immediate size"),
+                    ImmediateSize::None => {
+                        assert!(reg_or_opcode == RegOrOpcode::Register);
+                        (InstructionArgument::TwoRegister8BitDisplacement {
+                            register1: register,
+                            register2: get_register(register_or_opcode),
+                            displacement: displacement },
+                        3)
+                    }
                 }
             }
-            /* effecive address + 32 bit displacement */ 0b10 => panic!("effective address 32bit displacement not implemented"),
-            /* register */ 0b11 => {
+            0b10 => panic!("effective address 32bit displacement not implemented"), /* effecive address + 32 bit displacement */
+            0b11 => { /* register */
                 let register1 = get_register(modrm & 0b00000111);
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
