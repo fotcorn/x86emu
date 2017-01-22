@@ -33,6 +33,15 @@ impl CPU {
                     cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) });
                     1
                 },
+                opcode @ 0xB8...0xBF => {
+                    cpu::mov(InstructionArgument::Immediate32BitRegister {
+                        register: get_register(opcode - 0xB8),
+                        displacement: 0,
+                        opcode: 0,
+                        immediate : self.get_i32_value(1),
+                    });
+                    5
+                },
                 0x89 => { /* mov */
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
                     cpu::mov(argument);
@@ -54,16 +63,16 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
                     cpu::mov(argument);
                     ip_offset
-                }
-                0xBF => {
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::Bit32);
-                    cpu::mov(argument);
-                    ip_offset
-                }
+                },
                 _ => panic!("Unknown instruction: {:x}", first_byte)
             };
             self.instruction_pointer += ip_offset;
         }
+    }
+
+    fn get_i32_value(&self, ip_offset: usize) -> i32 {
+        let value = &self.code[self.instruction_pointer + ip_offset..self.instruction_pointer + ip_offset + 4];
+        *zero::read::<i32>(value)
     }
 
     fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
