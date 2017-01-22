@@ -70,6 +70,11 @@ impl CPU {
                     cpu::mov(argument);
                     ip_offset
                 },
+                0x8d => {
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    cpu::lea(argument);
+                    ip_offset
+                },
                 _ => panic!("Unknown instruction: {:x}", first_byte)
             };
             self.instruction_pointer += ip_offset;
