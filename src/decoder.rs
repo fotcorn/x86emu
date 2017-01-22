@@ -90,7 +90,7 @@ impl CPU {
                 
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
-                    0b01 => (self.code[self.instruction_pointer + 2] as i32, 1),
+                    0b01 => (self.code[self.instruction_pointer + 2] as i8 as i32, 1),
                     0b10 => {
                         let displacement = &self.code[self.instruction_pointer + 2..self.instruction_pointer+6];
                         let displacement = *zero::read::<i32>(displacement);
