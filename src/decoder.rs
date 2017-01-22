@@ -42,6 +42,12 @@ impl CPU {
                     });
                     5
                 },
+                0xE8 => {
+                    cpu::call(InstructionArgument::Immediate32 {
+                        immediate : self.get_i32_value(1),
+                    });
+                    5
+                },
                 0x89 => { /* mov */
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
                     cpu::mov(argument);

@@ -41,6 +41,9 @@ pub fn cmp(arg: InstructionArgument) {
     println!("CMP {:?}", arg);
 }
 
+pub fn call(arg: InstructionArgument) {
+    println!("CALL {:?}", arg);
+}
 
 pub fn arithmetic(arg: InstructionArgument) {
     let opcode = match arg {
