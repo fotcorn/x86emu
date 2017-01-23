@@ -49,6 +49,10 @@ pub fn lea(arg: InstructionArgument) {
     println!("LEA {:?}", arg);
 }
 
+pub fn test(arg: InstructionArgument) {
+    println!("TEST {:?}", arg);
+}
+
 pub fn arithmetic(arg: InstructionArgument) {
     let opcode = match arg {
         InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,

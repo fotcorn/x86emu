@@ -53,6 +53,11 @@ impl CPU {
                     cpu::mov(argument);
                     ip_offset
                 },
+                0x85 => { /* test */
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    cpu::test(argument);
+                    ip_offset
+                },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
