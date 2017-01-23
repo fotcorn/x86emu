@@ -70,16 +70,29 @@ impl CPU {
                     cpu::mov(argument);
                     ip_offset
                 },
-                0x8b => {
+                0x8B => {
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
                     cpu::mov(argument);
                     ip_offset
                 },
-                0x8d => {
+                0x8D => {
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
                     cpu::lea(argument);
                     ip_offset
                 },
+                0x0F => { /* two byte instructions */
+                    let second_byte = self.code[self.instruction_pointer + 1];
+                    match second_byte {
+                        0x48 => {
+                            // TODO: fixme, wrong register + deplacement
+                            let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                            cpu::cmov(argument);
+                            ip_offset
+                        },
+                        _ => panic!("Unknown instruction: 0F {:x}", first_byte)
+                    }
+
+                }
                 _ => panic!("Unknown instruction: {:x}", first_byte)
             };
             self.instruction_pointer += ip_offset;

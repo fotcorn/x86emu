@@ -53,6 +53,10 @@ pub fn test(arg: InstructionArgument) {
     println!("TEST {:?}", arg);
 }
 
+pub fn cmov(arg: InstructionArgument) {
+    println!("CMOV {:?}", arg);
+}
+
 pub fn arithmetic(arg: InstructionArgument) {
     let opcode = match arg {
         InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,
