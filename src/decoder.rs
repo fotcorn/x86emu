@@ -80,6 +80,19 @@ impl CPU {
                     cpu::lea(argument);
                     ip_offset
                 },
+                0xC1 => {
+                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    cpu::sar(argument);
+                    ip_offset
+                },
+                0xC3 => {
+                    cpu::ret();
+                    1
+                },
+                0xC9 => {
+                    cpu::leave();
+                    1
+                },
                 0x0F => { /* two byte instructions */
                     let second_byte = self.code[self.instruction_pointer + 1];
                     match second_byte {

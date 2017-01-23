@@ -57,6 +57,18 @@ pub fn cmov(arg: InstructionArgument) {
     println!("CMOV {:?}", arg);
 }
 
+pub fn sar(arg: InstructionArgument) {
+    println!("SAR {:?}", arg);
+}
+
+pub fn ret() {
+    println!("RET");
+}
+
+pub fn leave() {
+    println!("LEAVE");
+}
+
 pub fn arithmetic(arg: InstructionArgument) {
     let opcode = match arg {
         InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,
