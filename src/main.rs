@@ -10,7 +10,7 @@ use xmas_elf::{ElfFile, program, sections};
 use xmas_elf::symbol_table::Entry;
 
 extern crate x86emu;
-use x86emu::decoder;
+use x86emu::cpu::CPU;
 
 fn main() {
     let filename = match env::args().nth(1) {
@@ -43,8 +43,8 @@ fn main() {
 
     let main_code = &code[offset as usize .. (offset + main_size) as usize];
 
-    let mut cpu = decoder::CPU{code: main_code.to_vec(), instruction_pointer: 0};
-    cpu.disassemble();
+    let mut cpu = CPU::new(main_code.to_vec());
+    cpu.execute();
 }
 
 fn get_load_address(elf_file: &ElfFile) -> Option<u64> {

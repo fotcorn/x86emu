@@ -1,6 +1,7 @@
 pub mod decoder;
-mod cpu;
+pub mod cpu;
 mod instruction_set;
+mod execution;
 
 #[macro_use]
 extern crate bitflags;

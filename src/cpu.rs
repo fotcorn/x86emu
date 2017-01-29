@@ -1,89 +1,52 @@
-use instruction_set::InstructionArgument;
+pub struct CPU {
+    pub instruction_pointer: usize,
+    pub code: Vec<u8>,
 
-pub fn push(arg: InstructionArgument) {
-    println!("PUSH {:?}", arg);
+    pub rax: u64,
+    pub rbx: u64,
+    pub rcx: u64,
+    pub rdx: u64,
+    pub rsp: u64,
+    pub rbp: u64,
+    pub rsi: u64,
+    pub rdi: u64,
+
+    pub r8: u64,
+    pub r9: u64,
+    pub r10: u64,
+    pub r11: u64,
+    pub r12: u64,
+    pub r13: u64,
+    pub r14: u64,
+    pub r15: u64,
+
+    pub rflags: u64,
 }
 
-pub fn mov(arg: InstructionArgument) {
-    println!("MOV {:?}", arg);
-}
+impl CPU {
+    pub fn new(code: Vec<u8>) -> CPU {
+        CPU {
+            code: code,
+            instruction_pointer: 0,
+            rax: 0,
+            rbx: 0,
+            rcx: 0,
+            rdx: 0,
+            rsp: 0,
+            rbp: 0,
+            rsi: 0,
+            rdi: 0,
 
+            r8: 0,
+            r9: 0,
+            r10: 0,
+            r11: 0,
+            r12: 0,
+            r13: 0,
+            r14: 0,
+            r15: 0,
 
-pub fn add(arg: InstructionArgument) {
-    println!("ADD {:?}", arg);
-}
-
-pub fn or(arg: InstructionArgument) {
-    println!("OR {:?}", arg);
-}
-
-pub fn adc(arg: InstructionArgument) {
-    println!("ADC {:?}", arg);
-}
-
-pub fn sbb(arg: InstructionArgument) {
-    println!("SBB {:?}", arg);
-}
-
-pub fn and(arg: InstructionArgument) {
-    println!("AND {:?}", arg);
-}
-
-pub fn sub(arg: InstructionArgument) {
-    println!("SUB {:?}", arg);
-}
-
-pub fn xor(arg: InstructionArgument) {
-    println!("XOR {:?}", arg);
-}
-
-pub fn cmp(arg: InstructionArgument) {
-    println!("CMP {:?}", arg);
-}
-
-pub fn call(arg: InstructionArgument) {
-    println!("CALL {:?}", arg);
-}
-
-pub fn lea(arg: InstructionArgument) {
-    println!("LEA {:?}", arg);
-}
-
-pub fn test(arg: InstructionArgument) {
-    println!("TEST {:?}", arg);
-}
-
-pub fn cmov(arg: InstructionArgument) {
-    println!("CMOV {:?}", arg);
-}
-
-pub fn sar(arg: InstructionArgument) {
-    println!("SAR {:?}", arg);
-}
-
-pub fn ret() {
-    println!("RET");
-}
-
-pub fn leave() {
-    println!("LEAVE");
-}
-
-pub fn arithmetic(arg: InstructionArgument) {
-    let opcode = match arg {
-        InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,
-        InstructionArgument::Immediate32BitRegister { opcode, .. } => opcode,
-        _ => panic!("Unsupported argument type for arithmetic"),
-    };
-    match opcode {
-        0 => add(arg),
-        1 => or(arg),
-        2 => adc(arg),
-        3 => sbb(arg),
-        4 => and(arg),
-        5 => sub(arg),
-        6 => xor(arg),
-        7 => cmp(arg),
-        _ => unreachable!(),
+            rflags: 0,
+        }
     }
 }

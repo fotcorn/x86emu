@@ -1,15 +1,10 @@
 use instruction_set::{Register, InstructionArgument};
-use cpu;
+use cpu::CPU;
 
 use zero;
 
-pub struct CPU {
-    pub instruction_pointer: usize,
-    pub code: Vec<u8>,
-}
-
 impl CPU {
-    pub fn disassemble(&mut self) {
+    pub fn execute(&mut self) {
         loop {
             let first_byte = self.code[self.instruction_pointer];
 
@@ -30,67 +25,69 @@ impl CPU {
             let first_byte = self.code[self.instruction_pointer];
             let ip_offset: usize = match first_byte {
                 opcode @ 0x50...0x57 => {
-                    cpu::push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) });
+                    self.push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) });
                     1
                 },
                 opcode @ 0xB8...0xBF => {
-                    cpu::mov(InstructionArgument::Immediate32BitRegister {
+                    let immediate = self.get_i32_value(1);
+                    self.mov(InstructionArgument::Immediate32BitRegister {
                         register: get_register(opcode - 0xB8),
                         displacement: 0,
                         opcode: 0,
-                        immediate : self.get_i32_value(1),
+                        immediate : immediate,
                     });
                     5
                 },
                 0xE8 => {
-                    cpu::call(InstructionArgument::Immediate32 {
-                        immediate : self.get_i32_value(1),
+                    let immediate = self.get_i32_value(1);
+                    self.call(InstructionArgument::Immediate32 {
+                        immediate : immediate,
                     });
                     5
                 },
                 0x89 => { /* mov */
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
-                    cpu::mov(argument);
+                    self.mov(argument);
                     ip_offset
                 },
                 0x85 => { /* test */
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
-                    cpu::test(argument);
+                    self.test(argument);
                     ip_offset
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
-                    cpu::arithmetic(argument);
+                    self.arithmetic(argument);
                     ip_offset
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit32);
-                    cpu::mov(argument);
+                    self.mov(argument);
                     ip_offset
                 },
                 0x8B => {
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
-                    cpu::mov(argument);
+                    self.mov(argument);
                     ip_offset
                 },
                 0x8D => {
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
-                    cpu::lea(argument);
+                    self.lea(argument);
                     ip_offset
                 },
                 0xC1 => {
                     let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
-                    cpu::sar(argument);
+                    self.sar(argument);
                     ip_offset
                 },
                 0xC3 => {
-                    cpu::ret();
+                    self.ret();
                     1
                 },
                 0xC9 => {
-                    cpu::leave();
+                    self.leave();
                     1
                 },
                 0x0F => { /* two byte instructions */
@@ -99,7 +96,7 @@ impl CPU {
                         0x48 => {
                             // TODO: fixme, wrong register + deplacement
                             let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
-                            cpu::cmov(argument);
+                            self.cmov(argument);
                             ip_offset
                         },
                         _ => panic!("Unknown instruction: 0F {:x}", first_byte)
