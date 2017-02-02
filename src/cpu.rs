@@ -1,6 +1,7 @@
 pub struct CPU {
     pub instruction_pointer: usize,
     pub code: Vec<u8>,
+    pub stack: Vec<u8>,
 
     pub rax: u64,
     pub rbx: u64,
@@ -25,14 +26,14 @@ pub struct CPU {
 
 impl CPU {
     pub fn new(code: Vec<u8>) -> CPU {
+        let stack = vec![0; 8192];
         CPU {
-            code: code,
             instruction_pointer: 0,
             rax: 0,
             rbx: 0,
             rcx: 0,
             rdx: 0,
-            rsp: 0,
+            rsp: stack.len() as u64,
             rbp: 0,
             rsi: 0,
             rdi: 0,
@@ -47,6 +48,9 @@ impl CPU {
             r15: 0,
 
             rflags: 0,
+
+            stack: stack,
+            code: code,
         }
     }
 }
