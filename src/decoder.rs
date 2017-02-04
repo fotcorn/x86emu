@@ -58,29 +58,29 @@ impl CPU {
                     ip_offset
                 },
                 0x85 => { /* test */
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None);
                     self.test(argument);
                     ip_offset
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit8);
                     self.arithmetic(argument);
                     ip_offset
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit32);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit32);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8B => {
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8D => {
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None);
                     self.lea(argument);
                     ip_offset
                 },
