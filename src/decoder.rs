@@ -1,4 +1,4 @@
-use instruction_set::{Register, InstructionArgument};
+use instruction_set::{Register, RegisterSize, InstructionArgument};
 use cpu::CPU;
 
 use zero;
@@ -22,16 +22,23 @@ impl CPU {
                 _ => ()
             }
 
+            let register_size = match rex {
+                Some(r) if r.contains(OPERAND_64_BIT) => {
+                    RegisterSize::Bit64
+                },
+                _ => RegisterSize::Bit32
+            };
+
             let first_byte = self.code[self.instruction_pointer];
             let ip_offset: usize = match first_byte {
                 opcode @ 0x50...0x57 => {
-                    self.push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50) });
+                    self.push(InstructionArgument::OneRegister{ register: get_register(opcode - 0x50, RegisterSize::Bit64) });
                     1
                 },
                 opcode @ 0xB8...0xBF => {
                     let immediate = self.get_i32_value(1);
                     self.mov(InstructionArgument::Immediate32BitRegister {
-                        register: get_register(opcode - 0xB8),
+                        register: get_register(opcode - 0xB8, register_size),
                         displacement: 0,
                         opcode: 0,
                         immediate : immediate,
@@ -46,39 +53,39 @@ impl CPU {
                     5
                 },
                 0x89 => { /* mov */
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
                     self.mov(argument);
                     ip_offset
                 },
                 0x85 => { /* test */
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
                     self.test(argument);
                     ip_offset
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit8);
                     self.arithmetic(argument);
                     ip_offset
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit32);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit32);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8B => {
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8D => {
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
                     self.lea(argument);
                     ip_offset
                 },
                 0xC1 => {
-                    let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit8);
                     self.sar(argument);
                     ip_offset
                 },
@@ -95,7 +102,7 @@ impl CPU {
                     match second_byte {
                         0x48 => {
                             // TODO: fixme, wrong register + deplacement
-                            let (argument, ip_offset) = self.get_argument(rex, RegOrOpcode::Register, ImmediateSize::None);
+                            let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
                             self.cmov(argument);
                             ip_offset
                         },
@@ -114,12 +121,12 @@ impl CPU {
         *zero::read::<i32>(value)
     }
 
-    fn get_argument(&self, rex: Option<REX>, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
+    fn get_argument(&self, register_size: RegisterSize, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
         let address_mod = modrm >> 6;
         match address_mod {
             0b00 | 0b01 | 0b10 => { /* effective address / effecive address + 8 bit deplacement / effecive address + 32 bit deplacement */
-                let register = get_register(modrm & 0b00000111);
+                let register = get_register(modrm & 0b00000111, register_size);
                 
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
@@ -161,18 +168,18 @@ impl CPU {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
                         (InstructionArgument::TwoRegister {
                             register1: register,
-                            register2: get_register(register_or_opcode),
+                            register2: get_register(register_or_opcode, register_size),
                             displacement: displacement },
                         ip_offset)
                     }
                 }
             }
             0b11 => { /* register */
-                let register1 = get_register(modrm & 0b00000111);
+                let register1 = get_register(modrm & 0b00000111, register_size);
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
-                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2), displacement: 0 }, 2)
+                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2, register_size), displacement: 0 }, 2)
                     },
                     // TODO: why do we now here that this is an 8 bit immediate code?
                     RegOrOpcode::Opcode => 
@@ -212,16 +219,33 @@ bitflags! {
     }
 }
 
-fn get_register(num: u8) -> Register {
-    match num {
-        0 => Register::RAX,
-        1 => Register::RBX,
-        2 => Register::RCX,
-        3 => Register::RDX,
-        4 => Register::RSP,
-        5 => Register::RBP,
-        6 => Register::RSI,
-        7 => Register::RDI,
-        _ => panic!("Unknown instruction argument"),
+fn get_register(num: u8, size: RegisterSize) -> Register {
+    match size {
+        RegisterSize::Bit32 => {
+            match num {
+                0 => Register::EAX,
+                1 => Register::EBX,
+                2 => Register::ECX,
+                3 => Register::EDX,
+                4 => Register::ESP,
+                5 => Register::EBP,
+                6 => Register::ESI,
+                7 => Register::EDI,
+                _ => panic!("Unknown instruction argument"),
+            }
+        },
+        RegisterSize::Bit64 => {
+            match num {
+                0 => Register::RAX,
+                1 => Register::RBX,
+                2 => Register::RCX,
+                3 => Register::RDX,
+                4 => Register::RSP,
+                5 => Register::RBP,
+                6 => Register::RSI,
+                7 => Register::RDI,
+                _ => panic!("Unknown instruction argument"),
+            }
+        }
     }
 }

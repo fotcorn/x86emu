@@ -1,3 +1,9 @@
+#[derive(Clone, Copy, Debug)]
+pub enum RegisterSize {
+    Bit32,
+    Bit64,
+}
+
 #[derive(Debug)]
 pub enum Register {
     RAX,
@@ -8,6 +14,15 @@ pub enum Register {
     RBP,
     RSI,
     RDI,
+
+    EAX,
+    EBX,
+    ECX,
+    EDX,
+    ESP,
+    EBP,
+    ESI,
+    EDI,
 }
 
 #[derive(Debug)]
