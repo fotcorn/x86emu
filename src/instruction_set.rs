@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Clone, Copy, Debug)]
 pub enum RegisterSize {
     Bit32,
@@ -25,11 +27,55 @@ pub enum Register {
     EDI,
 }
 
+impl fmt::Display for Register {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let rep = format!("{:?}", self).to_lowercase();
+        write!(f, "%{}", rep)
+    }
+}
+
+
 #[derive(Debug)]
 pub enum InstructionArgument {
     OneRegister { register: Register },
     TwoRegister { register1: Register, register2: Register, displacement: i32 },
     Immediate32 { immediate: i32 },
     Immediate8BitRegister {immediate: u8, register: Register, opcode: u8, displacement: i32 },
-    Immediate32BitRegister {immediate: i32, register: Register, displacement: i32, opcode: u8 },
+    Immediate32BitRegister {immediate: i32, register: Register, opcode: u8, displacement: i32 },
+}
+
+impl fmt::Display for InstructionArgument {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            InstructionArgument::OneRegister { ref register } => write!(f, "{}", register),
+            InstructionArgument::TwoRegister { ref register1, ref register2, displacement } => {
+                if displacement > 0 {
+                    write!(f, "{},{:#x}({})", register1, displacement, register2)
+                } else if displacement > 0 {
+                    write!(f, "{},-{:#x}({})", register1, displacement * -1, register2)
+                } else {
+                    write!(f, "{},{}", register1, register2)
+                }
+            },
+            InstructionArgument::Immediate32 { immediate } => write!(f, "{:x}", immediate),
+            InstructionArgument::Immediate32BitRegister { ref register, immediate, displacement, .. } => {
+                if displacement > 0 {
+                    write!(f, "${:#x},{:#x}({})", immediate, displacement, register)
+                } else if displacement > 0 {
+                    write!(f, "${:#x},{:#x}({})", immediate, displacement * -1, register)
+                } else {
+                    write!(f, "${:#x},{}", immediate, register)
+                }
+            },
+            InstructionArgument::Immediate8BitRegister { ref register, immediate, displacement, .. } => {
+                if displacement > 0 {
+                    write!(f, "${:#x},{:#x}({})", immediate, displacement, register)
+                } else if displacement > 0 {
+                    write!(f, "${:#x},{:#x}({})", immediate, displacement * -1, register)
+                } else {
+                    write!(f, "${:#x},{}", immediate, register)
+                }
+            },
+        }
+    }
 }

@@ -4,71 +4,71 @@ use cpu::CPU;
 
 impl CPU {
     pub fn push(&mut self, arg: InstructionArgument) {
-        println!("PUSH {:?}", arg);
+        println!("{:<6} {}", "push", arg);
     }
 
     pub fn mov(&mut self, arg: InstructionArgument) {
-        println!("MOV {:?}", arg);
+        println!("{:<6} {}", "mov", arg);
     }
 
     pub fn add(&mut self, arg: InstructionArgument) {
-        println!("ADD {:?}", arg);
+        println!("{:<6} {}", "add", arg);
     }
 
     pub fn or(&mut self, arg: InstructionArgument) {
-        println!("OR {:?}", arg);
+        println!("{:<6} {}", "or", arg);
     }
 
     pub fn adc(&mut self, arg: InstructionArgument) {
-        println!("ADC {:?}", arg);
+        println!("{:<6} {}", "adc", arg);
     }
 
     pub fn sbb(&mut self, arg: InstructionArgument) {
-        println!("SBB {:?}", arg);
+        println!("{:<6} {}", "sbb", arg);
     }
 
     pub fn and(&mut self, arg: InstructionArgument) {
-        println!("AND {:?}", arg);
+        println!("{:<6} {}", "and", arg);
     }
 
     pub fn sub(&mut self, arg: InstructionArgument) {
-        println!("SUB {:?}", arg);
+        println!("{:<6} {}", "sub", arg);
     }
 
     pub fn xor(&mut self, arg: InstructionArgument) {
-        println!("XOR {:?}", arg);
+        println!("{:<6} {}", "xor", arg);
     }
 
     pub fn cmp(&mut self, arg: InstructionArgument) {
-        println!("CMP {:?}", arg);
+        println!("{:<6} {}", "cmp", arg);
     }
 
     pub fn call(&mut self, arg: InstructionArgument) {
-        println!("CALL {:?}", arg);
+        println!("{:<6} {}", "call", arg);
     }
 
     pub fn lea(&mut self, arg: InstructionArgument) {
-        println!("LEA {:?}", arg);
+        println!("{:<6} {}", "lea", arg);
     }
 
     pub fn test(&mut self, arg: InstructionArgument) {
-        println!("TEST {:?}", arg);
+        println!("{:<6} {}", "test", arg);
     }
 
     pub fn cmov(&mut self, arg: InstructionArgument) {
-        println!("CMOV {:?}", arg);
+        println!("{:<6} {}", "cmov", arg);
     }
 
     pub fn sar(&mut self, arg: InstructionArgument) {
-        println!("SAR {:?}", arg);
+        println!("{:<6} {}", "sar", arg);
     }
 
     pub fn ret(&mut self) {
-        println!("RET");
+        println!("{:<6}", "ret");
     }
 
     pub fn leave(&mut self) {
-        println!("LEAVE");
+        println!("{:<6}", "leave");
     }
 
     pub fn arithmetic(&mut self, arg: InstructionArgument) {
