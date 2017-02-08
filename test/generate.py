@@ -32,6 +32,9 @@ registers32 = (
     'edi',
 )
 
-for r1 in registers64:
-    for r2 in registers64:
-        print('mov %{},%{}'.format(r1, r2))
+# for r1 in registers64:
+#    for r2 in registers64:
+#        print('mov %{},%{}'.format(r1, r2))
+
+for r in registers64:
+    print('push %{}'.format(r))
