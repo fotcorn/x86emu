@@ -50,11 +50,11 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::OneRegister { ref register } => write!(f, "{}", register),
             InstructionArgument::TwoRegister { ref register1, ref register2, displacement } => {
                 if displacement > 0 {
-                    write!(f, "{},{:#x}({})", register1, displacement, register2)
+                    write!(f, "{},{:#x}({})", register2, displacement, register1)
                 } else if displacement > 0 {
-                    write!(f, "{},-{:#x}({})", register1, displacement * -1, register2)
+                    write!(f, "{},-{:#x}({})", register2, displacement * -1, register1)
                 } else {
-                    write!(f, "{},{}", register1, register2)
+                    write!(f, "{},{}", register2, register1)
                 }
             },
             InstructionArgument::Immediate32 { immediate } => write!(f, "{:x}", immediate),
