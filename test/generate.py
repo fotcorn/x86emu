@@ -11,14 +11,14 @@ registers64 = (
  'rbp',
  'rsi',
  'rdi',
- 'r8',
- 'r9',
- 'r10',
- 'r11',
- 'r12',
- 'r13',
- 'r14',
- 'r15',
+# 'r8',
+# 'r9',
+# 'r10',
+# 'r11',
+# 'r12',
+# 'r13',
+# 'r14',
+# 'r15',
 )
 
 registers32 = (
@@ -38,3 +38,6 @@ registers32 = (
 
 for r in registers64:
     print('push %{}'.format(r))
+
+for r in registers32:
+    print('mov %{0},%{0}'.format(r))
