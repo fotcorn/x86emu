@@ -51,7 +51,7 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::TwoRegister { ref register1, ref register2, displacement } => {
                 if displacement > 0 {
                     write!(f, "{},{:#x}({})", register2, displacement, register1)
-                } else if displacement > 0 {
+                } else if displacement < 0 {
                     write!(f, "{},-{:#x}({})", register2, displacement * -1, register1)
                 } else {
                     write!(f, "{},{}", register2, register1)
@@ -61,7 +61,7 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::Immediate32BitRegister { ref register, immediate, displacement, .. } => {
                 if displacement > 0 {
                     write!(f, "${:#x},{:#x}({})", immediate, displacement, register)
-                } else if displacement > 0 {
+                } else if displacement < 0 {
                     write!(f, "${:#x},{:#x}({})", immediate, displacement * -1, register)
                 } else {
                     write!(f, "${:#x},{}", immediate, register)
@@ -70,7 +70,7 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::Immediate8BitRegister { ref register, immediate, displacement, .. } => {
                 if displacement > 0 {
                     write!(f, "${:#x},{:#x}({})", immediate, displacement, register)
-                } else if displacement > 0 {
+                } else if displacement < 0 {
                     write!(f, "${:#x},{:#x}({})", immediate, displacement * -1, register)
                 } else {
                     write!(f, "${:#x},{}", immediate, register)
