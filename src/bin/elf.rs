@@ -21,6 +21,11 @@ fn main() {
         }
     };
 
+    let symbol_name = match env::args().nth(2) {
+        Some(symbol_name) => symbol_name,
+        None => "main".to_string(),
+    };
+
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
@@ -37,11 +42,15 @@ fn main() {
     let code_offset = text_section.offset();
 
     // get the virtual address of the main function
-    let (main_symbol_address, main_size) = get_main_symbol_address(&elf_file);
+    let (main_symbol_address, main_size) = get_main_symbol_address(&elf_file, &symbol_name);
     // get the offset of the main function
     let offset = main_symbol_address - code_offset - load_address;
 
-    let main_code = &code[offset as usize .. (offset + main_size) as usize];
+    let mut end = (offset + main_size) as usize;
+    if end >= code.len() {
+        end = code.len() - 1
+    }
+    let main_code = &code[offset as usize .. end];
 
     let mut cpu = CPU::new(main_code.to_vec());
     cpu.execute();
@@ -60,14 +69,18 @@ fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
     return None
 }
 
-fn get_main_symbol_address(elf_file: &ElfFile) -> (u64, u64) {
+fn get_main_symbol_address(elf_file: &ElfFile, symbol_name: &str) -> (u64, u64) {
     let symbol_string_table = elf_file.find_section_by_name(".strtab").expect("strtab (String table) section not found, is this a stripped binary?");
     let symbol_string_table = symbol_string_table.raw_data(&elf_file);
 
     let symbol_table = elf_file.find_section_by_name(".symtab").expect("symtab (Symbol table) section not found");
     if let sections::SectionData::SymbolTable64(data) = symbol_table.get_data(&elf_file).unwrap() {
-       let symbol = data.iter().find(|&symbol| read_str(&symbol_string_table[symbol.name() as usize..]) == "main").expect("main symbol not found");
-       return (symbol.value(), symbol.size());
+        let symbol = data.iter().find(|&symbol| read_str(&symbol_string_table[symbol.name() as usize..]) == symbol_name).expect("symbol not found");
+        if symbol.size() == 0 {
+            return (symbol.value(), u64::max_value());
+        } else {
+            return (symbol.value(), symbol.size());
+        }
     } else {
         unreachable!();
     };

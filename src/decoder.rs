@@ -224,9 +224,9 @@ fn get_register(num: u8, size: RegisterSize) -> Register {
         RegisterSize::Bit32 => {
             match num {
                 0 => Register::EAX,
-                1 => Register::EBX,
-                2 => Register::ECX,
-                3 => Register::EDX,
+                1 => Register::ECX,
+                2 => Register::EDX,
+                3 => Register::EBX,
                 4 => Register::ESP,
                 5 => Register::EBP,
                 6 => Register::ESI,
@@ -237,9 +237,9 @@ fn get_register(num: u8, size: RegisterSize) -> Register {
         RegisterSize::Bit64 => {
             match num {
                 0 => Register::RAX,
-                1 => Register::RBX,
-                2 => Register::RCX,
-                3 => Register::RDX,
+                1 => Register::RCX,
+                2 => Register::RDX,
+                3 => Register::RBX,
                 4 => Register::RSP,
                 5 => Register::RBP,
                 6 => Register::RSI,
