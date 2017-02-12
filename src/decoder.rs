@@ -58,7 +58,7 @@ impl CPU {
                     ip_offset
                 },
                 0x85 => { /* test */
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
                     self.test(argument);
                     ip_offset
                 },
