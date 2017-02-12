@@ -62,7 +62,7 @@ impl fmt::Display for InstructionArgument {
                 if displacement > 0 {
                     write!(f, "${:#x},{:#x}({})", immediate, displacement, register)
                 } else if displacement < 0 {
-                    write!(f, "${:#x},{:#x}({})", immediate, displacement * -1, register)
+                    write!(f, "${:#x},-{:#x}({})", immediate, displacement * -1, register)
                 } else {
                     write!(f, "${:#x},{}", immediate, register)
                 }
@@ -71,7 +71,7 @@ impl fmt::Display for InstructionArgument {
                 if displacement > 0 {
                     write!(f, "${:#x},{:#x}({})", immediate, displacement, register)
                 } else if displacement < 0 {
-                    write!(f, "${:#x},{:#x}({})", immediate, displacement * -1, register)
+                    write!(f, "${:#x},-{:#x}({})", immediate, displacement * -1, register)
                 } else {
                     write!(f, "${:#x},{}", immediate, register)
                 }
