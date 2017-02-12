@@ -16,7 +16,7 @@ fn main() {
     let filename = match env::args().nth(1) {
         Some(filename) => filename,
         None => {
-            println!("Usage: cargo run <program>");
+            println!("Usage: cargo run --bin elf <program>");
             return;
         }
     };

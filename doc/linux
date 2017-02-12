@@ -1,0 +1,8 @@
+setup_sects = 0x1f1
+start of code 32bit code = (setup_sects+1) * 512 (e.g. 0x4600)
+start of 64bit code = 32bit code + 0x200 = 0x4800
+overjumping efi code, we go to 0x48a0 where the real code starts
+
+(all of this is in arch/x86/boot/compressed/head64.S)
+
+objdump -d vmlinuz --start-address=0x4600

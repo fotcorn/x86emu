@@ -11,5 +11,5 @@ sed -e 's/addl/add /g' | \
 sed -e 's/leaveq/leave/g' | \
 sed -e 's/retq/ret/g' \
 > temp/dis_objdump.asm
-cargo run temp/out _start > temp/dis_emu.asm
+cargo run --bin elf temp/out _start > temp/dis_emu.asm
 diff -u temp/dis_objdump.asm temp/dis_emu.asm

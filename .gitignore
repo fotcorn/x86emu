@@ -1,4 +1,5 @@
 target
 a.out
 *.o
+vmlinuz
 /test/temp/
