@@ -89,7 +89,7 @@ impl CPU {
                     ip_offset
                 },
                 0x8D => {
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, true);
                     self.lea(argument);
                     ip_offset
                 },
