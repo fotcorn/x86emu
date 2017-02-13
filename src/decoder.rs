@@ -79,17 +79,17 @@ impl CPU {
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit32, address_size_override, false);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit32, address_size_override, false);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8B => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None, address_size_override, true);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, true);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8D => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
                     self.lea(argument);
                     ip_offset
                 },
