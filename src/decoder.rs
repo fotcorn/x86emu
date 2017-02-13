@@ -6,15 +6,24 @@ use zero;
 impl CPU {
     pub fn execute(&mut self) {
         loop {
-            let first_byte = self.code[self.instruction_pointer];
+            let mut first_byte = self.code[self.instruction_pointer];
 
             let mut rex: Option<REX> = None;
+            let mut address_size_override = false;
 
             match first_byte {
                 0xF0 | 0xF2 | 0xF3 => panic!("Lock and repeat prefixes/Bound prefix not supported"),
                 0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => panic!("Segment override prefixes/branch hints not supported"),
                 0x66 => panic!("Operand-size override prefix not supported"),
-                0x67 => panic!("Address-size override prefix not supported"),
+                0x67 => {
+                    address_size_override = true;
+                    self.instruction_pointer += 1;
+                },
+                _ => ()
+            }
+
+            first_byte = self.code[self.instruction_pointer];
+            match first_byte {
                 0x40...0x4F => {  // 64bit REX prefix
                     rex = Some(REX{ bits: first_byte });
                     self.instruction_pointer += 1;
@@ -53,39 +62,39 @@ impl CPU {
                     5
                 },
                 0x89 => { /* mov */
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
                     self.mov(argument);
                     ip_offset
                 },
                 0x85 => { /* test */
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
                     self.test(argument);
                     ip_offset
                 },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit8, address_size_override, false);
                     self.arithmetic(argument);
                     ip_offset
                 },
                 0xC7 => {
                     // TODO: this somehow also support 16 bit immediate, investigate how
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit32);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit32, address_size_override, false);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8B => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None, address_size_override, true);
                     self.mov(argument);
                     ip_offset
                 },
                 0x8D => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None);
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
                     self.lea(argument);
                     ip_offset
                 },
                 0xC1 => {
-                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit8);
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Opcode, ImmediateSize::Bit8, address_size_override, false);
                     self.sar(argument);
                     ip_offset
                 },
@@ -102,7 +111,7 @@ impl CPU {
                     match second_byte {
                         0x48 => {
                             // TODO: fixme, wrong register + deplacement
-                            let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None);
+                            let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
                             self.cmov(argument);
                             ip_offset
                         },
@@ -121,7 +130,7 @@ impl CPU {
         *zero::read::<i32>(value)
     }
 
-    fn get_argument(&self, register_size: RegisterSize, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize) -> (InstructionArgument, usize) {
+    fn get_argument(&self, register_size: RegisterSize, reg_or_opcode: RegOrOpcode, immediate_size: ImmediateSize, address_size_override: bool, reverse_direction: bool) -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
         let address_mod = modrm >> 6;
         match address_mod {
@@ -166,10 +175,24 @@ impl CPU {
                     },
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
+
+                        let second_register_size = if address_size_override {
+                            RegisterSize::Bit32
+                        } else {
+                            RegisterSize::Bit64
+                        };
+
+                        let (register1, register2) = if reverse_direction {
+                            (get_register(modrm & 0b00000111, second_register_size), get_register(register_or_opcode, register_size))
+                        } else {
+                            (register, get_register(register_or_opcode, second_register_size))
+                        };
+
                         (InstructionArgument::TwoRegister {
-                            register1: register,
-                            register2: get_register(register_or_opcode, register_size),
-                            displacement: displacement },
+                            register1: register1,
+                            register2: register2,
+                            displacement: displacement,
+                            reverse_direction: reverse_direction },
                         ip_offset)
                     }
                 }
@@ -179,7 +202,7 @@ impl CPU {
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
-                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2, register_size), displacement: 0 }, 2)
+                        (InstructionArgument::TwoRegister{ register1: register1, register2: get_register(value2, register_size), displacement: 0, reverse_direction: false }, 2)
                     },
                     // TODO: why do we now here that this is an 8 bit immediate code?
                     RegOrOpcode::Opcode => 
