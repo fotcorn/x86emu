@@ -58,7 +58,7 @@ impl fmt::Display for InstructionArgument {
                     }
                 } else if displacement < 0 {
                     if reverse_direction {
-                        write!(f, "-{:#x}({}),{},", displacement * -1, register1, register2)
+                        write!(f, "-{:#x}({}),{}", displacement * -1, register1, register2)
                     } else {
                         write!(f, "{},-{:#x}({})", register2, displacement * -1, register1)
 
