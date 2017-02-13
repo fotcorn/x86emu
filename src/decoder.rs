@@ -182,11 +182,8 @@ impl CPU {
                             RegisterSize::Bit64
                         };
 
-                        let (register1, register2) = if reverse_direction {
-                            (get_register(modrm & 0b00000111, second_register_size), get_register(register_or_opcode, register_size))
-                        } else {
-                            (register, get_register(register_or_opcode, second_register_size))
-                        };
+                        let register1 = get_register(modrm & 0b00000111, second_register_size);
+                        let register2 = get_register(register_or_opcode, register_size);
 
                         (InstructionArgument::TwoRegister {
                             register1: register1,
