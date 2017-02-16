@@ -18,6 +18,8 @@ pub enum Register {
     RSI,
     RDI,
 
+    RIP,
+
     EAX,
     EBX,
     ECX,

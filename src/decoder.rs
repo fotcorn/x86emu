@@ -202,12 +202,19 @@ impl CPU {
                     reverse_direction: bool)
                     -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
-        let address_mod = modrm >> 6;
+        let mut address_mod = modrm >> 6;
         match address_mod {
             0b00 | 0b01 | 0b10 => {
                 // effective address / effecive address + 8 bit deplacement /
                 // effecive address + 32 bit deplacement
-                let register = get_register(modrm & 0b00000111, register_size);
+                let rm = modrm & 0b00000111;
+
+                // special case: RIP relative adressing. We fake a 32bit displacement instruction.
+                if rm == 0x5 {
+                    address_mod = 0b10;
+                }
+
+                let register = get_register(rm, register_size);
 
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
@@ -258,7 +265,12 @@ impl CPU {
                             RegisterSize::Bit64
                         };
 
-                        let register1 = get_register(modrm & 0b00000111, second_register_size);
+                        // special case: RIP relative adressing.
+                        let register1 = if rm == 0x5 {
+                            Register::RIP
+                        } else {
+                            get_register(rm, second_register_size)
+                        };
                         let register2 = get_register(register_or_opcode, register_size);
 
                         (InstructionArgument::TwoRegister {
