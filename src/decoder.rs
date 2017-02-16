@@ -71,6 +71,11 @@ impl CPU {
                     self.test(argument);
                     ip_offset
                 },
+                0x31 => { /* xor */
+                    let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, false);
+                    self.xor(argument);
+                    ip_offset
+                },
                 0x83 => {  /* arithmetic operation (64bit register target, 8bit immediate) */
                     // TODO: other register sized are supported (REX, probably other)
                     let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64, RegOrOpcode::Opcode, ImmediateSize::Bit8, address_size_override, false);
