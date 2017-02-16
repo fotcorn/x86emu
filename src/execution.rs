@@ -74,10 +74,10 @@ impl CPU {
     pub fn jmp(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "jmp", arg);
         match arg {
-            InstructionArgument::Immediate32 { immediate} => {
+            InstructionArgument::Immediate32 { immediate } => {
                 self.instruction_pointer += immediate as usize
-            },
-            _ => panic!("JMP: Unsupported argument.")
+            }
+            _ => panic!("JMP: Unsupported argument."),
         }
     }
 

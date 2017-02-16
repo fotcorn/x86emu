@@ -29,7 +29,7 @@ fn main() {
     let mut offset = (setup_sect + 1) as usize * 512;
     offset += BIT64_OFFSET;
 
-    let main_code = &buffer[offset as usize .. (offset + 0x10000) as usize];
+    let main_code = &buffer[offset as usize..(offset + 0x10000) as usize];
 
     let mut cpu = CPU::new(main_code.to_vec());
     cpu.execute();
