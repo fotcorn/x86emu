@@ -106,6 +106,13 @@ impl CPU {
                     self.leave();
                     1
                 },
+                0xE9 => {
+                    let immediate = self.get_i32_value(1);
+                    self.jmp(InstructionArgument::Immediate32 {
+                        immediate : immediate,
+                    });
+                    5
+                }
                 0x0F => { /* two byte instructions */
                     let second_byte = self.code[self.instruction_pointer + 1];
                     match second_byte {

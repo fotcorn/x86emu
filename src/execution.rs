@@ -71,6 +71,15 @@ impl CPU {
         println!("{:<6}", "leave");
     }
 
+    pub fn jmp(&mut self, arg: InstructionArgument) {
+        match arg {
+            InstructionArgument::Immediate32 { immediate} => {
+                self.instruction_pointer += immediate as usize
+            },
+            _ => panic!("JMP: Unsupported argument.")
+        }
+    }
+
     pub fn arithmetic(&mut self, arg: InstructionArgument) {
         let opcode = match arg {
             InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,
