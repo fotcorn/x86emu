@@ -4,6 +4,7 @@ use std::fmt;
 pub enum RegisterSize {
     Bit32,
     Bit64,
+    Segment,
 }
 
 #[derive(Debug)]
@@ -25,6 +26,13 @@ pub enum Register {
     EBP,
     ESI,
     EDI,
+
+    ES,
+    CS,
+    SS,
+    DS,
+    FS,
+    GS,
 }
 
 impl fmt::Display for Register {

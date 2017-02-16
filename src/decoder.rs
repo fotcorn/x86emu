@@ -93,6 +93,11 @@ impl CPU {
                     self.mov(argument);
                     ip_offset
                 },
+                0x8E => { /* mov 16bit segment registers */
+                    let (argument, ip_offset) = self.get_argument(RegisterSize::Segment, RegOrOpcode::Register, ImmediateSize::None, address_size_override, true);
+                    self.mov(argument);
+                    ip_offset
+                },
                 0x8D => {
                     let (argument, ip_offset) = self.get_argument(register_size, RegOrOpcode::Register, ImmediateSize::None, address_size_override, true);
                     self.lea(argument);
@@ -276,6 +281,17 @@ fn get_register(num: u8, size: RegisterSize) -> Register {
                 5 => Register::RBP,
                 6 => Register::RSI,
                 7 => Register::RDI,
+                _ => panic!("Unknown instruction argument"),
+            }
+        },
+        RegisterSize::Segment => {
+            match num {
+                0 => Register::ES,
+                1 => Register::CS,
+                2 => Register::SS,
+                3 => Register::DS,
+                4 => Register::FS,
+                5 => Register::GS,
                 _ => panic!("Unknown instruction argument"),
             }
         }
