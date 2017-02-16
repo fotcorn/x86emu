@@ -72,7 +72,7 @@ impl CPU {
     }
 
     pub fn jmp(&mut self, arg: InstructionArgument) {
-        println!("{:<6} {}", "mov", arg);
+        println!("{:<6} {}", "jmp", arg);
         match arg {
             InstructionArgument::Immediate32 { immediate} => {
                 self.instruction_pointer += immediate as usize
