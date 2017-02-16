@@ -5,6 +5,11 @@ use std::env;
 extern crate x86emu;
 use x86emu::cpu::CPU;
 
+const SETUP_SECT_POSITION: usize = 0x1F1;
+const BIT64_OFFSET: usize = 0x200;
+
+
+// see <linux kernel source>/Documentation/x86/boot.txt for documentation of the boot protocol
 fn main() {
     let filename = match env::args().nth(1) {
         Some(filename) => filename,
@@ -19,7 +24,10 @@ fn main() {
 
     file.read_to_end(&mut buffer).expect("Failed to read file.");
 
-    let offset = 0x4800; // TODO calculate from setup_sects
+    let setup_sect = buffer[SETUP_SECT_POSITION];
+
+    let mut offset = (setup_sect + 1) as usize * 512;
+    offset += BIT64_OFFSET;
 
     let main_code = &buffer[offset as usize .. (offset + 0x10000) as usize];
 
