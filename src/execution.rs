@@ -63,6 +63,14 @@ impl CPU {
         println!("{:<6} {}", "sar", arg);
     }
 
+    pub fn inc(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "inc", arg);
+    }
+
+    pub fn dec(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "dec", arg);
+    }
+
     pub fn ret(&mut self) {
         println!("{:<6}", "ret");
     }
@@ -96,6 +104,23 @@ impl CPU {
             5 => self.sub(arg),
             6 => self.xor(arg),
             7 => self.cmp(arg),
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn register_operation(&mut self, arg: InstructionArgument) {
+        let opcode = match arg {
+            InstructionArgument::OneRegister { opcode, .. } => opcode,
+            _ => panic!("Unsupported argument type for register operation"),
+        };
+        match opcode {
+            0 => self.inc(arg),
+            1 => self.dec(arg),
+            2 => self.call(arg),
+            3 => self.call(arg), // far call
+            4 => self.jmp(arg),
+            5 => self.jmp(arg), // far jmp
+            6 => self.push(arg),
             _ => unreachable!(),
         }
     }

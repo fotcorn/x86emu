@@ -44,6 +44,7 @@ impl CPU {
                 opcode @ 0x50...0x57 => {
                     self.push(InstructionArgument::OneRegister {
                         register: get_register(opcode - 0x50, RegisterSize::Bit64),
+                        opcode: 0,
                     });
                     1
                 }
@@ -162,6 +163,15 @@ impl CPU {
                     let immediate = self.get_i32_value(1);
                     self.jmp(InstructionArgument::Immediate32 { immediate: immediate });
                     5
+                },
+                0xFF => {
+                    let (argument, ip_offset) = self.get_argument(register_size,
+                                                RegOrOpcode::Opcode,
+                                                ImmediateSize::None,
+                                                address_size_override,
+                                                false);
+                    self.register_operation(argument);
+                    ip_offset
                 }
                 0x0F => {
                     // two byte instructions
@@ -297,15 +307,28 @@ impl CPU {
                          },
                          2)
                     }
-                    // TODO: why do we now here that this is an 8 bit immediate code?
                     RegOrOpcode::Opcode => {
-                        (InstructionArgument::Immediate8BitRegister {
-                             register: register1,
-                             opcode: value2,
-                             immediate: self.code[self.instruction_pointer + 2],
-                             displacement: 0,
-                         },
-                         3)
+                        match immediate_size {
+                            ImmediateSize::Bit8 => {
+                                (InstructionArgument::Immediate8BitRegister {
+                                    register: register1,
+                                    opcode: value2,
+                                    immediate: self.code[self.instruction_pointer + 2],
+                                    displacement: 0,
+                                },
+                                3)
+                            },
+                            ImmediateSize::None => {
+                                (InstructionArgument::OneRegister {
+                                    register: register1,
+                                    opcode: value2,
+                                },
+                                2)
+                            },
+                            ImmediateSize::Bit32 => {
+                                panic!("Register + OpCode + 32bit opcode not implemented");
+                            }
+                        }
                     }
                 }
             }

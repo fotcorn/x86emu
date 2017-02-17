@@ -47,7 +47,10 @@ impl fmt::Display for Register {
 
 #[derive(Debug)]
 pub enum InstructionArgument {
-    OneRegister { register: Register },
+    OneRegister {
+        register: Register,
+        opcode: u8,
+    },
     TwoRegister {
         register1: Register,
         register2: Register,
@@ -72,7 +75,7 @@ pub enum InstructionArgument {
 impl fmt::Display for InstructionArgument {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            InstructionArgument::OneRegister { ref register } => write!(f, "{}", register),
+            InstructionArgument::OneRegister { ref register, .. } => write!(f, "{}", register),
             InstructionArgument::TwoRegister { ref register1,
                                                ref register2,
                                                displacement,
