@@ -47,10 +47,7 @@ impl fmt::Display for Register {
 
 #[derive(Debug)]
 pub enum InstructionArgument {
-    OneRegister {
-        register: Register,
-        opcode: u8,
-    },
+    OneRegister { register: Register, opcode: u8 },
     TwoRegister {
         register1: Register,
         register2: Register,

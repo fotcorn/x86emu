@@ -163,13 +163,13 @@ impl CPU {
                     let immediate = self.get_i32_value(1);
                     self.jmp(InstructionArgument::Immediate32 { immediate: immediate });
                     5
-                },
+                }
                 0xFF => {
                     let (argument, ip_offset) = self.get_argument(register_size,
-                                                RegOrOpcode::Opcode,
-                                                ImmediateSize::None,
-                                                address_size_override,
-                                                false);
+                                                                  RegOrOpcode::Opcode,
+                                                                  ImmediateSize::None,
+                                                                  address_size_override,
+                                                                  false);
                     self.register_operation(argument);
                     ip_offset
                 }
@@ -198,9 +198,8 @@ impl CPU {
     }
 
     fn get_i32_value(&self, ip_offset: usize) -> i32 {
-        let value = &self.code[self.instruction_pointer + ip_offset..self.instruction_pointer +
-                                                                     ip_offset +
-                                                                     4];
+        let value = &self.code[self.instruction_pointer + ip_offset..
+                     self.instruction_pointer + ip_offset + 4];
         *zero::read::<i32>(value)
     }
 
@@ -230,8 +229,8 @@ impl CPU {
                     0b00 => (0, 0),
                     0b01 => (self.code[self.instruction_pointer + 2] as i8 as i32, 1),
                     0b10 => {
-                        let displacement =
-                            &self.code[self.instruction_pointer + 2..self.instruction_pointer + 6];
+                        let displacement = &self.code[self.instruction_pointer + 2..
+                                            self.instruction_pointer + 6];
                         let displacement = *zero::read::<i32>(displacement);
                         (displacement, 4)
                     }
@@ -256,7 +255,7 @@ impl CPU {
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
                         let immediate = &self.code[self.instruction_pointer + ip_offset..
-                            self.instruction_pointer + ip_offset + 4];
+                                         self.instruction_pointer + ip_offset + 4];
                         let immediate = *zero::read::<i32>(immediate);
                         (InstructionArgument::Immediate32BitRegister {
                              register: register,
@@ -311,20 +310,20 @@ impl CPU {
                         match immediate_size {
                             ImmediateSize::Bit8 => {
                                 (InstructionArgument::Immediate8BitRegister {
-                                    register: register1,
-                                    opcode: value2,
-                                    immediate: self.code[self.instruction_pointer + 2],
-                                    displacement: 0,
-                                },
-                                3)
-                            },
+                                     register: register1,
+                                     opcode: value2,
+                                     immediate: self.code[self.instruction_pointer + 2],
+                                     displacement: 0,
+                                 },
+                                 3)
+                            }
                             ImmediateSize::None => {
                                 (InstructionArgument::OneRegister {
-                                    register: register1,
-                                    opcode: value2,
-                                },
-                                2)
-                            },
+                                     register: register1,
+                                     opcode: value2,
+                                 },
+                                 2)
+                            }
                             ImmediateSize::Bit32 => {
                                 panic!("Register + OpCode + 32bit opcode not implemented");
                             }

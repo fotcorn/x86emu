@@ -77,9 +77,12 @@ fn get_main_symbol_address(elf_file: &ElfFile, symbol_name: &str) -> (u64, u64) 
     let symbol_table = elf_file.find_section_by_name(".symtab")
         .expect("symtab (Symbol table) section not found");
     if let sections::SectionData::SymbolTable64(data) = symbol_table.get_data(&elf_file).unwrap() {
-        let symbol = data.iter()
-            .find(|&symbol| read_str(&symbol_string_table[symbol.name() as usize..]) == symbol_name)
-            .expect("symbol not found");
+        let symbol =
+            data.iter()
+                .find(|&symbol| {
+                    read_str(&symbol_string_table[symbol.name() as usize..]) == symbol_name
+                })
+                .expect("symbol not found");
         if symbol.size() == 0 {
             return (symbol.value(), u64::max_value());
         } else {
