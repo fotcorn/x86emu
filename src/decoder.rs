@@ -173,6 +173,15 @@ impl CPU {
                     self.jmp(InstructionArgument::Immediate32 { immediate: immediate });
                     5
                 }
+                0xF7 => {
+                    let (argument, ip_offset) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Opcode,
+                                                                  ImmediateSize::None,
+                                                                  address_size_override,
+                                                                  false);
+                    self.compare_mul_operation(argument);
+                    ip_offset
+                }
                 0xFF => {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,

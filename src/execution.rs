@@ -71,6 +71,30 @@ impl CPU {
         println!("{:<6} {}", "dec", arg);
     }
 
+    pub fn div(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "div", arg);
+    }
+
+    pub fn idiv(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "idiv", arg);
+    }
+
+    pub fn mul(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "mul", arg);
+    }
+
+    pub fn imul(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "imul", arg);
+    }
+
+    pub fn not(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "not", arg);
+    }
+
+    pub fn neg(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "neg", arg);
+    }
+
     pub fn ret(&mut self) {
         println!("{:<6}", "ret");
     }
@@ -121,6 +145,24 @@ impl CPU {
             4 => self.jmp(arg),
             5 => self.jmp(arg), // far jmp
             6 => self.push(arg),
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn compare_mul_operation(&mut self, arg: InstructionArgument) {
+        let opcode = match arg {
+            InstructionArgument::OneRegister { opcode, .. } => opcode,
+            _ => panic!("Unsupported argument type for register operation"),
+        };
+        match opcode {
+            0 => self.test(arg),
+            1 => self.test(arg),
+            2 => self.not(arg),
+            3 => self.neg(arg),
+            4 => self.mul(arg),
+            5 => self.imul(arg),
+            6 => self.div(arg),
+            7 => self.idiv(arg),
             _ => unreachable!(),
         }
     }
