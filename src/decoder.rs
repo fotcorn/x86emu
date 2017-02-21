@@ -58,6 +58,15 @@ impl CPU {
                     });
                     5
                 }
+                0x01 => {
+                    let (argument, ip_offset) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Register,
+                                                                  ImmediateSize::None,
+                                                                  address_size_override,
+                                                                  false);
+                    self.add(argument);
+                    ip_offset
+                }
                 0xE8 => {
                     let immediate = self.get_i32_value(1);
                     self.call(InstructionArgument::Immediate32 { immediate: immediate });
