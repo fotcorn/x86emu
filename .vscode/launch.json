@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "gdb",
+            "request": "launch",
+            "name": "Test out",
+            "target": "target/debug/elf",
+            "cwd": "${workspaceRoot}",
+            "arguments": "test/temp/out _start"
+        },
+        {
+            "type": "gdb",
+            "request": "launch",
+            "name": "ELF",
+            "target": "target/debug/elf",
+            "cwd": "${workspaceRoot}",
+            "arguments": "examples/main"
+        },
+        {
+            "name": "Linux",
+            "type": "gdb",
+            "request": "launch",
+            "target": "target/debug/linux",
+            "cwd": "${workspaceRoot}",
+            "arguments": "examples/vmlinuz"
+        }
+    ]
+}
