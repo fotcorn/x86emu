@@ -212,6 +212,7 @@ impl CPU {
                     -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
         let mut address_mod = modrm >> 6;
+
         match address_mod {
             0b00 | 0b01 | 0b10 => {
                 // effective address / effecive address + 8 bit deplacement /
@@ -219,7 +220,7 @@ impl CPU {
                 let rm = modrm & 0b00000111;
 
                 // special case: RIP relative adressing. We fake a 32bit displacement instruction.
-                if rm == 0x5 {
+                if address_mod == 0b00 && rm == 0x5 {
                     address_mod = 0b10;
                 }
 
