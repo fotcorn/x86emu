@@ -196,6 +196,10 @@ impl CPU {
                     self.leave();
                     1
                 }
+                0xFD => {
+                    self.std();
+                    1
+                }
                 0x9D => {
                     self.popf();
                     1
