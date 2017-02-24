@@ -111,10 +111,19 @@ impl CPU {
                     self.xor(argument);
                     ip_offset
                 }
+                0x81 => {
+                    // arithmetic operation (64bit register target, 8bit immediate)
+                    let (argument, ip_offset) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Opcode,
+                                                                  ImmediateSize::Bit32,
+                                                                  address_size_override,
+                                                                  false);
+                    self.arithmetic(argument);
+                    ip_offset                    
+                }
                 0x83 => {
                     // arithmetic operation (64bit register target, 8bit immediate)
-                    // TODO: other register sized are supported (REX, probably other)
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64,
+                    let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::Bit8,
                                                                   address_size_override,
@@ -353,7 +362,13 @@ impl CPU {
                                  2)
                             }
                             ImmediateSize::Bit32 => {
-                                panic!("Register + OpCode + 32bit opcode not implemented");
+                                (InstructionArgument::Immediate32BitRegister {
+                                     register: register1,
+                                     opcode: value2,
+                                     immediate: self.get_i32_value(2),
+                                     displacement: 0,
+                                 },
+                                 6)
                             }
                         }
                     }
