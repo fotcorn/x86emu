@@ -196,6 +196,10 @@ impl CPU {
                     self.leave();
                     1
                 }
+                0x9D => {
+                    self.popf();
+                    1
+                }
                 0xE9 => {
                     let immediate = self.get_i32_value(1);
                     self.jmp(InstructionArgument::Immediate32 { immediate: immediate });

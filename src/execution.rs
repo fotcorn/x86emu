@@ -103,6 +103,10 @@ impl CPU {
         println!("{:<6}", "leave");
     }
 
+    pub fn popf(&mut self) {
+        println!("{:<6}", "popf");
+    }
+
     pub fn jmp(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "jmp", arg);
         match arg {
