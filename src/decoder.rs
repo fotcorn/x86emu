@@ -76,6 +76,11 @@ impl CPU {
                     self.and(argument);
                     ip_offset
                 }
+                0x7D => {
+                    let immediate = self.code[self.instruction_pointer + 1] as i8;
+                    self.jge(InstructionArgument::Immediate8 { immediate: immediate});
+                    2
+                }
                 0xE8 => {
                     let immediate = self.get_i32_value(1);
                     self.call(InstructionArgument::Immediate32 { immediate: immediate });

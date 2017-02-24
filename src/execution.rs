@@ -113,6 +113,10 @@ impl CPU {
         }
     }
 
+    pub fn jge(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "jge", arg);
+    }
+
     pub fn arithmetic(&mut self, arg: InstructionArgument) {
         let opcode = match arg {
             InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,

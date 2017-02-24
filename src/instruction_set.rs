@@ -54,6 +54,7 @@ pub enum InstructionArgument {
         displacement: i32,
         reverse_direction: bool,
     },
+    Immediate8 { immediate: i8 },
     Immediate32 { immediate: i32 },
     Immediate8BitRegister {
         immediate: u8,
@@ -95,6 +96,7 @@ impl fmt::Display for InstructionArgument {
                     write!(f, "{},{}", register2, register1)
                 }
             }
+            InstructionArgument::Immediate8 { immediate } => write!(f, "{:x}", immediate),
             InstructionArgument::Immediate32 { immediate } => write!(f, "{:x}", immediate),
             InstructionArgument::Immediate32BitRegister { ref register,
                                                           immediate,
