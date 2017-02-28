@@ -110,6 +110,9 @@ impl CPU {
     pub fn std(&mut self) {
         println!("{:<6}", "std");
     }
+    pub fn cld(&mut self) {
+        println!("{:<6}", "cld");
+    }
 
     pub fn movs(&mut self, repeat: bool) {
         if repeat {

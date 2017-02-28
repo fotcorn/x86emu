@@ -215,6 +215,10 @@ impl CPU {
                     self.compare_mul_operation(argument);
                     ip_offset
                 }
+                0xFC => {
+                    self.cld();
+                    1
+                }
                 0xFF => {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
