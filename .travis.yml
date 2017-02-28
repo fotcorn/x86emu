@@ -1,0 +1,5 @@
+language: rust
+script:
+    - test/test.sh test/generated.asm
+    - test/test.sh test/hello.asm
+    - test/test.sh test/direction.asm
