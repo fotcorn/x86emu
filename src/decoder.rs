@@ -280,7 +280,7 @@ impl CPU {
 
                 // special case: RIP relative adressing. We fake a 32bit displacement instruction.
                 if address_mod == 0b00 && rm == 0x5 {
-                    address_mod = 0b10;
+                    address_mod = 0b100;
                 }
 
                 let register = get_register(rm, register_size);
@@ -288,10 +288,16 @@ impl CPU {
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
                     0b01 => (self.code[self.instruction_pointer + 2] as i8 as i32, 1),
-                    0b10 => {
+                    0b10 | 0b100=> {
                         let displacement = &self.code[self.instruction_pointer + 2..
                                             self.instruction_pointer + 6];
                         let displacement = *zero::read::<i32>(displacement);
+
+                        // change RIP relative addressing mode back to 0b00
+                        if address_mod == 0b100 {
+                            address_mod = 0b00;
+                        }
+
                         (displacement, 4)
                     }
                     _ => unreachable!(),
@@ -335,7 +341,7 @@ impl CPU {
                         };
 
                         // special case: RIP relative adressing.
-                        let register1 = if rm == 0x5 {
+                        let register1 = if address_mod == 0b00 && rm == 0x5 {
                             Register::RIP
                         } else {
                             get_register(rm, second_register_size)
