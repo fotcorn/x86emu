@@ -267,8 +267,6 @@ impl CPU {
                     register_size: RegisterSize,
                     reg_or_opcode: RegOrOpcode,
                     immediate_size: ImmediateSize,
-                    //address_size_override: bool,
-                    //reverse_direction: bool)
                     decoder_flags: DecoderFlags)
                     -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
