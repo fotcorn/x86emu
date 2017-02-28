@@ -32,8 +32,18 @@ impl CPU {
             match first_byte {
                 0x40...0x4F => {
                     // 64bit REX prefix
-                    rex = Some(REX { bits: first_byte });
+                    let temp_rex = REX { bits: first_byte };
+                    if temp_rex.contains(B) {
+                        panic!("REX B flag not supported");
+                    }
+                    if temp_rex.contains(MOD_R_M_EXTENSION) {
+                        panic!("REX mod rm extension not supported")
+                    }
+                    if temp_rex.contains(SIB_EXTENSION) {
+                        panic!("REX mod rm extension not supported")
+                    }
                     self.instruction_pointer += 1;
+                    rex = Some(temp_rex);
                 }
                 _ => (),
             }
