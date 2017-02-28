@@ -7,6 +7,10 @@ impl CPU {
         println!("{:<6} {}", "push", arg);
     }
 
+    pub fn pop(&mut self, arg: InstructionArgument) {
+        println!("{:<6} {}", "pop", arg);
+    }
+
     pub fn mov(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "mov", arg);
     }

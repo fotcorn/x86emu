@@ -52,6 +52,13 @@ impl CPU {
                     });
                     1
                 }
+                opcode @ 0x58...0x5F => {
+                    self.pop(InstructionArgument::OneRegister {
+                        register: get_register(opcode - 0x58, RegisterSize::Bit64),
+                        opcode: 0,
+                    });
+                    1
+                }
                 opcode @ 0xB8...0xBF => {
                     let immediate = self.get_i32_value(1);
                     self.mov(InstructionArgument::Immediate32BitRegister {
