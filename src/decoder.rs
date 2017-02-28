@@ -9,7 +9,7 @@ impl CPU {
             let mut first_byte = self.code[self.instruction_pointer];
 
             let mut rex: Option<REX> = None;
-            let mut address_size_override = false;
+            let mut decoder_flags = DecoderFlags {bits: 0};
 
             match first_byte {
                 0xF0 | 0xF2 | 0xF3 => panic!("Lock and repeat prefixes/Bound prefix not supported"),
@@ -18,7 +18,7 @@ impl CPU {
                 }
                 0x66 => panic!("Operand-size override prefix not supported"),
                 0x67 => {
-                    address_size_override = true;
+                    decoder_flags |= ADDRESS_SIZE_OVERRIDE;
                     self.instruction_pointer += 1;
                 }
                 _ => (),
@@ -62,8 +62,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.add(argument);
                     ip_offset
                 }
@@ -71,8 +70,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.and(argument);
                     ip_offset
                 }
@@ -96,8 +94,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.mov(argument);
                     ip_offset
                 }
@@ -106,8 +103,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.test(argument);
                     ip_offset
                 }
@@ -116,8 +112,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.xor(argument);
                     ip_offset
                 }
@@ -126,8 +121,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::Bit32,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.arithmetic(argument);
                     ip_offset                    
                 }
@@ -136,8 +130,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::Bit8,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.arithmetic(argument);
                     ip_offset
                 }
@@ -146,8 +139,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::Bit32,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.mov(argument);
                     ip_offset
                 }
@@ -155,8 +147,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  true);
+                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.mov(argument);
                     ip_offset
                 }
@@ -165,8 +156,8 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(RegisterSize::Segment,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  true);
+                                                                  // TODO: REVERSED_REGISTER_DIRECTION correct?
+                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION); 
                     self.mov(argument);
                     ip_offset
                 }
@@ -174,8 +165,8 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  true);
+                                                                  // TODO: REVERSED_REGISTER_DIRECTION correct?
+                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.lea(argument);
                     ip_offset
                 }
@@ -183,8 +174,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::Bit8,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.sar(argument);
                     ip_offset
                 }
@@ -213,8 +203,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.compare_mul_operation(argument);
                     ip_offset
                 }
@@ -222,8 +211,7 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Opcode,
                                                                   ImmediateSize::None,
-                                                                  address_size_override,
-                                                                  false);
+                                                                  decoder_flags);
                     self.register_operation(argument);
                     ip_offset
                 }
@@ -236,8 +224,7 @@ impl CPU {
                             let (argument, ip_offset) = self.get_argument(register_size,
                                                                           RegOrOpcode::Register,
                                                                           ImmediateSize::None,
-                                                                          address_size_override,
-                                                                          false);
+                                                                          decoder_flags);
                             self.cmov(argument);
                             ip_offset
                         }
@@ -261,8 +248,9 @@ impl CPU {
                     register_size: RegisterSize,
                     reg_or_opcode: RegOrOpcode,
                     immediate_size: ImmediateSize,
-                    address_size_override: bool,
-                    reverse_direction: bool)
+                    //address_size_override: bool,
+                    //reverse_direction: bool)
+                    decoder_flags: DecoderFlags)
                     -> (InstructionArgument, usize) {
         let modrm = self.code[self.instruction_pointer + 1];
         let mut address_mod = modrm >> 6;
@@ -323,7 +311,7 @@ impl CPU {
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
 
-                        let second_register_size = if address_size_override {
+                        let second_register_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
                             RegisterSize::Bit32
                         } else {
                             RegisterSize::Bit64
@@ -341,7 +329,7 @@ impl CPU {
                              register1: register1,
                              register2: register2,
                              displacement: displacement,
-                             reverse_direction: reverse_direction,
+                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) { true } else { false },
                          },
                          ip_offset)
                     }
@@ -416,6 +404,18 @@ bitflags! {
         const MOD_R_M_EXTENSION = 0b00000100,
         const SIB_EXTENSION = 0b00000010,
         const B = 0b00000001,
+    }
+}
+
+bitflags! {
+    flags DecoderFlags: u64 {
+        const REVERSED_REGISTER_DIRECTION = 0b1,
+        const ADDRESS_SIZE_OVERRIDE = 0b10,
+        const REPEAT = 0b100,
+        // const OPERAND_64_BIT = 0b1000,
+        // const REGISTER_EXTENSION = 0b10000,
+        // const SIB_EXTENSION = 0b100000,
+        // const REX_B = 0b1000000,
     }
 }
 
