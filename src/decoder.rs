@@ -246,14 +246,14 @@ impl CPU {
                 }
                 0x0F => {
                     // two byte instructions
-                    let second_byte = self.code[self.instruction_pointer + 1];
+                    self.instruction_pointer += 1;
+                    let second_byte = self.code[self.instruction_pointer];
                     match second_byte {
                         0x48 => {
-                            // TODO: fixme, wrong register + deplacement
                             let (argument, ip_offset) = self.get_argument(register_size,
                                                                           RegOrOpcode::Register,
                                                                           ImmediateSize::None,
-                                                                          decoder_flags);
+                                                                          decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.cmov(argument);
                             ip_offset
                         }
@@ -378,7 +378,7 @@ impl CPU {
                              register1: register1,
                              register2: get_register(value2, register_size),
                              displacement: 0,
-                             reverse_direction: false,
+                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) { true } else { false },
                          },
                          2)
                     }

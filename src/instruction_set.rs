@@ -93,7 +93,11 @@ impl fmt::Display for InstructionArgument {
 
                     }
                 } else {
-                    write!(f, "{},{}", register2, register1)
+                    if reverse_direction {
+                        write!(f, "{},{}", register1, register2)
+                    } else {
+                        write!(f, "{},{}", register2, register1)
+                    }
                 }
             }
             InstructionArgument::Immediate8 { immediate } => write!(f, "{:x}", immediate),
