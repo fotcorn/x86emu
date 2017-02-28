@@ -12,7 +12,11 @@ impl CPU {
             let mut decoder_flags = DecoderFlags {bits: 0};
 
             match first_byte {
-                0xF0 | 0xF2 | 0xF3 => panic!("Lock and repeat prefixes/Bound prefix not supported"),
+                0xF0 | 0xF2 => panic!("Lock prefixes/Bound prefix not supported"),
+                0xF3 => {
+                    decoder_flags |= REPEAT;
+                    self.instruction_pointer += 1;
+                }
                 0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
                     panic!("Segment override prefixes/branch hints not supported")
                 }
@@ -169,6 +173,10 @@ impl CPU {
                                                                   decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.lea(argument);
                     ip_offset
+                }
+                0xA5 => {
+                    self.movs(true);
+                    1
                 }
                 0xC1 => {
                     let (argument, ip_offset) = self.get_argument(register_size,

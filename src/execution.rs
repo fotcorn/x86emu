@@ -111,6 +111,14 @@ impl CPU {
         println!("{:<6}", "std");
     }
 
+    pub fn movs(&mut self, repeat: bool) {
+        if repeat {
+            println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
+        } else {
+            println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
+        }
+    }
+
     pub fn jmp(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "jmp", arg);
         match arg {
