@@ -10,7 +10,6 @@ pub enum ArgumentSize {
 
 
 impl CPU {
-
     pub fn first_argument_size(&self, arg: &InstructionArgument) -> ArgumentSize {
         ArgumentSize::Bit64
     }

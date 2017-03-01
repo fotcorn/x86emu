@@ -9,7 +9,7 @@ impl CPU {
             let mut first_byte = self.code[self.instruction_pointer];
 
             let mut rex: Option<REX> = None;
-            let mut decoder_flags = DecoderFlags {bits: 0};
+            let mut decoder_flags = DecoderFlags { bits: 0 };
 
             match first_byte {
                 0xF0 | 0xF2 => panic!("Lock prefixes/Bound prefix not supported"),
@@ -97,12 +97,12 @@ impl CPU {
                 }
                 0x7D => {
                     let immediate = self.code[self.instruction_pointer + 1] as i8;
-                    self.jge(InstructionArgument::Immediate8 { immediate: immediate});
+                    self.jge(InstructionArgument::Immediate8 { immediate: immediate });
                     2
                 }
                 0x6A => {
                     let immediate = self.code[self.instruction_pointer + 1] as i8;
-                    self.push(InstructionArgument::Immediate8 { immediate: immediate});
+                    self.push(InstructionArgument::Immediate8 { immediate: immediate });
                     2
                 }
                 0xE8 => {
@@ -144,7 +144,7 @@ impl CPU {
                                                                   ImmediateSize::Bit32,
                                                                   decoder_flags);
                     self.arithmetic(argument);
-                    ip_offset                    
+                    ip_offset
                 }
                 0x83 => {
                     // arithmetic operation (64bit register target, 8bit immediate)
@@ -168,26 +168,29 @@ impl CPU {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                   RegOrOpcode::Register,
                                                                   ImmediateSize::None,
-                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION);
+                                                                  decoder_flags |
+                                                                  REVERSED_REGISTER_DIRECTION);
                     self.mov(argument);
                     ip_offset
                 }
                 0x8E => {
                     // mov 16bit segment registers
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Segment,
-                                                                  RegOrOpcode::Register,
-                                                                  ImmediateSize::None,
-                                                                  // TODO: REVERSED_REGISTER_DIRECTION correct?
-                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION); 
+                    let (argument, ip_offset) =
+                        self.get_argument(RegisterSize::Segment,
+                                          RegOrOpcode::Register,
+                                          ImmediateSize::None,
+                                          // TODO: REVERSED_REGISTER_DIRECTION correct?
+                                          decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.mov(argument);
                     ip_offset
                 }
                 0x8D => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                  RegOrOpcode::Register,
-                                                                  ImmediateSize::None,
-                                                                  // TODO: REVERSED_REGISTER_DIRECTION correct?
-                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    let (argument, ip_offset) =
+                        self.get_argument(register_size,
+                                          RegOrOpcode::Register,
+                                          ImmediateSize::None,
+                                          // TODO: REVERSED_REGISTER_DIRECTION correct?
+                                          decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.lea(argument);
                     ip_offset
                 }
@@ -251,9 +254,9 @@ impl CPU {
                     match second_byte {
                         0x48 => {
                             let (argument, ip_offset) = self.get_argument(register_size,
-                                                                          RegOrOpcode::Register,
-                                                                          ImmediateSize::None,
-                                                                          decoder_flags | REVERSED_REGISTER_DIRECTION);
+                                              RegOrOpcode::Register,
+                                              ImmediateSize::None,
+                                              decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.cmov(argument);
                             ip_offset
                         }
@@ -298,7 +301,7 @@ impl CPU {
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
                     0b01 => (self.code[self.instruction_pointer + 2] as i8 as i32, 1),
-                    0b10 | 0b100=> {
+                    0b10 | 0b100 => {
                         let displacement = &self.code[self.instruction_pointer + 2..
                                             self.instruction_pointer + 6];
                         let displacement = *zero::read::<i32>(displacement);
@@ -362,7 +365,11 @@ impl CPU {
                              register1: register1,
                              register2: register2,
                              displacement: displacement,
-                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) { true } else { false },
+                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
+                                 true
+                             } else {
+                                 false
+                             },
                          },
                          ip_offset)
                     }
@@ -378,7 +385,11 @@ impl CPU {
                              register1: register1,
                              register2: get_register(value2, register_size),
                              displacement: 0,
-                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) { true } else { false },
+                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
+                                 true
+                             } else {
+                                 false
+                             },
                          },
                          2)
                     }
