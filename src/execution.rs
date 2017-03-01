@@ -113,11 +113,65 @@ impl CPU {
 
     // register operations
     fn get_register_value_i32(&self, register: Register) -> i32 {
-        panic!("Not implemented");
+        match register {
+            Register::RAX => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RBX => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RCX => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RDX => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RSP => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RBP => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RSI => panic!("Cannot get 32bit value from 64bit register"),
+            Register::RDI => panic!("Cannot get 32bit value from 64bit register"),
+
+            Register::RIP => self.instruction_pointer as i32,
+
+            Register::EAX => self.rax as i32,
+            Register::EBX => self.rbx as i32,
+            Register::ECX => self.rcx as i32,
+            Register::EDX => self.rdx as i32,
+            Register::ESP => self.rsp as i32,
+            Register::EBP => self.rbp as i32,
+            Register::ESI => self.rsi as i32,
+            Register::EDI => self.rdi as i32,
+
+            Register::ES => 0,
+            Register::CS => 0,
+            Register::SS => 0,
+            Register::DS => 0,
+            Register::FS => 0,
+            Register::GS => 0,
+        }
     }
 
     fn get_register_value_i64(&self, register: Register) -> i64 {
-        panic!("Not implemented");
+        match register {
+            Register::RAX => self.rax,
+            Register::RBX => self.rbx,
+            Register::RCX => self.rcx,
+            Register::RDX => self.rdx,
+            Register::RSP => self.rsp,
+            Register::RBP => self.rbp,
+            Register::RSI => self.rsi,
+            Register::RDI => self.rdi,
+
+            Register::RIP => self.instruction_pointer as i64,
+
+            Register::EAX => self.rax as i32 as i64,
+            Register::EBX => self.rbx as i32 as i64,
+            Register::ECX => self.rcx as i32 as i64,
+            Register::EDX => self.rdx as i32 as i64,
+            Register::ESP => self.rsp as i32 as i64,
+            Register::EBP => self.rbp as i32 as i64,
+            Register::ESI => self.rsi as i32 as i64,
+            Register::EDI => self.rdi as i32 as i64,
+
+            Register::ES => 0,
+            Register::CS => 0,
+            Register::SS => 0,
+            Register::DS => 0,
+            Register::FS => 0,
+            Register::GS => 0,
+        }
     }
 
     fn set_register_value_i32(&self, register: Register, value: i32) {
