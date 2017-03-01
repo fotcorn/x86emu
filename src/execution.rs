@@ -174,15 +174,6 @@ impl CPU {
         }
     }
 
-    fn set_register_value_i32(&self, register: Register, value: i32) {
-        panic!("Not implemented");
-    }
-
-    fn set_register_value_i64(&self, register: Register, value: i32) {
-        panic!("Not implemented");
-    }
-
-
     // stack operations
     pub fn stack_push(&mut self, data: Vec<u8>) {
         for v in data {

@@ -26,6 +26,15 @@ impl CPU {
 
     pub fn mov(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "mov", arg);
+        match arg {
+            InstructionArgument::TwoRegister {..} => (),
+            InstructionArgument::Immediate8BitRegister {..} => (),
+            InstructionArgument::Immediate32BitRegister {..} => (),
+            _ => panic!("Unsupported argument type for mov")
+        }
+
+        let argument = self.first_argument_i64(arg);
+        println!("argument: {}", argument);
     }
 
     pub fn add(&mut self, arg: InstructionArgument) {
