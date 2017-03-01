@@ -56,37 +56,84 @@ impl CPU {
     }
 
     pub fn first_argument_i8(&self, arg: InstructionArgument) -> i8 {
-        0
+        panic!("Not implemented");
     }
 
     pub fn first_argument_i16(&self, arg: InstructionArgument) -> i16 {
-        0
+        panic!("Not implemented");
     }
 
     pub fn first_argument_i32(&self, arg: InstructionArgument) -> i32 {
-        0
+        match arg {
+            InstructionArgument::OneRegister { register, .. } => {
+                self.get_register_value_i32(register)
+            },
+            InstructionArgument::TwoRegister { register1, .. } => {
+                self.get_register_value_i32(register1)
+            },
+            InstructionArgument::Immediate8 { immediate, .. } => immediate as i32,
+            InstructionArgument::Immediate32 { immediate, .. } => immediate as i32,
+            InstructionArgument::Immediate8BitRegister { immediate, .. } => immediate as i32,
+            InstructionArgument::Immediate32BitRegister  { immediate, .. } => immediate as i32,
+        }
     }
 
     pub fn first_argument_i64(&self, arg: InstructionArgument) -> i64 {
-        0
+        match arg {
+            InstructionArgument::OneRegister { register, .. } => {
+                self.get_register_value_i64(register)
+            },
+            InstructionArgument::TwoRegister { register1, .. } => {
+                self.get_register_value_i64(register1)
+            },
+            InstructionArgument::Immediate8 { immediate, .. } => immediate as i64,
+            InstructionArgument::Immediate32 { immediate, .. } => immediate as i64,
+            InstructionArgument::Immediate8BitRegister { immediate, .. } => immediate as i64,
+            InstructionArgument::Immediate32BitRegister  { immediate, .. } => immediate as i64,
+        }
     }
 
 
     pub fn second_argument_i8(&self, arg: InstructionArgument) -> i8 {
-        0
+        panic!("Not implemented");
     }
 
     pub fn second_argument_i16(&self, arg: InstructionArgument) -> i16 {
-        0
+        panic!("Not implemented");
     }
 
     pub fn second_argument_i32(&self, arg: InstructionArgument) -> i32 {
-        0
+        panic!("Not implemented");
     }
 
     pub fn second_argument_i64(&self, arg: InstructionArgument) -> i64 {
-        0
+        panic!("Not implemented");
     }
+
+
+    // register operations
+    fn get_register_value_i32(&self, register: Register) -> i32 {
+        panic!("Not implemented");
+    }
+
+    fn get_register_value_i64(&self, register: Register) -> i64 {
+        panic!("Not implemented");
+    }
+
+    fn set_register_value_i32(&self, register: Register, value: i32) {
+        panic!("Not implemented");
+    }
+
+    fn set_register_value_i64(&self, register: Register, value: i32) {
+        panic!("Not implemented");
+    }
+
+
+    // stack operations
+    pub fn stack_push(&self, data: Vec<u8>) {
+        panic!("Not implemented");
+    }
+
 }
 
 pub fn convert_i8_to_u8vec(value: i32) -> Vec<u8> {

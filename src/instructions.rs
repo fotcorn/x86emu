@@ -10,11 +10,11 @@ impl CPU {
         match argument_size {
             ArgumentSize::Bit32 => {
                 let first_arg = self.first_argument_i32(arg);
-                self.stack.extend(convert_i32_to_u8vec(first_arg));
+                self.stack_push(convert_i32_to_u8vec(first_arg));
             }
             ArgumentSize::Bit64 => {
                 let first_arg = self.first_argument_i64(arg);
-                self.stack.extend(convert_i64_to_u8vec(first_arg));
+                self.stack_push(convert_i64_to_u8vec(first_arg));
             }
             _ => panic!("Unsupported push argument size"),
         }
