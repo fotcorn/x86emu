@@ -9,11 +9,11 @@ impl CPU {
         let argument_size = self.first_argument_size(&arg);
         match argument_size {
             ArgumentSize::Bit32 => {
-                let first_arg = self.first_argument_i32(arg);
+                let first_arg = self.first_argument_i32(&arg);
                 self.stack_push(convert_i32_to_u8vec(first_arg));
             }
             ArgumentSize::Bit64 => {
-                let first_arg = self.first_argument_i64(arg);
+                let first_arg = self.first_argument_i64(&arg);
                 self.stack_push(convert_i64_to_u8vec(first_arg));
             }
             _ => panic!("Unsupported push argument size"),
@@ -33,8 +33,8 @@ impl CPU {
             _ => panic!("Unsupported argument type for mov")
         }
 
-        let argument = self.first_argument_i64(arg);
-        println!("argument: {}", argument);
+        let value = self.first_argument_i64(&arg);
+        self.set_value(value, &arg);
     }
 
     pub fn add(&mut self, arg: InstructionArgument) {
