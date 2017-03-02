@@ -73,7 +73,7 @@ impl CPU {
                     let immediate = self.get_i32_value(1);
                     self.mov(InstructionArgument::Immediate32BitRegister {
                         register: get_register(opcode - 0xB8, register_size),
-                        displacement: 0,
+                        effective_address_displacement: None,
                         opcode: 0,
                         immediate: immediate,
                     });
@@ -322,7 +322,7 @@ impl CPU {
                         let immediate = self.code[self.instruction_pointer + ip_offset];
                         (InstructionArgument::Immediate8BitRegister {
                              register: register,
-                             displacement: displacement,
+                             effective_address_displacement: Some(displacement),
                              immediate: immediate,
                              opcode: register_or_opcode,
                          },
@@ -335,7 +335,7 @@ impl CPU {
                         let immediate = *zero::read::<i32>(immediate);
                         (InstructionArgument::Immediate32BitRegister {
                              register: register,
-                             displacement: displacement,
+                             effective_address_displacement: Some(displacement),
                              immediate: immediate,
                              opcode: register_or_opcode,
                          },
@@ -361,7 +361,7 @@ impl CPU {
                         (InstructionArgument::TwoRegister {
                              register1: register1,
                              register2: register2,
-                             displacement: displacement,
+                             effective_address_displacement: Some(displacement),
                              reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) { true } else { false },
                          },
                          ip_offset)
@@ -377,7 +377,7 @@ impl CPU {
                         (InstructionArgument::TwoRegister {
                              register1: register1,
                              register2: get_register(value2, register_size),
-                             displacement: 0,
+                             effective_address_displacement: None,
                              reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) { true } else { false },
                          },
                          2)
@@ -389,7 +389,7 @@ impl CPU {
                                      register: register1,
                                      opcode: value2,
                                      immediate: self.code[self.instruction_pointer + 2],
-                                     displacement: 0,
+                                     effective_address_displacement: None,
                                  },
                                  3)
                             }
@@ -405,7 +405,7 @@ impl CPU {
                                      register: register1,
                                      opcode: value2,
                                      immediate: self.get_i32_value(2),
-                                     displacement: 0,
+                                     effective_address_displacement: None,
                                  },
                                  6)
                             }

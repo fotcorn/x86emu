@@ -2,3 +2,4 @@ language: rust
 script:
     - test/test.sh test/generated.asm
     - test/test.sh test/direction.asm
+    - test/test.sh test/register_address.asm
