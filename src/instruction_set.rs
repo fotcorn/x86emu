@@ -121,20 +121,13 @@ impl fmt::Display for InstructionArgument {
                     }
                     Some(displacement) if displacement < 0 => {
                         write!(f,
-                           "${:#x},-{:#x}({})",
-                           immediate,
-                           displacement * -1,
-                           register)
+                               "${:#x},-{:#x}({})",
+                               immediate,
+                               displacement * -1,
+                               register)
                     }
-                    Some(_) => {
-                        write!(f,
-                           "${:#x},({})",
-                           immediate,
-                           register)
-                    }
-                    None => {
-                        write!(f, "${:#x},{}", immediate, register)
-                    }
+                    Some(_) => write!(f, "${:#x},({})", immediate, register),
+                    None => write!(f, "${:#x},{}", immediate, register),
                 }
             }
             InstructionArgument::Immediate8BitRegister { ref register,
@@ -147,20 +140,13 @@ impl fmt::Display for InstructionArgument {
                     }
                     Some(displacement) if displacement < 0 => {
                         write!(f,
-                           "${:#x},-{:#x}({})",
-                           immediate,
-                           displacement * -1,
-                           register)
+                               "${:#x},-{:#x}({})",
+                               immediate,
+                               displacement * -1,
+                               register)
                     }
-                    Some(_) => {
-                        write!(f,
-                           "${:#x},({})",
-                           immediate,
-                           register)
-                    }
-                    None => {
-                        write!(f, "${:#x},{}", immediate, register)
-                    }
+                    Some(_) => write!(f, "${:#x},({})", immediate, register),
+                    None => write!(f, "${:#x},{}", immediate, register),
                 }
             }
         }
