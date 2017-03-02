@@ -187,14 +187,14 @@ impl CPU {
 
             Register::RIP => self.instruction_pointer = value as usize,
 
-            Register::EAX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::EBX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::ECX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::EDX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::ESP => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::EBP => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::ESI => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
-            Register::EDI => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::EAX => self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::EBX => self.rbx = ((self.rbx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::ECX => self.rcx = ((self.rcx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::EDX => self.rdx = ((self.rdx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::ESP => self.rsp = ((self.rsp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::EBP => self.rbp = ((self.rbp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::ESI => self.rsi = ((self.rsi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::EDI => self.rdi = ((self.rdi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
 
             Register::ES => (),
             Register::CS => (),
