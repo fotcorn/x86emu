@@ -73,10 +73,10 @@ pub enum InstructionArgument {
 impl InstructionArgument {
     pub fn assert_two_arguments(&self) {
         match *self {
-            InstructionArgument::TwoRegister {..} => (),
-            InstructionArgument::Immediate8BitRegister {..} => (),
-            InstructionArgument::Immediate32BitRegister {..} => (),
-            _ => panic!("Instruction requires two arguments")
+            InstructionArgument::TwoRegister { .. } => (),
+            InstructionArgument::Immediate8BitRegister { .. } => (),
+            InstructionArgument::Immediate32BitRegister { .. } => (),
+            _ => panic!("Instruction requires two arguments"),
         }
     }
 }

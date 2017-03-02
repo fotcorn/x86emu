@@ -67,14 +67,14 @@ impl CPU {
         match *arg {
             InstructionArgument::OneRegister { ref register, .. } => {
                 self.get_register_value_i32(register)
-            },
+            }
             InstructionArgument::TwoRegister { ref register1, .. } => {
                 self.get_register_value_i32(register1)
-            },
+            }
             InstructionArgument::Immediate8 { immediate, .. } => immediate as i32,
             InstructionArgument::Immediate32 { immediate, .. } => immediate as i32,
             InstructionArgument::Immediate8BitRegister { immediate, .. } => immediate as i32,
-            InstructionArgument::Immediate32BitRegister  { immediate, .. } => immediate as i32,
+            InstructionArgument::Immediate32BitRegister { immediate, .. } => immediate as i32,
         }
     }
 
@@ -82,14 +82,14 @@ impl CPU {
         match *arg {
             InstructionArgument::OneRegister { ref register, .. } => {
                 self.get_register_value_i64(register)
-            },
+            }
             InstructionArgument::TwoRegister { ref register1, .. } => {
                 self.get_register_value_i64(register1)
-            },
+            }
             InstructionArgument::Immediate8 { immediate, .. } => immediate as i64,
             InstructionArgument::Immediate32 { immediate, .. } => immediate as i64,
             InstructionArgument::Immediate8BitRegister { immediate, .. } => immediate as i64,
-            InstructionArgument::Immediate32BitRegister  { immediate, .. } => immediate as i64,
+            InstructionArgument::Immediate32BitRegister { immediate, .. } => immediate as i64,
         }
     }
 
@@ -187,14 +187,30 @@ impl CPU {
 
             Register::RIP => self.instruction_pointer = value as usize,
 
-            Register::EAX => self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EBX => self.rbx = ((self.rbx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::ECX => self.rcx = ((self.rcx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EDX => self.rdx = ((self.rdx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::ESP => self.rsp = ((self.rsp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EBP => self.rbp = ((self.rbp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::ESI => self.rsi = ((self.rsi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EDI => self.rdi = ((self.rdi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::EAX => {
+                self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EBX => {
+                self.rbx = ((self.rbx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::ECX => {
+                self.rcx = ((self.rcx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EDX => {
+                self.rdx = ((self.rdx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::ESP => {
+                self.rsp = ((self.rsp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EBP => {
+                self.rbp = ((self.rbp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::ESI => {
+                self.rsi = ((self.rsi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EDI => {
+                self.rdi = ((self.rdi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
 
             Register::ES => (),
             Register::CS => (),
@@ -215,7 +231,10 @@ impl CPU {
 
     pub fn set_value(&mut self, value: i64, arg: &InstructionArgument) {
         match *arg {
-            InstructionArgument::TwoRegister {ref register1, ref register2, effective_address_displacement, reverse_direction} => {
+            InstructionArgument::TwoRegister { ref register1,
+                                               ref register2,
+                                               effective_address_displacement,
+                                               reverse_direction } => {
                 match effective_address_displacement {
                     Some(_) => panic!("Effective Address mode not yet supported"),
                     None => {
@@ -224,14 +243,12 @@ impl CPU {
                         } else {
                             self.set_register_value(register2, value)
                         }
-                    },
+                    }
                 }
             }
-            _ => panic!("Unsupported set_value argument.")
+            _ => panic!("Unsupported set_value argument."),
         }
     }
-
-
 }
 
 /*pub fn convert_i8_to_u8vec(value: i8) -> Vec<u8> {
@@ -246,26 +263,22 @@ pub fn convert_i16_to_u8vec(value: i16) -> Vec<u8> {
 }*/
 
 pub fn convert_i32_to_u8vec(value: i32) -> Vec<u8> {
-    vec![
-        (value as u32 & 0x000000FF) as u8,
-        (value as u32 & 0x0000FF00 >> 8) as u8,
-        (value as u32 & 0x00FF0000 >> 16) as u8,
-        (value as u32 & 0xFF000000 >> 24) as u8,
-    ]
+    vec![(value as u32 & 0x000000FF) as u8,
+         (value as u32 & 0x0000FF00 >> 8) as u8,
+         (value as u32 & 0x00FF0000 >> 16) as u8,
+         (value as u32 & 0xFF000000 >> 24) as u8]
 }
 
 pub fn convert_i64_to_u8vec(value: i64) -> Vec<u8> {
-    vec![
-        (value as u64 & 0x00000000000000FF) as u8,
-        (value as u64 & 0x000000000000FF00 >> 8) as u8,
-        (value as u64 & 0x0000000000FF0000 >> 16) as u8,
-        (value as u64 & 0x00000000FF000000 >> 24) as u8,
+    vec![(value as u64 & 0x00000000000000FF) as u8,
+         (value as u64 & 0x000000000000FF00 >> 8) as u8,
+         (value as u64 & 0x0000000000FF0000 >> 16) as u8,
+         (value as u64 & 0x00000000FF000000 >> 24) as u8,
 
-        (value as u64 & 0x000000FF00000000 >> 32) as u8,
-        (value as u64 & 0x0000FF0000000000 >> 40) as u8,
-        (value as u64 & 0x00FF000000000000 >> 48) as u8,
-        (value as u64 & 0xFF00000000000000 >> 56) as u8,
-    ]
+         (value as u64 & 0x000000FF00000000 >> 32) as u8,
+         (value as u64 & 0x0000FF0000000000 >> 40) as u8,
+         (value as u64 & 0x00FF000000000000 >> 48) as u8,
+         (value as u64 & 0xFF00000000000000 >> 56) as u8]
 }
 
 
