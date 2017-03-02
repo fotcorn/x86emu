@@ -174,6 +174,37 @@ impl CPU {
         }
     }
 
+    fn set_register_value(&mut self, register: &Register, value: i64) {
+        match *register {
+            Register::RAX => self.rax = value,
+            Register::RBX => self.rbx = value,
+            Register::RCX => self.rcx = value,
+            Register::RDX => self.rdx = value,
+            Register::RSP => self.rsp = value,
+            Register::RBP => self.rbp = value,
+            Register::RSI => self.rsi = value,
+            Register::RDI => self.rdi = value,
+
+            Register::RIP => self.instruction_pointer = value as usize,
+
+            Register::EAX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::EBX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::ECX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::EDX => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::ESP => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::EBP => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::ESI => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+            Register::EDI => self.rax = (self.rax & 0xFFFFFFFF00000000) | (value as i32 as i64),
+
+            Register::ES => (),
+            Register::CS => (),
+            Register::SS => (),
+            Register::DS => (),
+            Register::FS => (),
+            Register::GS => (),
+        }
+    }
+
     // stack operations
     pub fn stack_push(&mut self, data: Vec<u8>) {
         for v in data {
@@ -183,7 +214,21 @@ impl CPU {
     }
 
     pub fn set_value(&mut self, value: i64, arg: &InstructionArgument) {
-
+        match *arg {
+            InstructionArgument::TwoRegister {ref register1, ref register2, effective_address_displacement, reverse_direction} => {
+                match effective_address_displacement {
+                    Some(_) => panic!("Effective Address mode not yet supported"),
+                    None => {
+                        if reverse_direction {
+                            self.set_register_value(register1, value)
+                        } else {
+                            self.set_register_value(register2, value)
+                        }
+                    },
+                }
+            }
+            _ => panic!("Unsupported set_value argument.")
+        }
     }
 
 
