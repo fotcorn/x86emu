@@ -22,6 +22,7 @@ impl CPU {
 
     pub fn pop(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "pop", arg);
+        panic!("Not implemented");
     }
 
     pub fn mov(&mut self, arg: InstructionArgument) {
@@ -33,105 +34,131 @@ impl CPU {
 
     pub fn add(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "add", arg);
+        panic!("Not implemented");
     }
 
     pub fn or(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "or", arg);
+        panic!("Not implemented");
     }
 
     pub fn adc(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "adc", arg);
+        panic!("Not implemented");
     }
 
     pub fn sbb(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "sbb", arg);
+        panic!("Not implemented");
     }
 
     pub fn and(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "and", arg);
+        panic!("Not implemented");
     }
 
     pub fn sub(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "sub", arg);
+        panic!("Not implemented");
     }
 
     pub fn xor(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "xor", arg);
+        panic!("Not implemented");
     }
 
     pub fn cmp(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "cmp", arg);
+        panic!("Not implemented");
     }
 
     pub fn call(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "call", arg);
+        panic!("Not implemented");
     }
 
     pub fn lea(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "lea", arg);
+        panic!("Not implemented");
     }
 
     pub fn test(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "test", arg);
+        panic!("Not implemented");
     }
 
     pub fn cmov(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "cmov", arg);
+        panic!("Not implemented");
     }
 
     pub fn sar(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "sar", arg);
+        panic!("Not implemented");
     }
 
     pub fn inc(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "inc", arg);
+        panic!("Not implemented");
     }
 
     pub fn dec(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "dec", arg);
+        panic!("Not implemented");
     }
 
     pub fn div(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "div", arg);
+        panic!("Not implemented");
     }
 
     pub fn idiv(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "idiv", arg);
+        panic!("Not implemented");
     }
 
     pub fn mul(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "mul", arg);
+        panic!("Not implemented");
     }
 
     pub fn imul(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "imul", arg);
+        panic!("Not implemented");
     }
 
     pub fn not(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "not", arg);
+        panic!("Not implemented");
     }
 
     pub fn neg(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "neg", arg);
+        panic!("Not implemented");
     }
 
     pub fn ret(&mut self) {
         println!("{:<6}", "ret");
+        panic!("Not implemented");
     }
 
     pub fn leave(&mut self) {
         println!("{:<6}", "leave");
+        panic!("Not implemented");
     }
 
     pub fn popf(&mut self) {
         println!("{:<6}", "popf");
+        panic!("Not implemented");
     }
 
     pub fn std(&mut self) {
         println!("{:<6}", "std");
+        panic!("Not implemented");
     }
     pub fn cld(&mut self) {
         println!("{:<6}", "cld");
+        panic!("Not implemented");
     }
 
     pub fn movs(&mut self, repeat: bool) {
@@ -140,6 +167,7 @@ impl CPU {
         } else {
             println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
         }
+        panic!("Not implemented");
     }
 
     pub fn jmp(&mut self, arg: InstructionArgument) {
@@ -154,6 +182,7 @@ impl CPU {
 
     pub fn jge(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "jge", arg);
+        panic!("Not implemented");
     }
 
     pub fn arithmetic(&mut self, arg: InstructionArgument) {
