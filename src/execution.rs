@@ -321,6 +321,14 @@ impl CPU {
                         }
                     }
                 }
+            },
+            InstructionArgument::Immediate8BitRegister { ref register, effective_address_displacement, .. } => {
+                match effective_address_displacement {
+                    Some(_) => panic!("Effective Address mode not yet supported"),
+                    None => {
+                        self.set_register_value(register, value)
+                    }
+                }
             }
             _ => panic!("Unsupported set_value argument."),
         }
