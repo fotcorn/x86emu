@@ -17,11 +17,18 @@ impl CPU {
             InstructionArgument::TwoRegister { ref register1,
                                                ref register2,
                                                reverse_direction,
+                                               effective_address_displacement,
                                                .. } => {
                 if reverse_direction {
-                    get_register_size(register2)
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => get_register_size(register2),
+                    }
                 } else {
-                    get_register_size(register1)
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => get_register_size(register1),
+                    }
                 }
             }
             InstructionArgument::Immediate8 { .. } => ArgumentSize::Bit8,
@@ -37,20 +44,33 @@ impl CPU {
             InstructionArgument::TwoRegister { ref register1,
                                                ref register2,
                                                reverse_direction,
+                                               effective_address_displacement,
                                                .. } => {
                 if reverse_direction {
-                    get_register_size(register1)
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => get_register_size(register1),
+                    }
                 } else {
-                    get_register_size(register2)
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => get_register_size(register2),
+                    }
                 }
             }
             InstructionArgument::Immediate8 { .. } => panic!("Only one argument available"),
             InstructionArgument::Immediate32 { .. } => panic!("Only one argument available"),
-            InstructionArgument::Immediate8BitRegister { ref register, .. } => {
-                get_register_size(register)
+            InstructionArgument::Immediate8BitRegister { ref register, effective_address_displacement, .. } => {
+                match effective_address_displacement {
+                    Some(_) => panic!("Displacement not implemented"),
+                    None => get_register_size(register),
+                }
             }
-            InstructionArgument::Immediate32BitRegister { ref register, .. } => {
-                get_register_size(register)
+            InstructionArgument::Immediate32BitRegister { ref register, effective_address_displacement, .. } => {
+                match effective_address_displacement {
+                    Some(_) => panic!("Displacement not implemented"),
+                    None => get_register_size(register),
+                }
             }
         }
     }
@@ -68,8 +88,18 @@ impl CPU {
             InstructionArgument::OneRegister { ref register, .. } => {
                 self.get_register_value_i32(register)
             }
-            InstructionArgument::TwoRegister { ref register1, .. } => {
-                self.get_register_value_i32(register1)
+            InstructionArgument::TwoRegister { ref register1, ref register2, reverse_direction, effective_address_displacement } => {
+                if reverse_direction {
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => self.get_register_value_i32(register2),
+                    }
+                } else {
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => self.get_register_value_i32(register1),
+                    }
+                }
             }
             InstructionArgument::Immediate8 { immediate, .. } => immediate as i32,
             InstructionArgument::Immediate32 { immediate, .. } => immediate as i32,
@@ -83,8 +113,18 @@ impl CPU {
             InstructionArgument::OneRegister { ref register, .. } => {
                 self.get_register_value_i64(register)
             }
-            InstructionArgument::TwoRegister { ref register1, .. } => {
-                self.get_register_value_i64(register1)
+            InstructionArgument::TwoRegister { ref register1, ref register2, reverse_direction, effective_address_displacement, .. } => {
+                if reverse_direction {
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => self.get_register_value_i64(register2),
+                    }
+                } else {
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => self.get_register_value_i64(register1),
+                    }
+                }
             }
             InstructionArgument::Immediate8 { immediate, .. } => immediate as i64,
             InstructionArgument::Immediate32 { immediate, .. } => immediate as i64,
@@ -105,10 +145,46 @@ impl CPU {
     pub fn second_argument_i32(&self, arg: &InstructionArgument) -> i32 {
         panic!("Not implemented");
     }
-
+    */
     pub fn second_argument_i64(&self, arg: &InstructionArgument) -> i64 {
-        panic!("Not implemented");
-    }*/
+        match *arg {
+            InstructionArgument::TwoRegister { ref register1, ref register2, reverse_direction, effective_address_displacement, .. } => {
+                if reverse_direction {
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => self.get_register_value_i64(register1),
+                    }
+                } else {
+                    match effective_address_displacement {
+                        Some(_) => panic!("Displacement not implemented"),
+                        None => self.get_register_value_i64(register2),
+                    }
+                }
+
+            }
+            InstructionArgument::Immediate8BitRegister { ref register, effective_address_displacement, .. } => {
+                match effective_address_displacement {
+                    Some(_) => panic!("Displacement not implemented"),
+                    None => self.get_register_value_i64(register),
+                }
+            },
+            InstructionArgument::Immediate32BitRegister { ref register, effective_address_displacement, .. } => {
+                match effective_address_displacement {
+                    Some(_) => panic!("Displacement not implemented"),
+                    None => self.get_register_value_i64(register),
+                }
+            },
+            InstructionArgument::OneRegister { .. } => {
+                panic!("Cannot get second argument on single argument type")
+            },
+            InstructionArgument::Immediate8 { .. } => {
+                panic!("Cannot get second argument on single argument type")
+            }
+            InstructionArgument::Immediate32 { .. } => {
+                panic!("Cannot get second argument on single argument type")
+            }
+        }
+    }
 
 
     // register operations

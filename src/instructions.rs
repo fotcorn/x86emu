@@ -59,7 +59,10 @@ impl CPU {
 
     pub fn sub(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "sub", arg);
-        panic!("Not implemented");
+        arg.assert_two_arguments();
+        let value1 = self.first_argument_i64(&arg);
+        let value2 = self.second_argument_i64(&arg);
+        self.set_value(value1 - value2, &arg);
     }
 
     pub fn xor(&mut self, arg: InstructionArgument) {
