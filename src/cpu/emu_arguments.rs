@@ -10,7 +10,7 @@ pub enum ArgumentSize {
 }
 
 
-impl CPU {
+impl EmulationCPU {
     pub fn first_argument_size(&self, arg: &InstructionArgument) -> ArgumentSize {
         match *arg {
             InstructionArgument::OneRegister { ref register, .. } => get_register_size(register),

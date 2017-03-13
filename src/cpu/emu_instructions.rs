@@ -3,7 +3,10 @@ use instruction_set::InstructionArgument;
 use cpu::CPU;
 use execution::*;
 
-impl CPU {
+
+pub struct EmulationCPU{};
+
+impl CPU for EmulationCPU {
     pub fn push(&mut self, arg: InstructionArgument) {
         println!("{:<6} {}", "push", arg);
         let argument_size = self.first_argument_size(&arg);
