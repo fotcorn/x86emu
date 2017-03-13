@@ -3,7 +3,9 @@ use std::io::Read;
 use std::env;
 
 extern crate x86emu;
-use x86emu::cpu::CPU;
+use x86emu::cpu::print::PrintCPU;
+use x86emu::machine_state::MachineState;
+use x86emu::decoder::Decoder;
 
 const SETUP_SECT_POSITION: usize = 0x1F1;
 const BIT64_OFFSET: usize = 0x200;
@@ -31,6 +33,8 @@ fn main() {
 
     let main_code = &buffer[offset as usize..(offset + 0x10000) as usize];
 
-    let mut cpu = CPU::new(main_code.to_vec());
-    cpu.execute();
+    let mut cpu = PrintCPU{};
+    let mut machine_state = MachineState::new(main_code.to_vec());
+    let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
+    decoder.execute();
 }

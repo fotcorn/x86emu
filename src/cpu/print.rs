@@ -130,6 +130,12 @@ impl CPU for PrintCPU {
 
     fn jmp(&mut self, machine_state: &mut MachineState, arg: InstructionArgument) {
         println!("{:<6} {}", "jmp", arg);
+        match arg {
+            InstructionArgument::Immediate32 { immediate } => {
+                machine_state.rip += immediate as usize
+            }
+            _ => panic!("JMP: Unsupported argument."),
+        }
     }
 
     fn jge(&mut self, machine_state: &mut MachineState, arg: InstructionArgument) {
