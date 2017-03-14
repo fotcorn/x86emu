@@ -1,16 +1,8 @@
 use instruction_set::{InstructionArgument, Register};
+use instruction_set::{ArgumentSize, get_register_size};
+use machine_state::MachineState;
 
-use cpu::CPU;
-
-pub enum ArgumentSize {
-    Bit64,
-    Bit32,
-    Bit16,
-    Bit8,
-}
-
-
-impl EmulationCPU {
+impl MachineState {
     pub fn first_argument_size(&self, arg: &InstructionArgument) -> ArgumentSize {
         match *arg {
             InstructionArgument::OneRegister { ref register, .. } => get_register_size(register),
@@ -199,7 +191,7 @@ impl EmulationCPU {
             Register::RSI => panic!("Cannot get 32bit value from 64bit register"),
             Register::RDI => panic!("Cannot get 32bit value from 64bit register"),
 
-            Register::RIP => self.instruction_pointer as i32,
+            Register::RIP => self.rip as i32,
 
             Register::EAX => self.rax as i32,
             Register::EBX => self.rbx as i32,
@@ -230,7 +222,7 @@ impl EmulationCPU {
             Register::RSI => self.rsi,
             Register::RDI => self.rdi,
 
-            Register::RIP => self.instruction_pointer as i64,
+            Register::RIP => self.rip as i64,
 
             Register::EAX => self.rax as i32 as i64,
             Register::EBX => self.rbx as i32 as i64,
@@ -261,7 +253,7 @@ impl EmulationCPU {
             Register::RSI => self.rsi = value,
             Register::RDI => self.rdi = value,
 
-            Register::RIP => self.instruction_pointer = value as usize,
+            Register::RIP => self.rip = value as usize,
 
             Register::EAX => {
                 self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
@@ -331,49 +323,6 @@ impl EmulationCPU {
                 }
             }
             _ => panic!("Unsupported set_value argument."),
-        }
-    }
-}
-
-/*pub fn convert_i8_to_u8vec(value: i8) -> Vec<u8> {
-    vec![value as u8]
-}
-
-pub fn convert_i16_to_u8vec(value: i16) -> Vec<u8> {
-    vec![
-        (value as u16 & 0x00FF) as u8,
-        (value as u16 & 0xFF00 >> 8) as u8,
-    ]
-}*/
-
-pub fn convert_i32_to_u8vec(value: i32) -> Vec<u8> {
-    vec![(value as u32 & 0x000000FF) as u8,
-         (value as u32 & 0x0000FF00 >> 8) as u8,
-         (value as u32 & 0x00FF0000 >> 16) as u8,
-         (value as u32 & 0xFF000000 >> 24) as u8]
-}
-
-pub fn convert_i64_to_u8vec(value: i64) -> Vec<u8> {
-    vec![(value as u64 & 0x00000000000000FF) as u8,
-         (value as u64 & 0x000000000000FF00 >> 8) as u8,
-         (value as u64 & 0x0000000000FF0000 >> 16) as u8,
-         (value as u64 & 0x00000000FF000000 >> 24) as u8,
-
-         (value as u64 & 0x000000FF00000000 >> 32) as u8,
-         (value as u64 & 0x0000FF0000000000 >> 40) as u8,
-         (value as u64 & 0x00FF000000000000 >> 48) as u8,
-         (value as u64 & 0xFF00000000000000 >> 56) as u8]
-}
-
-
-fn get_register_size(reg: &Register) -> ArgumentSize {
-    match *reg {
-        Register::RAX | Register::RBX | Register::RCX | Register::RDX | Register::RSP |
-        Register::RBP | Register::RSI | Register::RDI | Register::RIP => ArgumentSize::Bit64,
-        Register::EAX | Register::EBX | Register::ECX | Register::EDX | Register::ESP |
-        Register::EBP | Register::ESI | Register::EDI => ArgumentSize::Bit32,
-        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => {
-            ArgumentSize::Bit16
         }
     }
 }

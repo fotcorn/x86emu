@@ -37,6 +37,25 @@ pub enum Register {
     GS,
 }
 
+pub enum ArgumentSize {
+    Bit64,
+    Bit32,
+    Bit16,
+    Bit8,
+}
+
+pub fn get_register_size(reg: &Register) -> ArgumentSize {
+    match *reg {
+        Register::RAX | Register::RBX | Register::RCX | Register::RDX | Register::RSP |
+        Register::RBP | Register::RSI | Register::RDI | Register::RIP => ArgumentSize::Bit64,
+        Register::EAX | Register::EBX | Register::ECX | Register::EDX | Register::ESP |
+        Register::EBP | Register::ESI | Register::EDI => ArgumentSize::Bit32,
+        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => {
+            ArgumentSize::Bit16
+        }
+    }
+}
+
 impl fmt::Display for Register {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let rep = format!("{:?}", self).to_lowercase();
