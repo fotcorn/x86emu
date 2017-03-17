@@ -132,7 +132,7 @@ impl InstructionArguments {
 impl fmt::Display for InstructionArguments {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.second_argument {
-            Some(ref second_argument) => write!(f, "{} {}", self.first_argument, second_argument),
+            Some(ref second_argument) => write!(f, "{},{}", self.first_argument, second_argument),
             None => write!(f, "{}", self.first_argument),
         }
     }
@@ -145,7 +145,7 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::Immediate { immediate } => write!(f, "{:x}", immediate),
             InstructionArgument::EffectiveAddress { ref register, displacement } => {
                 if displacement < 0  {
-                    write!(f, "-{:#x}({})", displacement, register)
+                    write!(f, "-{:#x}({})", displacement.abs(), register)
                 } else if displacement > 0 {
                     write!(f, "{:#x}({})", displacement, register)
                 } else {
