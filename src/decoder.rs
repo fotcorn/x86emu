@@ -10,10 +10,9 @@ pub struct Decoder<'a> {
 }
 
 impl<'a> Decoder<'a> {
-
     pub fn new(cpu: &'a CPU, machine_state: &'a mut MachineState) -> Decoder<'a> {
         Decoder {
-            cpu : cpu,
+            cpu: cpu,
             machine_state: machine_state,
         }
     }
@@ -259,7 +258,7 @@ impl<'a> Decoder<'a> {
                     ip_offset
                 }
                 0xFC => {
-                    self.cpu.cld(self.machine_state, );
+                    self.cpu.cld(self.machine_state);
                     1
                 }
                 0xFF => {
@@ -362,7 +361,8 @@ impl<'a> Decoder<'a> {
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
                         let immediate = &self.machine_state.code[self.machine_state.rip + ip_offset..
-                                         self.machine_state.rip + ip_offset + 4];
+                                         self.machine_state.rip + ip_offset +
+                                         4];
                         let immediate = *zero::read::<i32>(immediate);
                         (InstructionArguments::new_two_arguments_opcode(
                             InstructionArgument::Immediate {
@@ -379,7 +379,8 @@ impl<'a> Decoder<'a> {
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
 
-                        let second_register_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
+                        let second_register_size = if
+                            decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
                             RegisterSize::Bit32
                         } else {
                             RegisterSize::Bit64
@@ -394,7 +395,7 @@ impl<'a> Decoder<'a> {
                         let register2 = get_register(register_or_opcode, register_size);
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                            InstructionArguments::new_two_arguments(
+                             InstructionArguments::new_two_arguments(
                                 InstructionArgument::EffectiveAddress {
                                     register: register1,
                                     displacement: displacement,
@@ -403,8 +404,8 @@ impl<'a> Decoder<'a> {
                                     register: register2,
                                 }
                             )
-                        } else {
-                            InstructionArguments::new_two_arguments(
+                         } else {
+                             InstructionArguments::new_two_arguments(
                                 InstructionArgument::Register {
                                     register: register2,
                                 },
@@ -413,8 +414,8 @@ impl<'a> Decoder<'a> {
                                     displacement: displacement,
                                 }
                             )
-                        },
-                        ip_offset)
+                         },
+                         ip_offset)
                     }
                 }
             }
@@ -424,8 +425,8 @@ impl<'a> Decoder<'a> {
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
-                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                            InstructionArguments::new_two_arguments(
+                        (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
+                             InstructionArguments::new_two_arguments(
                                 InstructionArgument::Register {
                                     register: register1,
                                 },
@@ -433,8 +434,8 @@ impl<'a> Decoder<'a> {
                                     register: get_register(value2, register_size),
                                 }
                             )
-                        } else {
-                            InstructionArguments::new_two_arguments(
+                         } else {
+                             InstructionArguments::new_two_arguments(
                                 InstructionArgument::Register {
                                     register: get_register(value2, register_size),
                                 },
@@ -442,8 +443,8 @@ impl<'a> Decoder<'a> {
                                     register: register1,
                                 }
                             )
-                        },
-                        2)
+                         },
+                         2)
                     }
                     RegOrOpcode::Opcode => {
                         match immediate_size {
@@ -458,7 +459,7 @@ impl<'a> Decoder<'a> {
                                     value2,
                                 ),
                                  3)
-                            },
+                            }
                             ImmediateSize::Bit32 => {
                                 (InstructionArguments::new_two_arguments_opcode(
                                     InstructionArgument::Immediate {

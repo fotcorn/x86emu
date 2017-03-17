@@ -132,9 +132,7 @@ impl CPU for PrintCPU {
         println!("{:<6} {}", "jmp", arg);
         arg.assert_one_argument();
         match arg.first_argument {
-            InstructionArgument::Immediate { immediate } => {
-                machine_state.rip += immediate as usize
-            }
+            InstructionArgument::Immediate { immediate } => machine_state.rip += immediate as usize,
             _ => panic!("JMP: Unsupported argument."),
         }
     }

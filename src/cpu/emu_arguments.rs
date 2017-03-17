@@ -5,9 +5,9 @@ use machine_state::MachineState;
 impl MachineState {
     pub fn get_value(&self, arg: &InstructionArgument) -> i64 {
         match *arg {
-            InstructionArgument::Register { ref register} => self.get_register_value(register),
+            InstructionArgument::Register { ref register } => self.get_register_value(register),
             InstructionArgument::Immediate { immediate } => immediate,
-            InstructionArgument::EffectiveAddress {..} => panic!("Displacement not implemented"),
+            InstructionArgument::EffectiveAddress { .. } => panic!("Displacement not implemented"),
         }
     }
 
@@ -99,9 +99,11 @@ impl MachineState {
 
     pub fn set_value(&mut self, value: i64, arg: &InstructionArgument) {
         match *arg {
-            InstructionArgument::Register {ref register} => self.set_register_value(register, value),
-            InstructionArgument::EffectiveAddress {..} => panic!("Displacement not implemented"),
-            InstructionArgument::Immediate {..} => panic!("Cannot set value on immediate value"),
+            InstructionArgument::Register { ref register } => {
+                self.set_register_value(register, value)
+            }
+            InstructionArgument::EffectiveAddress { .. } => panic!("Displacement not implemented"),
+            InstructionArgument::Immediate { .. } => panic!("Cannot set value on immediate value"),
         }
     }
 }

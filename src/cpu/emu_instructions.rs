@@ -12,8 +12,12 @@ impl CPU for EmulationCPU {
 
         arg.assert_one_argument();
         let vector = match arg.size() {
-            ArgumentSize::Bit32 => convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument) as i32),
-            ArgumentSize::Bit64 => convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument)),
+            ArgumentSize::Bit32 => {
+                convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument) as i32)
+            }
+            ArgumentSize::Bit64 => {
+                convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument))
+            }
             _ => panic!("Unsupported push value size"),
         };
         machine_state.stack_push(vector);
@@ -177,9 +181,7 @@ impl CPU for EmulationCPU {
         println!("{:<6} {}", "jmp", arg);
         arg.assert_one_argument();
         match arg.first_argument {
-            InstructionArgument::Immediate { immediate } => {
-                machine_state.rip += immediate as usize
-            }
+            InstructionArgument::Immediate { immediate } => machine_state.rip += immediate as usize,
             _ => panic!("JMP: Unsupported argument."),
         }
     }

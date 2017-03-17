@@ -65,10 +65,13 @@ impl fmt::Display for Register {
 
 
 #[derive(Debug)]
-pub enum  InstructionArgument {
-    Immediate { immediate: i64},
-    Register { register: Register},
-    EffectiveAddress { register: Register, displacement: i32}
+pub enum InstructionArgument {
+    Immediate { immediate: i64 },
+    Register { register: Register },
+    EffectiveAddress {
+        register: Register,
+        displacement: i32,
+    },
 }
 
 #[derive(Debug)]
@@ -79,7 +82,6 @@ pub struct InstructionArguments {
 }
 
 impl InstructionArguments {
-
     pub fn new_one_argument(argument: InstructionArgument) -> InstructionArguments {
         InstructionArguments {
             first_argument: argument,
@@ -88,7 +90,9 @@ impl InstructionArguments {
         }
     }
 
-    pub fn new_one_argument_opcode(argument: InstructionArgument, opcode: u8) -> InstructionArguments {
+    pub fn new_one_argument_opcode(argument: InstructionArgument,
+                                   opcode: u8)
+                                   -> InstructionArguments {
         InstructionArguments {
             first_argument: argument,
             second_argument: None,
@@ -96,7 +100,9 @@ impl InstructionArguments {
         }
     }
 
-    pub fn new_two_arguments(first_argument: InstructionArgument, second_argument: InstructionArgument) -> InstructionArguments {
+    pub fn new_two_arguments(first_argument: InstructionArgument,
+                             second_argument: InstructionArgument)
+                             -> InstructionArguments {
         InstructionArguments {
             first_argument: first_argument,
             second_argument: Some(second_argument),
@@ -106,7 +112,8 @@ impl InstructionArguments {
 
     pub fn new_two_arguments_opcode(first_argument: InstructionArgument,
                                     second_argument: InstructionArgument,
-                                    opcode: u8) -> InstructionArguments {
+                                    opcode: u8)
+                                    -> InstructionArguments {
         InstructionArguments {
             first_argument: first_argument,
             second_argument: Some(second_argument),
@@ -135,9 +142,9 @@ impl InstructionArguments {
             }
             None => {
                 match self.first_argument {
-                    InstructionArgument::Register {ref register} => get_register_size(register),
-                    InstructionArgument::Immediate {..} => ArgumentSize::Bit64,
-                    InstructionArgument::EffectiveAddress {..} => ArgumentSize::Bit64,
+                    InstructionArgument::Register { ref register } => get_register_size(register),
+                    InstructionArgument::Immediate { .. } => ArgumentSize::Bit64,
+                    InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
                 }
             }
         }
@@ -159,14 +166,14 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::Register { ref register } => write!(f, "{}", register),
             InstructionArgument::Immediate { immediate } => write!(f, "$0x{:x}", immediate),
             InstructionArgument::EffectiveAddress { ref register, displacement } => {
-                if displacement < 0  {
+                if displacement < 0 {
                     write!(f, "-{:#x}({})", displacement.abs(), register)
                 } else if displacement > 0 {
                     write!(f, "{:#x}({})", displacement, register)
                 } else {
                     write!(f, "({})", register)
                 }
-            },
+            }
         }
     }
 }

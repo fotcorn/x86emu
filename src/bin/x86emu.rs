@@ -9,8 +9,7 @@ use x86emu::loader::linux::linux;
 
 fn main() {
     let matches = App::new("x86emu")
-        .arg(Arg::with_name("file")
-            .required(true))
+        .arg(Arg::with_name("file").required(true))
         .arg(Arg::with_name("symbol")
             .help("symbol to execute in elf file")
             .long("symbol")
@@ -29,7 +28,7 @@ fn main() {
             .takes_value(true)
             .possible_values(&["emu", "print"]))
         .get_matches();
-    
+
     let symbol = matches.value_of("symbol").unwrap_or("main");
     let cpu = matches.value_of("cpu").unwrap_or("print");
     let loader = matches.value_of("loader").unwrap_or("elf");
@@ -38,18 +37,18 @@ fn main() {
     match loader {
         "linux" => {
             match cpu {
-                "print" => linux(filename, &PrintCPU{}),
-                "emu" => linux(filename, &EmulationCPU{}),
+                "print" => linux(filename, &PrintCPU {}),
+                "emu" => linux(filename, &EmulationCPU {}),
                 _ => unreachable!("Values already validated by clap"),
             };
-        },
+        }
         "elf" => {
             match cpu {
-                "print" => elf(filename, symbol, &PrintCPU{}),
-                "emu" => elf(filename, symbol, &EmulationCPU{}),
+                "print" => elf(filename, symbol, &PrintCPU {}),
+                "emu" => elf(filename, symbol, &EmulationCPU {}),
                 _ => unreachable!("Values already validated by clap"),
             };
-        },
+        }
         _ => unreachable!("Values already validated by clap"),
     }
 
