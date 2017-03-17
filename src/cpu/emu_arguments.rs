@@ -1,5 +1,4 @@
 use instruction_set::{InstructionArgument, Register};
-use instruction_set::{ArgumentSize, get_register_size};
 use machine_state::MachineState;
 
 impl MachineState {

@@ -137,7 +137,7 @@ impl InstructionArguments {
 
     pub fn size(&self) -> ArgumentSize {
         match self.second_argument {
-            Some(ref second_argument) => {
+            Some(_) => {
                 panic!("argument size for two arguments not implemented");
             }
             None => {
