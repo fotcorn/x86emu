@@ -37,6 +37,7 @@ pub enum Register {
     GS,
 }
 
+#[derive(Debug)]
 pub enum ArgumentSize {
     Bit64,
     Bit32,
@@ -79,14 +80,40 @@ pub struct InstructionArguments {
     pub first_argument: InstructionArgument,
     pub second_argument: Option<InstructionArgument>,
     pub opcode: Option<u8>,
+    explicit_size: Option<ArgumentSize>,
 }
 
 impl InstructionArguments {
+    pub fn new(argument: InstructionArgument) -> InstructionArguments {
+        InstructionArguments {
+            first_argument: argument,
+            second_argument: None,
+            opcode: None,
+            explicit_size: None,
+        }
+    }
+
+    fn second_argument(&mut self, second_argument: InstructionArgument) -> &mut InstructionArguments {
+        self.second_argument = Some(second_argument);
+        self
+    }
+
+    fn opcode(&mut self, opcode: u8) -> &mut InstructionArguments {
+        self.opcode = Some(opcode);
+        self
+    }
+
+    fn explicit_size(&mut self, explicit_size: ArgumentSize) -> &mut InstructionArguments {
+        self.explicit_size = Some(explicit_size);
+        self
+    }
+
     pub fn new_one_argument(argument: InstructionArgument) -> InstructionArguments {
         InstructionArguments {
             first_argument: argument,
             second_argument: None,
             opcode: None,
+            explicit_size: None,
         }
     }
 
@@ -97,6 +124,7 @@ impl InstructionArguments {
             first_argument: argument,
             second_argument: None,
             opcode: Some(opcode),
+            explicit_size: None,
         }
     }
 
@@ -107,6 +135,7 @@ impl InstructionArguments {
             first_argument: first_argument,
             second_argument: Some(second_argument),
             opcode: None,
+            explicit_size: None,
         }
     }
 
@@ -118,6 +147,7 @@ impl InstructionArguments {
             first_argument: first_argument,
             second_argument: Some(second_argument),
             opcode: Some(opcode),
+            explicit_size: None,
         }
     }
 
