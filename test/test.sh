@@ -13,5 +13,5 @@ sed -e 's/call.*/call/g' | \
 sed -e 's/retq/ret/g' | \
 sed -e 's/cmovs/cmov /g' \
 > temp/dis_objdump.asm
-cargo run --bin elf temp/out _start | sed -e 's/call.*/call/g' > temp/dis_emu.asm
+cargo run -- --loader elf --cpu print --symbol _start temp/out | sed -e 's/call.*/call/g' > temp/dis_emu.asm
 diff -u temp/dis_objdump.asm temp/dis_emu.asm

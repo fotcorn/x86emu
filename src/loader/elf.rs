@@ -2,32 +2,16 @@ use std::fs::File;
 use std::io::Read;
 use std::env;
 
-extern crate zero;
 use zero::read_str;
 
-extern crate xmas_elf;
 use xmas_elf::{ElfFile, program, sections};
 use xmas_elf::symbol_table::Entry;
 
-extern crate x86emu;
-use x86emu::cpu::emu_instructions::EmulationCPU;
-use x86emu::machine_state::MachineState;
-use x86emu::decoder::Decoder;
+use machine_state::MachineState;
+use decoder::Decoder;
+use cpu::cpu_trait::CPU;
 
-fn main() {
-    let filename = match env::args().nth(1) {
-        Some(filename) => filename,
-        None => {
-            println!("Usage: cargo run --bin elf <program>");
-            return;
-        }
-    };
-
-    let symbol_name = match env::args().nth(2) {
-        Some(symbol_name) => symbol_name,
-        None => "main".to_string(),
-    };
-
+pub fn elf(filename: &str, symbol: &str, cpu: &CPU) {
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
@@ -44,7 +28,7 @@ fn main() {
     let code_offset = text_section.offset();
 
     // get the virtual address of the main function
-    let (main_symbol_address, main_size) = get_main_symbol_address(&elf_file, &symbol_name);
+    let (main_symbol_address, main_size) = get_main_symbol_address(&elf_file, &symbol);
     // get the offset of the main function
     let offset = main_symbol_address - code_offset - load_address;
 
@@ -54,9 +38,8 @@ fn main() {
     }
     let main_code = &code[offset as usize..end];
 
-    let mut cpu = EmulationCPU{};
     let mut machine_state = MachineState::new(main_code.to_vec());
-    let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
+    let mut decoder = Decoder::new(cpu, &mut machine_state);
     decoder.execute();
 }
 

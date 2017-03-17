@@ -7,7 +7,7 @@ use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 pub struct EmulationCPU {}
 
 impl CPU for EmulationCPU {
-    fn push(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn push(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "push", arg);
 
         arg.assert_one_argument();
@@ -19,44 +19,44 @@ impl CPU for EmulationCPU {
         machine_state.stack_push(vector);
     }
 
-    fn pop(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn pop(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "pop", arg);
         panic!("Not implemented");
     }
 
-    fn mov(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "mov", arg);
         arg.assert_two_arguments();
         let value = machine_state.get_value(&arg.first_argument);
         machine_state.set_value(value, &arg.second_argument.unwrap());
     }
 
-    fn add(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn add(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "add", arg);
         panic!("Not implemented");
     }
 
-    fn or(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn or(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "or", arg);
         panic!("Not implemented");
     }
 
-    fn adc(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn adc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "adc", arg);
         panic!("Not implemented");
     }
 
-    fn sbb(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn sbb(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sbb", arg);
         panic!("Not implemented");
     }
 
-    fn and(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn and(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "and", arg);
         panic!("Not implemented");
     }
 
-    fn sub(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sub", arg);
         arg.assert_two_arguments();
         let second_argument = arg.second_argument.unwrap();
@@ -65,106 +65,106 @@ impl CPU for EmulationCPU {
         machine_state.set_value(value1 - value2, &second_argument);
     }
 
-    fn xor(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn xor(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "xor", arg);
         panic!("Not implemented");
     }
 
-    fn cmp(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn cmp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmp", arg);
         panic!("Not implemented");
     }
 
-    fn call(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn call(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "call", arg);
         panic!("Not implemented");
     }
 
-    fn lea(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn lea(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "lea", arg);
         panic!("Not implemented");
     }
 
-    fn test(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn test(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "test", arg);
         panic!("Not implemented");
     }
 
-    fn cmov(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn cmov(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmov", arg);
         panic!("Not implemented");
     }
 
-    fn sar(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn sar(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sar", arg);
         panic!("Not implemented");
     }
 
-    fn inc(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn inc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "inc", arg);
         panic!("Not implemented");
     }
 
-    fn dec(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn dec(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "dec", arg);
         panic!("Not implemented");
     }
 
-    fn div(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn div(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "div", arg);
         panic!("Not implemented");
     }
 
-    fn idiv(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn idiv(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "idiv", arg);
         panic!("Not implemented");
     }
 
-    fn mul(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn mul(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "mul", arg);
         panic!("Not implemented");
     }
 
-    fn imul(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn imul(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "imul", arg);
         panic!("Not implemented");
     }
 
-    fn not(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn not(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "not", arg);
         panic!("Not implemented");
     }
 
-    fn neg(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn neg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "neg", arg);
         panic!("Not implemented");
     }
 
-    fn ret(&mut self, _machine_state: &mut MachineState) {
+    fn ret(&self, _machine_state: &mut MachineState) {
         println!("{:<6}", "ret");
         panic!("Not implemented");
     }
 
-    fn leave(&mut self, _machine_state: &mut MachineState) {
+    fn leave(&self, _machine_state: &mut MachineState) {
         println!("{:<6}", "leave");
         panic!("Not implemented");
     }
 
-    fn popf(&mut self, _machine_state: &mut MachineState) {
+    fn popf(&self, _machine_state: &mut MachineState) {
         println!("{:<6}", "popf");
         panic!("Not implemented");
     }
 
-    fn std(&mut self, _machine_state: &mut MachineState) {
+    fn std(&self, _machine_state: &mut MachineState) {
         println!("{:<6}", "std");
         panic!("Not implemented");
     }
-    fn cld(&mut self, _machine_state: &mut MachineState) {
+    fn cld(&self, _machine_state: &mut MachineState) {
         println!("{:<6}", "cld");
         panic!("Not implemented");
     }
 
-    fn movs(&mut self, _machine_state: &mut MachineState, repeat: bool) {
+    fn movs(&self, _machine_state: &mut MachineState, repeat: bool) {
         if repeat {
             println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
         } else {
@@ -173,7 +173,7 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn jmp(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jmp", arg);
         arg.assert_one_argument();
         match arg.first_argument {
@@ -184,7 +184,7 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn jge(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jge", arg);
         panic!("Not implemented");
     }

@@ -1,6 +1,7 @@
-pub mod decoder;
 pub mod cpu;
-pub mod machine_state;
+pub mod loader;
+mod decoder;
+mod machine_state;
 mod instruction_set;
 mod utils;
 
@@ -8,3 +9,4 @@ mod utils;
 extern crate bitflags;
 
 extern crate zero;
+extern crate xmas_elf;

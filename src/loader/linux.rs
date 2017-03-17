@@ -1,26 +1,16 @@
 use std::fs::File;
 use std::io::Read;
-use std::env;
 
-extern crate x86emu;
-use x86emu::cpu::print::PrintCPU;
-use x86emu::machine_state::MachineState;
-use x86emu::decoder::Decoder;
+use machine_state::MachineState;
+use decoder::Decoder;
+use cpu::cpu_trait::CPU;
 
 const SETUP_SECT_POSITION: usize = 0x1F1;
 const BIT64_OFFSET: usize = 0x200;
 
 
 // see <linux kernel source>/Documentation/x86/boot.txt for documentation of the boot protocol
-fn main() {
-    let filename = match env::args().nth(1) {
-        Some(filename) => filename,
-        None => {
-            println!("Usage: cargo run --bin elf <program>");
-            return;
-        }
-    };
-
+pub fn linux(filename: &str, cpu: &CPU) {
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
@@ -33,8 +23,7 @@ fn main() {
 
     let main_code = &buffer[offset as usize..(offset + 0x10000) as usize];
 
-    let mut cpu = PrintCPU{};
     let mut machine_state = MachineState::new(main_code.to_vec());
-    let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
+    let mut decoder = Decoder::new(cpu, &mut machine_state);
     decoder.execute();
 }

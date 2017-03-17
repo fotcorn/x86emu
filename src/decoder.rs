@@ -6,12 +6,12 @@ use zero;
 
 pub struct Decoder<'a> {
     machine_state: &'a mut MachineState,
-    cpu: &'a mut CPU,
+    cpu: &'a CPU,
 }
 
 impl<'a> Decoder<'a> {
 
-    pub fn new(cpu: &'a mut CPU, machine_state: &'a mut MachineState) -> Decoder<'a> {
+    pub fn new(cpu: &'a CPU, machine_state: &'a mut MachineState) -> Decoder<'a> {
         Decoder {
             cpu : cpu,
             machine_state: machine_state,
