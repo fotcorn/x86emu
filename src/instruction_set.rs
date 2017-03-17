@@ -65,43 +65,74 @@ impl fmt::Display for Register {
 
 
 #[derive(Debug)]
-pub enum InstructionArgument {
-    OneRegister { register: Register, opcode: u8 },
-    TwoRegister {
-        register1: Register,
-        register2: Register,
-        effective_address_displacement: Option<i32>,
-        reverse_direction: bool,
-    },
-    Immediate8 { immediate: i8 },
-    Immediate32 { immediate: i32 },
-    Immediate8BitRegister {
-        immediate: u8,
-        register: Register,
-        opcode: u8,
-        effective_address_displacement: Option<i32>,
-    },
-    Immediate32BitRegister {
-        immediate: i32,
-        register: Register,
-        opcode: u8,
-        effective_address_displacement: Option<i32>,
-    },
+pub enum  InstructionArgument {
+    Immediate { immediate: i64},
+    Register { register: Register},
+    EffectiveAddress { register: Register, displacement: i32}
 }
 
-impl InstructionArgument {
+#[derive(Debug)]
+pub struct InstructionArguments {
+    pub first_argument: InstructionArgument,
+    pub second_argument: Option<InstructionArgument>,
+    pub opcode: Option<u8>,
+}
+
+impl InstructionArguments {
+
+    pub fn new_one_argument(argument: InstructionArgument) -> InstructionArguments {
+        InstructionArguments {
+            first_argument: argument,
+            second_argument: None,
+            opcode: None,
+        }
+    }
+
+    pub fn new_one_argument_opcode(argument: InstructionArgument, opcode: u8) -> InstructionArguments {
+        InstructionArguments {
+            first_argument: argument,
+            second_argument: None,
+            opcode: Some(opcode),
+        }
+    }
+
+    pub fn new_two_arguments(first_argument: InstructionArgument, second_argument: InstructionArgument) -> InstructionArguments {
+        InstructionArguments {
+            first_argument: first_argument,
+            second_argument: Some(second_argument),
+            opcode: None,
+        }
+    }
+
+    pub fn new_two_arguments_opcode(first_argument: InstructionArgument,
+                                    second_argument: InstructionArgument,
+                                    opcode: u8) -> InstructionArguments {
+        InstructionArguments {
+            first_argument: first_argument,
+            second_argument: Some(second_argument),
+            opcode: Some(opcode),
+        }
+    }
+
+    pub fn assert_one_argument(&self) {
+        match self.second_argument {
+            Some(_) => panic!("Instruction accepts only one argument"),
+            None => (),
+        }
+    }
+
     pub fn assert_two_arguments(&self) {
-        match *self {
-            InstructionArgument::TwoRegister { .. } => (),
-            InstructionArgument::Immediate8BitRegister { .. } => (),
-            InstructionArgument::Immediate32BitRegister { .. } => (),
-            _ => panic!("Instruction requires two arguments"),
+        match self.second_argument {
+            Some(_) => (),
+            None => panic!("Instruction requires two arguments"),
         }
     }
 }
 
-impl fmt::Display for InstructionArgument {
+impl fmt::Display for InstructionArguments {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+        /*
         match *self {
             InstructionArgument::OneRegister { ref register, .. } => write!(f, "{}", register),
             InstructionArgument::TwoRegister { ref register1,
@@ -179,6 +210,6 @@ impl fmt::Display for InstructionArgument {
                     None => write!(f, "${:#x},{}", immediate, register),
                 }
             }
-        }
+        }*/
     }
 }

@@ -10,7 +10,7 @@ use xmas_elf::{ElfFile, program, sections};
 use xmas_elf::symbol_table::Entry;
 
 extern crate x86emu;
-use x86emu::cpu::emu_instructions::EmulationCPU;
+use x86emu::cpu::print::PrintCPU;
 use x86emu::machine_state::MachineState;
 use x86emu::decoder::Decoder;
 
@@ -54,7 +54,7 @@ fn main() {
     }
     let main_code = &code[offset as usize..end];
 
-    let mut cpu = EmulationCPU{};
+    let mut cpu = PrintCPU{};
     let mut machine_state = MachineState::new(main_code.to_vec());
     let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
     decoder.execute();

@@ -1,4 +1,4 @@
-use instruction_set::{Register, RegisterSize, InstructionArgument};
+use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgument};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
@@ -70,27 +70,31 @@ impl<'a> Decoder<'a> {
             let first_byte = self.machine_state.code[self.machine_state.rip];
             let ip_offset: usize = match first_byte {
                 opcode @ 0x50...0x57 => {
-                    self.cpu.push(self.machine_state, InstructionArgument::OneRegister {
-                        register: get_register(opcode - 0x50, RegisterSize::Bit64),
-                        opcode: 0,
-                    });
+                    self.cpu.push(self.machine_state, InstructionArguments::new_one_argument(
+                        InstructionArgument::Register {
+                            register: get_register(opcode - 0x50, RegisterSize::Bit64),
+                        }
+                    ));
                     1
                 }
                 opcode @ 0x58...0x5F => {
-                    self.cpu.pop(self.machine_state, InstructionArgument::OneRegister {
-                        register: get_register(opcode - 0x58, RegisterSize::Bit64),
-                        opcode: 0,
-                    });
+                    self.cpu.pop(self.machine_state, InstructionArguments::new_one_argument(
+                        InstructionArgument::Register {
+                            register: get_register(opcode - 0x58, RegisterSize::Bit64)
+                        }
+                    ));
                     1
                 }
                 opcode @ 0xB8...0xBF => {
                     let immediate = self.get_i32_value(1);
-                    self.cpu.mov(self.machine_state, InstructionArgument::Immediate32BitRegister {
-                        register: get_register(opcode - 0xB8, register_size),
-                        effective_address_displacement: None,
-                        opcode: 0,
-                        immediate: immediate,
-                    });
+                    self.cpu.mov(self.machine_state, InstructionArguments::new_two_arguments(
+                        InstructionArgument::Immediate {
+                            immediate: immediate as i64,
+                        },
+                        InstructionArgument::Register {
+                            register: get_register(opcode - 0xB8, register_size),
+                        }
+                    ));
                     5
                 }
                 0x01 => {
@@ -111,17 +115,20 @@ impl<'a> Decoder<'a> {
                 }
                 0x7D => {
                     let immediate = self.machine_state.code[self.machine_state.rip + 1] as i8;
-                    self.cpu.jge(self.machine_state, InstructionArgument::Immediate8 { immediate: immediate });
+                    self.cpu.jge(self.machine_state, InstructionArguments::new_one_argument(
+                        InstructionArgument::Immediate { immediate: immediate as i64 }));
                     2
                 }
                 0x6A => {
                     let immediate = self.machine_state.code[self.machine_state.rip + 1] as i8;
-                    self.cpu.push(self.machine_state, InstructionArgument::Immediate8 { immediate: immediate });
+                    self.cpu.push(self.machine_state, InstructionArguments::new_one_argument(
+                        InstructionArgument::Immediate { immediate: immediate as i64 }));
                     2
                 }
                 0xE8 => {
                     let immediate = self.get_i32_value(1);
-                    self.cpu.call(self.machine_state, InstructionArgument::Immediate32 { immediate: immediate });
+                    self.cpu.call(self.machine_state, InstructionArguments::new_one_argument(
+                        InstructionArgument::Immediate { immediate: immediate as i64 }));
                     5
                 }
                 0x89 => {
@@ -238,7 +245,9 @@ impl<'a> Decoder<'a> {
                 }
                 0xE9 => {
                     let immediate = self.get_i32_value(1);
-                    self.cpu.jmp(self.machine_state, InstructionArgument::Immediate32 { immediate: immediate });
+                    self.cpu.jmp(self.machine_state, InstructionArguments::new_one_argument(
+                        InstructionArgument::Immediate {immediate: immediate as i64}
+                    ));
                     5
                 }
                 0xF7 => {
@@ -295,7 +304,7 @@ impl<'a> Decoder<'a> {
                     reg_or_opcode: RegOrOpcode,
                     immediate_size: ImmediateSize,
                     decoder_flags: DecoderFlags)
-                    -> (InstructionArgument, usize) {
+                    -> (InstructionArguments, usize) {
         let modrm = self.machine_state.code[self.machine_state.rip + 1];
         let mut address_mod = modrm >> 6;
 
@@ -337,26 +346,35 @@ impl<'a> Decoder<'a> {
                     ImmediateSize::Bit8 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
                         let immediate = self.machine_state.code[self.machine_state.rip + ip_offset];
-                        (InstructionArgument::Immediate8BitRegister {
-                             register: register,
-                             effective_address_displacement: Some(displacement),
-                             immediate: immediate,
-                             opcode: register_or_opcode,
-                         },
-                         ip_offset + 1)
+
+                        (InstructionArguments::new_two_arguments_opcode(
+                            InstructionArgument::Immediate {
+                                immediate: immediate as i64
+                            },
+                            InstructionArgument::EffectiveAddress {
+                                register: register,
+                                displacement: displacement,
+                            },
+                            register_or_opcode
+                        ),
+                        ip_offset + 1)
                     }
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
                         let immediate = &self.machine_state.code[self.machine_state.rip + ip_offset..
                                          self.machine_state.rip + ip_offset + 4];
                         let immediate = *zero::read::<i32>(immediate);
-                        (InstructionArgument::Immediate32BitRegister {
-                             register: register,
-                             effective_address_displacement: Some(displacement),
-                             immediate: immediate,
-                             opcode: register_or_opcode,
-                         },
-                         ip_offset + 4)
+                        (InstructionArguments::new_two_arguments_opcode(
+                            InstructionArgument::Immediate {
+                                immediate: immediate as i64
+                            },
+                            InstructionArgument::EffectiveAddress {
+                                register: register,
+                                displacement: displacement,
+                            },
+                            register_or_opcode
+                        ),
+                        ip_offset + 4)
                     }
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
@@ -375,17 +393,28 @@ impl<'a> Decoder<'a> {
                         };
                         let register2 = get_register(register_or_opcode, register_size);
 
-                        (InstructionArgument::TwoRegister {
-                             register1: register1,
-                             register2: register2,
-                             effective_address_displacement: Some(displacement),
-                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                                 true
-                             } else {
-                                 false
-                             },
-                         },
-                         ip_offset)
+                        (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
+                            InstructionArguments::new_two_arguments(
+                                InstructionArgument::EffectiveAddress {
+                                    register: register1,
+                                    displacement: displacement,
+                                },
+                                InstructionArgument::Register {
+                                    register: register2,
+                                }
+                            )
+                        } else {
+                            InstructionArguments::new_two_arguments(
+                                InstructionArgument::Register {
+                                    register: register2,
+                                },
+                                InstructionArgument::EffectiveAddress {
+                                    register: register1,
+                                    displacement: displacement,
+                                }
+                            )
+                        },
+                        ip_offset)
                     }
                 }
             }
@@ -395,44 +424,58 @@ impl<'a> Decoder<'a> {
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
-                        (InstructionArgument::TwoRegister {
-                             register1: register1,
-                             register2: get_register(value2, register_size),
-                             effective_address_displacement: None,
-                             reverse_direction: if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                                 true
-                             } else {
-                                 false
-                             },
-                         },
-                         2)
+                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
+                            InstructionArguments::new_two_arguments(
+                                InstructionArgument::Register {
+                                    register: register1,
+                                },
+                                InstructionArgument::Register {
+                                    register: get_register(value2, register_size),
+                                }
+                            )
+                        } else {
+                            InstructionArguments::new_two_arguments(
+                                InstructionArgument::Register {
+                                    register: get_register(value2, register_size),
+                                },
+                                InstructionArgument::Register {
+                                    register: register1,
+                                }
+                            )
+                        },
+                        2)
                     }
                     RegOrOpcode::Opcode => {
                         match immediate_size {
                             ImmediateSize::Bit8 => {
-                                (InstructionArgument::Immediate8BitRegister {
-                                     register: register1,
-                                     opcode: value2,
-                                     immediate: self.machine_state.code[self.machine_state.rip + 2],
-                                     effective_address_displacement: None,
-                                 },
+                                (InstructionArguments::new_two_arguments_opcode(
+                                    InstructionArgument::Immediate {
+                                        immediate: self.machine_state.code[self.machine_state.rip + 2] as i64,
+                                    },
+                                    InstructionArgument::Register {
+                                        register: register1,
+                                    },
+                                    value2,
+                                ),
                                  3)
+                            },
+                            ImmediateSize::Bit32 => {
+                                (InstructionArguments::new_two_arguments_opcode(
+                                    InstructionArgument::Immediate {
+                                        immediate: self.machine_state.code[self.machine_state.rip + 2] as i64,
+                                    },
+                                    InstructionArgument::Register {
+                                        register: register1,
+                                    },
+                                    value2,
+                                ),
+                                 6)
                             }
                             ImmediateSize::None => {
-                                (InstructionArgument::OneRegister {
+                                (InstructionArguments::new_one_argument_opcode(InstructionArgument::Register {
                                      register: register1,
-                                     opcode: value2,
-                                 },
+                                 }, value2),
                                  2)
-                            }
-                            ImmediateSize::Bit32 => {
-                                (InstructionArgument::Immediate32BitRegister {
-                                     register: register1,
-                                     opcode: value2,
-                                     immediate: self.get_i32_value(2),
-                                     effective_address_displacement: None,
-                                 },
-                                 6)
                             }
                         }
                     }

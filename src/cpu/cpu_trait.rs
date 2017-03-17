@@ -1,54 +1,54 @@
-use instruction_set::InstructionArgument;
+use instruction_set::InstructionArguments;
 use machine_state::MachineState;
 
 pub trait CPU {
-    fn push(&mut self, machine_state: &mut MachineState, arg: InstructionArgument);
+    fn push(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn pop(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn pop(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn mov(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn mov(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn add(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn add(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn or(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn or(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn adc(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn adc(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn sbb(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn sbb(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn and(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn and(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn sub(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn sub(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn xor(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn xor(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn cmp(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn cmp(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn call(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn call(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn lea(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn lea(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn test(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn test(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn cmov(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn cmov(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn sar(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn sar(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn inc(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn inc(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn dec(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn dec(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn div(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn div(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn idiv(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn idiv(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn mul(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn mul(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn imul(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn imul(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn not(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn not(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn neg(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn neg(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn ret(&mut self, machine_state: &mut MachineState);
 
@@ -62,15 +62,14 @@ pub trait CPU {
 
     fn movs(&mut self, machine_state: &mut MachineState, repeat: bool);
 
-    fn jmp(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn jmp(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn jge(&mut self, machine_state: &mut MachineState, arg:InstructionArgument);
+    fn jge(&mut self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn arithmetic(&mut self, machine_state: &mut MachineState, arg:InstructionArgument) {
-        let opcode = match arg {
-            InstructionArgument::Immediate8BitRegister { opcode, .. } => opcode,
-            InstructionArgument::Immediate32BitRegister { opcode, .. } => opcode,
-            _ => panic!("Unsupported argument type for arithmetic"),
+    fn arithmetic(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        let opcode = match arg.opcode {
+            Some(opcode) => opcode,
+            None => panic!("Unsupported argument type for arithmetic"),
         };
         match opcode {
             0 => self.add(machine_state, arg),
@@ -85,10 +84,10 @@ pub trait CPU {
         }
     }
 
-    fn register_operation(&mut self, machine_state: &mut MachineState, arg:InstructionArgument) {
-        let opcode = match arg {
-            InstructionArgument::OneRegister { opcode, .. } => opcode,
-            _ => panic!("Unsupported argument type for register operation"),
+    fn register_operation(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        let opcode = match arg.opcode {
+            Some(opcode) => opcode,
+            None => panic!("Unsupported argument type for register_operation"),
         };
         match opcode {
             0 => self.inc(machine_state, arg),
@@ -102,10 +101,10 @@ pub trait CPU {
         }
     }
 
-    fn compare_mul_operation(&mut self, machine_state: &mut MachineState, arg:InstructionArgument) {
-        let opcode = match arg {
-            InstructionArgument::OneRegister { opcode, .. } => opcode,
-            _ => panic!("Unsupported argument type for register operation"),
+    fn compare_mul_operation(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        let opcode = match arg.opcode {
+            Some(opcode) => opcode,
+            None => panic!("Unsupported argument type for compare_mul_operation"),
         };
         match opcode {
             0 => self.test(machine_state, arg),
