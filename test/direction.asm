@@ -11,3 +11,6 @@ mov    %eax,-0x4(%ebp)
 mov    %rax,-0x4(%ebp)
 mov    %eax,-0x4(%rbp)
 mov    %rax,-0x4(%rbp)
+
+cmovs  %edx,%eax
+cmovs  %eax,%edx
