@@ -157,7 +157,7 @@ impl fmt::Display for InstructionArgument {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             InstructionArgument::Register { ref register } => write!(f, "{}", register),
-            InstructionArgument::Immediate { immediate } => write!(f, "{:x}", immediate),
+            InstructionArgument::Immediate { immediate } => write!(f, "$0x{:x}", immediate),
             InstructionArgument::EffectiveAddress { ref register, displacement } => {
                 if displacement < 0  {
                     write!(f, "-{:#x}({})", displacement.abs(), register)
