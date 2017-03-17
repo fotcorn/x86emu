@@ -127,6 +127,21 @@ impl InstructionArguments {
             None => panic!("Instruction requires two arguments"),
         }
     }
+
+    pub fn size(&self) -> ArgumentSize {
+        match self.second_argument {
+            Some(ref second_argument) => {
+                panic!("argument size for two arguments not implemented");
+            }
+            None => {
+                match self.first_argument {
+                    InstructionArgument::Register {ref register} => get_register_size(register),
+                    InstructionArgument::Immediate {..} => ArgumentSize::Bit64,
+                    InstructionArgument::EffectiveAddress {..} => ArgumentSize::Bit64,
+                }
+            }
+        }
+    }
 }
 
 impl fmt::Display for InstructionArguments {

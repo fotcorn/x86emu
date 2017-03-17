@@ -9,20 +9,14 @@ pub struct EmulationCPU {}
 impl CPU for EmulationCPU {
     fn push(&mut self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "push", arg);
-        panic!("Not implemented");
-        /*
-        let argument_size = machine_state.first_argument_size(&arg);
-        match argument_size {
-            ArgumentSize::Bit32 => {
-                let first_arg = machine_state.first_argument_i32(&arg);
-                machine_state.stack_push(convert_i32_to_u8vec(first_arg));
-            }
-            ArgumentSize::Bit64 => {
-                let first_arg = machine_state.first_argument_i64(&arg);
-                machine_state.stack_push(convert_i64_to_u8vec(first_arg));
-            }
-            _ => panic!("Unsupported push argument size"),
-        }*/
+
+        arg.assert_one_argument();
+        let vector = match arg.size() {
+            ArgumentSize::Bit32 => convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument) as i32),
+            ArgumentSize::Bit64 => convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument)),
+            _ => panic!("Unsupported push value size"),
+        };
+        machine_state.stack_push(vector);
     }
 
     fn pop(&mut self, _machine_state: &mut MachineState, arg: InstructionArguments) {
