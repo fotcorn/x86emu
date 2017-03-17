@@ -3,215 +3,15 @@ use instruction_set::{ArgumentSize, get_register_size};
 use machine_state::MachineState;
 
 impl MachineState {
-    pub fn first_argument_size(&self, arg: &InstructionArgument) -> ArgumentSize {
+    pub fn get_value(&self, arg: &InstructionArgument) -> i64 {
         match *arg {
-            InstructionArgument::OneRegister { ref register, .. } => get_register_size(register),
-            InstructionArgument::TwoRegister { ref register1,
-                                               ref register2,
-                                               reverse_direction,
-                                               effective_address_displacement,
-                                               .. } => {
-                if reverse_direction {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => get_register_size(register2),
-                    }
-                } else {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => get_register_size(register1),
-                    }
-                }
-            }
-            InstructionArgument::Immediate8 { .. } => ArgumentSize::Bit8,
-            InstructionArgument::Immediate32 { .. } => ArgumentSize::Bit32,
-            InstructionArgument::Immediate8BitRegister { .. } => ArgumentSize::Bit8,
-            InstructionArgument::Immediate32BitRegister { .. } => ArgumentSize::Bit32,
+            InstructionArgument::Register { ref register} => self.get_register_value(register),
+            InstructionArgument::Immediate { immediate } => immediate,
+            InstructionArgument::EffectiveAddress {..} => panic!("Displacement not implemented"),
         }
     }
 
-    pub fn second_argument_size(&self, arg: &InstructionArgument) -> ArgumentSize {
-        match *arg {
-            InstructionArgument::OneRegister { .. } => panic!("Only one argument available"),
-            InstructionArgument::TwoRegister { ref register1,
-                                               ref register2,
-                                               reverse_direction,
-                                               effective_address_displacement,
-                                               .. } => {
-                if reverse_direction {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => get_register_size(register1),
-                    }
-                } else {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => get_register_size(register2),
-                    }
-                }
-            }
-            InstructionArgument::Immediate8 { .. } => panic!("Only one argument available"),
-            InstructionArgument::Immediate32 { .. } => panic!("Only one argument available"),
-            InstructionArgument::Immediate8BitRegister { ref register, effective_address_displacement, .. } => {
-                match effective_address_displacement {
-                    Some(_) => panic!("Displacement not implemented"),
-                    None => get_register_size(register),
-                }
-            }
-            InstructionArgument::Immediate32BitRegister { ref register, effective_address_displacement, .. } => {
-                match effective_address_displacement {
-                    Some(_) => panic!("Displacement not implemented"),
-                    None => get_register_size(register),
-                }
-            }
-        }
-    }
-
-    /*pub fn first_argument_i8(&self, arg: &InstructionArgument) -> i8 {
-        panic!("Not implemented");
-    }
-
-    pub fn first_argument_i16(&self, arg: &InstructionArgument) -> i16 {
-        panic!("Not implemented");
-    }*/
-
-    pub fn first_argument_i32(&self, arg: &InstructionArgument) -> i32 {
-        match *arg {
-            InstructionArgument::OneRegister { ref register, .. } => {
-                self.get_register_value_i32(register)
-            }
-            InstructionArgument::TwoRegister { ref register1, ref register2, reverse_direction, effective_address_displacement } => {
-                if reverse_direction {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => self.get_register_value_i32(register2),
-                    }
-                } else {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => self.get_register_value_i32(register1),
-                    }
-                }
-            }
-            InstructionArgument::Immediate8 { immediate, .. } => immediate as i32,
-            InstructionArgument::Immediate32 { immediate, .. } => immediate as i32,
-            InstructionArgument::Immediate8BitRegister { immediate, .. } => immediate as i32,
-            InstructionArgument::Immediate32BitRegister { immediate, .. } => immediate as i32,
-        }
-    }
-
-    pub fn first_argument_i64(&self, arg: &InstructionArgument) -> i64 {
-        match *arg {
-            InstructionArgument::OneRegister { ref register, .. } => {
-                self.get_register_value_i64(register)
-            }
-            InstructionArgument::TwoRegister { ref register1, ref register2, reverse_direction, effective_address_displacement, .. } => {
-                if reverse_direction {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => self.get_register_value_i64(register2),
-                    }
-                } else {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => self.get_register_value_i64(register1),
-                    }
-                }
-            }
-            InstructionArgument::Immediate8 { immediate, .. } => immediate as i64,
-            InstructionArgument::Immediate32 { immediate, .. } => immediate as i64,
-            InstructionArgument::Immediate8BitRegister { immediate, .. } => immediate as i64,
-            InstructionArgument::Immediate32BitRegister { immediate, .. } => immediate as i64,
-        }
-    }
-
-
-    /*pub fn second_argument_i8(&self, arg: &InstructionArgument) -> i8 {
-        panic!("Not implemented");
-    }
-
-    pub fn second_argument_i16(&self, arg: &InstructionArgument) -> i16 {
-        panic!("Not implemented");
-    }
-
-    pub fn second_argument_i32(&self, arg: &InstructionArgument) -> i32 {
-        panic!("Not implemented");
-    }
-    */
-    pub fn second_argument_i64(&self, arg: &InstructionArgument) -> i64 {
-        match *arg {
-            InstructionArgument::TwoRegister { ref register1, ref register2, reverse_direction, effective_address_displacement, .. } => {
-                if reverse_direction {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => self.get_register_value_i64(register1),
-                    }
-                } else {
-                    match effective_address_displacement {
-                        Some(_) => panic!("Displacement not implemented"),
-                        None => self.get_register_value_i64(register2),
-                    }
-                }
-
-            }
-            InstructionArgument::Immediate8BitRegister { ref register, effective_address_displacement, .. } => {
-                match effective_address_displacement {
-                    Some(_) => panic!("Displacement not implemented"),
-                    None => self.get_register_value_i64(register),
-                }
-            },
-            InstructionArgument::Immediate32BitRegister { ref register, effective_address_displacement, .. } => {
-                match effective_address_displacement {
-                    Some(_) => panic!("Displacement not implemented"),
-                    None => self.get_register_value_i64(register),
-                }
-            },
-            InstructionArgument::OneRegister { .. } => {
-                panic!("Cannot get second argument on single argument type")
-            },
-            InstructionArgument::Immediate8 { .. } => {
-                panic!("Cannot get second argument on single argument type")
-            }
-            InstructionArgument::Immediate32 { .. } => {
-                panic!("Cannot get second argument on single argument type")
-            }
-        }
-    }
-
-
-    // register operations
-    fn get_register_value_i32(&self, register: &Register) -> i32 {
-        match *register {
-            Register::RAX => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RBX => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RCX => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RDX => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RSP => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RBP => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RSI => panic!("Cannot get 32bit value from 64bit register"),
-            Register::RDI => panic!("Cannot get 32bit value from 64bit register"),
-
-            Register::RIP => self.rip as i32,
-
-            Register::EAX => self.rax as i32,
-            Register::EBX => self.rbx as i32,
-            Register::ECX => self.rcx as i32,
-            Register::EDX => self.rdx as i32,
-            Register::ESP => self.rsp as i32,
-            Register::EBP => self.rbp as i32,
-            Register::ESI => self.rsi as i32,
-            Register::EDI => self.rdi as i32,
-
-            Register::ES => 0,
-            Register::CS => 0,
-            Register::SS => 0,
-            Register::DS => 0,
-            Register::FS => 0,
-            Register::GS => 0,
-        }
-    }
-
-    fn get_register_value_i64(&self, register: &Register) -> i64 {
+    fn get_register_value(&self, register: &Register) -> i64 {
         match *register {
             Register::RAX => self.rax,
             Register::RBX => self.rbx,
@@ -299,30 +99,9 @@ impl MachineState {
 
     pub fn set_value(&mut self, value: i64, arg: &InstructionArgument) {
         match *arg {
-            InstructionArgument::TwoRegister { ref register1,
-                                               ref register2,
-                                               effective_address_displacement,
-                                               reverse_direction } => {
-                match effective_address_displacement {
-                    Some(_) => panic!("Effective Address mode not yet supported"),
-                    None => {
-                        if reverse_direction {
-                            self.set_register_value(register1, value)
-                        } else {
-                            self.set_register_value(register2, value)
-                        }
-                    }
-                }
-            },
-            InstructionArgument::Immediate8BitRegister { ref register, effective_address_displacement, .. } => {
-                match effective_address_displacement {
-                    Some(_) => panic!("Effective Address mode not yet supported"),
-                    None => {
-                        self.set_register_value(register, value)
-                    }
-                }
-            }
-            _ => panic!("Unsupported set_value argument."),
+            InstructionArgument::Register {ref register} => self.set_register_value(register, value),
+            InstructionArgument::EffectiveAddress {..} => panic!("Displacement not implemented"),
+            InstructionArgument::Immediate {..} => panic!("Cannot set value on immediate value"),
         }
     }
 }
