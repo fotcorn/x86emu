@@ -84,73 +84,6 @@ pub struct InstructionArguments {
 }
 
 impl InstructionArguments {
-    pub fn new(argument: InstructionArgument) -> InstructionArguments {
-        InstructionArguments {
-            first_argument: argument,
-            second_argument: None,
-            opcode: None,
-            explicit_size: None,
-        }
-    }
-
-    fn second_argument(&mut self, second_argument: InstructionArgument) -> &mut InstructionArguments {
-        self.second_argument = Some(second_argument);
-        self
-    }
-
-    fn opcode(&mut self, opcode: u8) -> &mut InstructionArguments {
-        self.opcode = Some(opcode);
-        self
-    }
-
-    fn explicit_size(&mut self, explicit_size: ArgumentSize) -> &mut InstructionArguments {
-        self.explicit_size = Some(explicit_size);
-        self
-    }
-
-    pub fn new_one_argument(argument: InstructionArgument) -> InstructionArguments {
-        InstructionArguments {
-            first_argument: argument,
-            second_argument: None,
-            opcode: None,
-            explicit_size: None,
-        }
-    }
-
-    pub fn new_one_argument_opcode(argument: InstructionArgument,
-                                   opcode: u8)
-                                   -> InstructionArguments {
-        InstructionArguments {
-            first_argument: argument,
-            second_argument: None,
-            opcode: Some(opcode),
-            explicit_size: None,
-        }
-    }
-
-    pub fn new_two_arguments(first_argument: InstructionArgument,
-                             second_argument: InstructionArgument)
-                             -> InstructionArguments {
-        InstructionArguments {
-            first_argument: first_argument,
-            second_argument: Some(second_argument),
-            opcode: None,
-            explicit_size: None,
-        }
-    }
-
-    pub fn new_two_arguments_opcode(first_argument: InstructionArgument,
-                                    second_argument: InstructionArgument,
-                                    opcode: u8)
-                                    -> InstructionArguments {
-        InstructionArguments {
-            first_argument: first_argument,
-            second_argument: Some(second_argument),
-            opcode: Some(opcode),
-            explicit_size: None,
-        }
-    }
-
     pub fn assert_one_argument(&self) {
         match self.second_argument {
             Some(_) => panic!("Instruction accepts only one argument"),
@@ -177,6 +110,50 @@ impl InstructionArguments {
                     InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
                 }
             }
+        }
+    }
+}
+
+pub struct InstructionArgumentsBuilder {
+    first_argument: InstructionArgument,
+    second_argument: Option<InstructionArgument>,
+    opcode: Option<u8>,
+    explicit_size: Option<ArgumentSize>,
+}
+
+impl InstructionArgumentsBuilder {
+    pub fn new(argument: InstructionArgument) -> InstructionArgumentsBuilder {
+        InstructionArgumentsBuilder {
+            first_argument: argument,
+            second_argument: None,
+            opcode: None,
+            explicit_size: None,
+        }
+    }
+
+    pub fn second_argument(mut self,
+                           second_argument: InstructionArgument)
+                           -> InstructionArgumentsBuilder {
+        self.second_argument = Some(second_argument);
+        self
+    }
+
+    pub fn opcode(mut self, opcode: u8) -> InstructionArgumentsBuilder {
+        self.opcode = Some(opcode);
+        self
+    }
+
+    pub fn explicit_size(mut self, explicit_size: ArgumentSize) -> InstructionArgumentsBuilder {
+        self.explicit_size = Some(explicit_size);
+        self
+    }
+
+    pub fn finalize(self) -> InstructionArguments {
+        InstructionArguments {
+            first_argument: self.first_argument,
+            second_argument: self.second_argument,
+            opcode: self.opcode,
+            explicit_size: self.explicit_size,
         }
     }
 }
