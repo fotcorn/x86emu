@@ -1,5 +1,5 @@
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
-                      InstructionArgument};
+                      InstructionArgument, ArgumentSize};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
@@ -185,8 +185,7 @@ impl<'a> Decoder<'a> {
                         ip_offset
                     }
                     0xC7 => {
-                        // TODO: register size can also be 32bit with address_size_override
-                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit64,
+                        let (argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Opcode,
                                                                       ImmediateSize::Bit32,
                                                                       decoder_flags);
@@ -356,6 +355,12 @@ impl<'a> Decoder<'a> {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
                         let immediate = self.machine_state.code[self.machine_state.rip + ip_offset];
 
+                        let argument_size = match register_size {
+                            RegisterSize::Bit32 => ArgumentSize::Bit32,
+                            RegisterSize::Bit64 => ArgumentSize::Bit64,
+                            RegisterSize::Segment => panic!("Unsupported register size"),
+                        };
+
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
                              })
@@ -364,6 +369,7 @@ impl<'a> Decoder<'a> {
                                  displacement: displacement,
                              })
                              .opcode(register_or_opcode)
+                             .explicit_size(argument_size)
                              .finalize(),
                          ip_offset + 1)
                     }
@@ -373,6 +379,13 @@ impl<'a> Decoder<'a> {
                                          self.machine_state.rip + ip_offset +
                                          4];
                         let immediate = *zero::read::<i32>(immediate);
+
+                        let argument_size = match register_size {
+                            RegisterSize::Bit32 => ArgumentSize::Bit32,
+                            RegisterSize::Bit64 => ArgumentSize::Bit64,
+                            RegisterSize::Segment => panic!("Unsupported register size"),
+                        };
+
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
                              })
@@ -381,6 +394,7 @@ impl<'a> Decoder<'a> {
                                  displacement: displacement,
                              })
                              .opcode(register_or_opcode)
+                             .explicit_size(argument_size)
                              .finalize(),
                          ip_offset + 4)
                     }
