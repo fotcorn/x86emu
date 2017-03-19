@@ -17,17 +17,17 @@ impl MachineState {
                             value |= (self.stack[address as usize + i] as i32) << (i * 8);
                         }
                         value as i64
-                    },
+                    }
                     ArgumentSize::Bit64 => {
                         let mut value: i64 = 0;
                         for i in 0..7 {
                             value |= (self.stack[address as usize + i] as i64) << (i * 8);
                         }
                         value
-                    },
+                    }
                     _ => panic!("unsupported argument size in set_value/effective address"),
                 }
-            },
+            }
         }
     }
 
@@ -117,7 +117,10 @@ impl MachineState {
         }
     }
 
-    pub fn set_value(&mut self, value: i64, arg: &InstructionArgument, argument_size: ArgumentSize) {
+    pub fn set_value(&mut self,
+                     value: i64,
+                     arg: &InstructionArgument,
+                     argument_size: ArgumentSize) {
         match *arg {
             InstructionArgument::Register { ref register } => {
                 self.set_register_value(register, value)
@@ -134,7 +137,7 @@ impl MachineState {
                     self.stack[address as usize] = v;
                     address += 1;
                 }
-            },
+            }
             InstructionArgument::Immediate { .. } => panic!("Cannot set value on immediate value"),
         }
     }

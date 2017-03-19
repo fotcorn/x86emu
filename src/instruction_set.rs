@@ -107,10 +107,15 @@ impl InstructionArguments {
                 match self.second_argument {
                     Some(ref second_argument) => {
                         match self.first_argument {
-                            InstructionArgument::Register { ref register } => get_register_size(register),
-                            InstructionArgument::Immediate {..} | InstructionArgument::EffectiveAddress {..} => {
+                            InstructionArgument::Register { ref register } => {
+                                get_register_size(register)
+                            }
+                            InstructionArgument::Immediate { .. } |
+                            InstructionArgument::EffectiveAddress { .. } => {
                                 match *second_argument {
-                                    InstructionArgument::Register { ref register } => get_register_size(register),
+                                    InstructionArgument::Register { ref register } => {
+                                        get_register_size(register)
+                                    }
                                     _ => panic!("Cannot determine instruction argument size"),
                                 }
                             }
@@ -118,7 +123,9 @@ impl InstructionArguments {
                     }
                     None => {
                         match self.first_argument {
-                            InstructionArgument::Register { ref register } => get_register_size(register),
+                            InstructionArgument::Register { ref register } => {
+                                get_register_size(register)
+                            }
                             InstructionArgument::Immediate { .. } => ArgumentSize::Bit64,
                             InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
                         }
