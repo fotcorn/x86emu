@@ -1,4 +1,4 @@
-use instruction_set::{InstructionArgument, InstructionArguments};
+use instruction_set::{InstructionArgument, InstructionArguments, Register};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 use instruction_set::ArgumentSize;
@@ -86,9 +86,12 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn call(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "call", arg);
-        panic!("Not implemented");
+        let value = machine_state.get_value(&InstructionArgument::Register{
+            register: Register::RSI,
+        }, ArgumentSize::Bit64);
+        println!("{}", value);
     }
 
     fn lea(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
