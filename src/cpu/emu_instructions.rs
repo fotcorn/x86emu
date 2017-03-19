@@ -13,10 +13,10 @@ impl CPU for EmulationCPU {
         arg.assert_one_argument();
         let vector = match arg.size() {
             ArgumentSize::Bit32 => {
-                convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument) as i32)
+                convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument, ArgumentSize::Bit32) as i32)
             }
             ArgumentSize::Bit64 => {
-                convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument))
+                convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument, ArgumentSize::Bit64))
             }
             _ => panic!("Unsupported push value size"),
         };
@@ -31,14 +31,19 @@ impl CPU for EmulationCPU {
     fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "mov", arg);
         arg.assert_two_arguments();
-        let value = machine_state.get_value(&arg.first_argument);
+        let value = machine_state.get_value(&arg.first_argument, arg.size());
         let argument_size = arg.size();
         machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
     }
 
-    fn add(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn add(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "add", arg);
-        panic!("Not implemented");
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+        machine_state.set_value(value1 + value2, &second_argument, argument_size);
     }
 
     fn or(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -66,8 +71,8 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
-        let value1 = machine_state.get_value(&arg.first_argument);
-        let value2 = machine_state.get_value(&second_argument);
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
         machine_state.set_value(value1 - value2, &second_argument, argument_size);
     }
 

@@ -3,11 +3,31 @@ use machine_state::MachineState;
 use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
 impl MachineState {
-    pub fn get_value(&self, arg: &InstructionArgument) -> i64 {
+    pub fn get_value(&self, arg: &InstructionArgument, argument_size: ArgumentSize) -> i64 {
         match *arg {
             InstructionArgument::Register { ref register } => self.get_register_value(register),
             InstructionArgument::Immediate { immediate } => immediate,
-            InstructionArgument::EffectiveAddress { .. } => panic!("Displacement not implemented"),
+            InstructionArgument::EffectiveAddress { ref register, displacement } => {
+                let mut address = self.get_register_value(register);
+                address += displacement as i64;
+                match argument_size {
+                    ArgumentSize::Bit32 => {
+                        let mut value: i32 = 0;
+                        for i in 0..3 {
+                            value |= (self.stack[address as usize + i] as i32) << (i * 8);
+                        }
+                        value as i64
+                    },
+                    ArgumentSize::Bit64 => {
+                        let mut value: i64 = 0;
+                        for i in 0..7 {
+                            value |= (self.stack[address as usize + i] as i64) << (i * 8);
+                        }
+                        value
+                    },
+                    _ => panic!("unsupported argument size in set_value/effective address"),
+                }
+            },
         }
     }
 
