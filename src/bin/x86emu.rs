@@ -53,30 +53,3 @@ fn main() {
     }
 
 }
-
-/*
-    let filename = match env::args().nth(1) {
-        Some(filename) => filename,
-        None => {
-            println!("Usage: cargo run --bin elf <program>");
-            return;
-        }
-    };
-
-
-
-
-    // elf
-        let filename = match env::args().nth(1) {
-        Some(filename) => filename,
-        None => {
-            println!("Usage: cargo run --bin elf <program>");
-            return;
-        }
-    };
-
-    let symbol_name = match env::args().nth(2) {
-        Some(symbol_name) => symbol_name,
-        None => "main".to_string(),
-    };
-*/
