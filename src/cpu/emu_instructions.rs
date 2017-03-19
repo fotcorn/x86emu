@@ -32,7 +32,8 @@ impl CPU for EmulationCPU {
         println!("{:<6} {}", "mov", arg);
         arg.assert_two_arguments();
         let value = machine_state.get_value(&arg.first_argument);
-        machine_state.set_value(value, &arg.second_argument.unwrap());
+        let argument_size = arg.size();
+        machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
     }
 
     fn add(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -63,10 +64,11 @@ impl CPU for EmulationCPU {
     fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sub", arg);
         arg.assert_two_arguments();
+        let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument);
         let value2 = machine_state.get_value(&second_argument);
-        machine_state.set_value(value1 - value2, &second_argument);
+        machine_state.set_value(value1 - value2, &second_argument, argument_size);
     }
 
     fn xor(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

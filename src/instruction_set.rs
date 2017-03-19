@@ -37,7 +37,7 @@ pub enum Register {
     GS,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum ArgumentSize {
     Bit64,
     Bit32,
@@ -99,15 +99,20 @@ impl InstructionArguments {
     }
 
     pub fn size(&self) -> ArgumentSize {
-        match self.second_argument {
-            Some(_) => {
-                panic!("argument size for two arguments not implemented");
-            }
+        match self.explicit_size {
+            Some(explicit_size) => explicit_size,
             None => {
-                match self.first_argument {
-                    InstructionArgument::Register { ref register } => get_register_size(register),
-                    InstructionArgument::Immediate { .. } => ArgumentSize::Bit64,
-                    InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
+                match self.second_argument {
+                    Some(_) => {
+                        panic!("argument size for two arguments not implemented");
+                    }
+                    None => {
+                        match self.first_argument {
+                            InstructionArgument::Register { ref register } => get_register_size(register),
+                            InstructionArgument::Immediate { .. } => ArgumentSize::Bit64,
+                            InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
+                        }
+                    }
                 }
             }
         }

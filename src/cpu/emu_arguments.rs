@@ -1,5 +1,6 @@
-use instruction_set::{InstructionArgument, Register};
+use instruction_set::{InstructionArgument, Register, ArgumentSize};
 use machine_state::MachineState;
+use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
 impl MachineState {
     pub fn get_value(&self, arg: &InstructionArgument) -> i64 {
@@ -96,12 +97,24 @@ impl MachineState {
         }
     }
 
-    pub fn set_value(&mut self, value: i64, arg: &InstructionArgument) {
+    pub fn set_value(&mut self, value: i64, arg: &InstructionArgument, argument_size: ArgumentSize) {
         match *arg {
             InstructionArgument::Register { ref register } => {
                 self.set_register_value(register, value)
             }
-            InstructionArgument::EffectiveAddress { .. } => panic!("Displacement not implemented"),
+            InstructionArgument::EffectiveAddress { ref register, displacement } => {
+                let mut address = self.get_register_value(register);
+                address += displacement as i64;
+                let vector = match argument_size {
+                    ArgumentSize::Bit32 => convert_i32_to_u8vec(value as i32),
+                    ArgumentSize::Bit64 => convert_i64_to_u8vec(value),
+                    _ => panic!("unsupported argument size in set_value/effective address"),
+                };
+                for v in vector {
+                    self.stack[address as usize] = v;
+                    address += 1;
+                }
+            },
             InstructionArgument::Immediate { .. } => panic!("Cannot set value on immediate value"),
         }
     }
