@@ -98,13 +98,23 @@ impl InstructionArguments {
         }
     }
 
+
+
     pub fn size(&self) -> ArgumentSize {
         match self.explicit_size {
             Some(explicit_size) => explicit_size,
             None => {
                 match self.second_argument {
-                    Some(_) => {
-                        panic!("argument size for two arguments not implemented");
+                    Some(ref second_argument) => {
+                        match self.first_argument {
+                            InstructionArgument::Register { ref register } => get_register_size(register),
+                            InstructionArgument::Immediate {..} | InstructionArgument::EffectiveAddress {..} => {
+                                match *second_argument {
+                                    InstructionArgument::Register { ref register } => get_register_size(register),
+                                    _ => panic!("Cannot determine instruction argument size"),
+                                }
+                            }
+                        }
                     }
                     None => {
                         match self.first_argument {
