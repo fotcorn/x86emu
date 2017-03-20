@@ -116,12 +116,12 @@ impl CPU for EmulationCPU {
 
     fn test(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "test", arg);
-        panic!("Not implemented");
+        println!("WARNING: test not implemented");
     }
 
-    fn cmov(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn cmov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmov", arg);
-        panic!("Not implemented");
+        self.mov(machine_state, arg);
     }
 
     fn sar(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
