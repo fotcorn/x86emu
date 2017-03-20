@@ -99,17 +99,17 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let argument_size = arg.size();
         match arg.first_argument {
-            InstructionArgument::EffectiveAddress {ref register, displacement} => {
+            InstructionArgument::EffectiveAddress { displacement, .. } => {
                 let mut value = machine_state.get_value(&arg.first_argument, argument_size);
                 value += displacement as i64;
                 let second_argument = arg.second_argument.unwrap();
                 match second_argument {
-                    InstructionArgument::Register {ref register} => {
+                    InstructionArgument::Register { .. } => {
                         machine_state.set_value(value, &second_argument, argument_size)
-                    },
+                    }
                     _ => panic!("Unsupported lea argument"),
                 }
-            },
+            }
             _ => panic!("Unsupported lea argument"),
         }
     }
