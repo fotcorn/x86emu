@@ -88,9 +88,9 @@ impl CPU for EmulationCPU {
 
     fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "call", arg);
-        let value = machine_state.get_value(&InstructionArgument::Register{
-            register: Register::RSI,
-        }, ArgumentSize::Bit64);
+        let value =
+            machine_state.get_value(&InstructionArgument::Register { register: Register::RSI },
+                                    ArgumentSize::Bit64);
         println!("{}", value);
     }
 
