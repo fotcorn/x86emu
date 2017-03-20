@@ -121,6 +121,7 @@ impl CPU for EmulationCPU {
 
     fn cmov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmov", arg);
+        println!("WARNING: cmov implemented unconditionally");
         self.mov(machine_state, arg);
     }
 
