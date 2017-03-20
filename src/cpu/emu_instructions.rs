@@ -94,9 +94,24 @@ impl CPU for EmulationCPU {
         println!("{}", value);
     }
 
-    fn lea(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn lea(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "lea", arg);
-        panic!("Not implemented");
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        match arg.first_argument {
+            InstructionArgument::EffectiveAddress {ref register, displacement} => {
+                let mut value = machine_state.get_value(&arg.first_argument, argument_size);
+                value += displacement as i64;
+                let second_argument = arg.second_argument.unwrap();
+                match second_argument {
+                    InstructionArgument::Register {ref register} => {
+                        machine_state.set_value(value, &second_argument, argument_size)
+                    },
+                    _ => panic!("Unsupported lea argument"),
+                }
+            },
+            _ => panic!("Unsupported lea argument"),
+        }
     }
 
     fn test(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
