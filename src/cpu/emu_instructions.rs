@@ -104,8 +104,9 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let argument_size = arg.size();
         match arg.first_argument {
-            InstructionArgument::EffectiveAddress { displacement, .. } => {
-                let mut value = machine_state.get_value(&arg.first_argument, argument_size);
+            InstructionArgument::EffectiveAddress { register, displacement } => {
+                let reg = InstructionArgument::Register { register: register };
+                let mut value = machine_state.get_value(&reg, argument_size);
                 value += displacement as i64;
                 let second_argument = arg.second_argument.unwrap();
                 match second_argument {
