@@ -140,14 +140,20 @@ impl CPU for EmulationCPU {
         machine_state.set_value(value2 >> value1, &second_argument, argument_size);
     }
 
-    fn inc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn inc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "inc", arg);
-        panic!("Not implemented");
+        arg.assert_one_argument();
+        let argument_size = arg.size();
+        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        machine_state.set_value(value + 1, &arg.first_argument, argument_size);
     }
 
-    fn dec(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn dec(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "dec", arg);
-        panic!("Not implemented");
+        arg.assert_one_argument();
+        let argument_size = arg.size();
+        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        machine_state.set_value(value - 1, &arg.first_argument, argument_size);
     }
 
     fn div(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
