@@ -176,9 +176,12 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn not(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn not(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "not", arg);
-        panic!("Not implemented");
+        arg.assert_one_argument();
+        let argument_size = arg.size();
+        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        machine_state.set_value(!value, &arg.first_argument, argument_size);
     }
 
     fn neg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
