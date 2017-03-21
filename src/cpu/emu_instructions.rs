@@ -61,9 +61,14 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn and(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn and(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "and", arg);
-        panic!("Not implemented");
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+        machine_state.set_value(value2 & value1, &second_argument, argument_size);
     }
 
     fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
