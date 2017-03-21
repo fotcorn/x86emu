@@ -137,7 +137,6 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        println!("{} {} {}", value1, value2, value2 >> value1);
         machine_state.set_value(value2 >> value1, &second_argument, argument_size);
     }
 
