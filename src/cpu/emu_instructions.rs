@@ -93,7 +93,7 @@ impl CPU for EmulationCPU {
 
     fn cmp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmp", arg);
-        panic!("Not implemented");
+        println!("WARNING: cmp not implemented");
     }
 
     fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -238,6 +238,6 @@ impl CPU for EmulationCPU {
 
     fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jge", arg);
-        panic!("Not implemented");
+        println!("WARNING: jge not implemented");
     }
 }
