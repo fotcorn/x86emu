@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub struct MachineState {
     pub rip: usize,
     pub code: Vec<u8>,
@@ -22,6 +24,8 @@ pub struct MachineState {
     pub r15: i64,
 
     pub rflags: i64,
+
+    memory: HashMap<u64, Vec<u8>>,
 }
 
 impl MachineState {
@@ -51,6 +55,16 @@ impl MachineState {
 
             stack: stack,
             code: code,
+
+            memory: HashMap::new()
         }
+    }
+
+    pub fn mem_read(&self, address: u64, length: u64) -> Vec<u8> {
+        vec![0,1,2,3]
+    }
+
+    pub fn mem_write(&mut self, address: u64, data: Vec<u8>) {
+
     }
 }

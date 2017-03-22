@@ -1,7 +1,7 @@
 pub mod cpu;
 pub mod loader;
+pub mod machine_state;
 mod decoder;
-mod machine_state;
 mod instruction_set;
 mod utils;
 
