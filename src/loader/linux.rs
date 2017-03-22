@@ -9,8 +9,15 @@ const SETUP_SECT_POSITION: usize = 0x1F1;
 const BIT64_OFFSET: usize = 0x200;
 
 
-// see <linux kernel source>/Documentation/x86/boot.txt for documentation of the boot protocol
+// see <linux kernel source>/Documentation/x86/boot.txt and zero-page.txt for documentation of the boot protocol
 pub fn linux(filename: &str, cpu: &CPU) {
+    /*
+    TODO
+    copy setup_header to 0x10.000 + 1f1
+    load kernel at 0x100.000
+    set %rsi to boot_params (0x10.000)
+    jmp to 0x100.000 + 0x200
+    */
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
