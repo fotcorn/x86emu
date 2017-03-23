@@ -1,6 +1,7 @@
 use instruction_set::{InstructionArgument, Register, ArgumentSize};
 use machine_state::MachineState;
 use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
+use zero;
 
 impl MachineState {
     pub fn get_value(&mut self, arg: &InstructionArgument, argument_size: ArgumentSize) -> i64 {
@@ -118,6 +119,13 @@ impl MachineState {
         let rsp = self.rsp - data.len() as i64;
         self.mem_write(rsp as u64, data);
         self.rsp = rsp;
+    }
+
+    pub fn stack_pop(&mut self) -> i64 {
+        let rsp = self.rsp as u64;
+        let data = self.mem_read(rsp, 8);
+        self.rsp -= 8;
+        *zero::read::<i64>(&data)
     }
 
     pub fn set_value(&mut self,

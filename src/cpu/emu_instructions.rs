@@ -204,9 +204,10 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn popf(&self, _machine_state: &mut MachineState) {
+    fn popf(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "popf");
-        panic!("Not implemented");
+        let value = machine_state.stack_pop();
+        machine_state.rflags = value;
     }
 
     fn std(&self, _machine_state: &mut MachineState) {
