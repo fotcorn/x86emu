@@ -5,25 +5,25 @@
             "type": "gdb",
             "request": "launch",
             "name": "Test out",
-            "target": "target/debug/elf",
+            "target": "target/debug/x86emu",
             "cwd": "${workspaceRoot}",
-            "arguments": "test/temp/out _start"
+            "arguments": "--loader elf --cpu emu examples/main --symbol _start"
         },
         {
             "type": "gdb",
             "request": "launch",
             "name": "ELF",
-            "target": "target/debug/elf",
+            "target": "target/debug/x86emu",
             "cwd": "${workspaceRoot}",
-            "arguments": "examples/main"
+            "arguments": "--loader elf --cpu emu examples/main"
         },
         {
             "name": "Linux",
             "type": "gdb",
             "request": "launch",
-            "target": "target/debug/linux",
+            "target": "target/debug/x86emu",
             "cwd": "${workspaceRoot}",
-            "arguments": "examples/vmlinuz"
+            "arguments": "--loader linux --cpu emu examples/vmlinuz"
         }
     ]
 }
