@@ -241,9 +241,17 @@ impl CPU for EmulationCPU {
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jmp", arg);
         arg.assert_one_argument();
+        let value = machine_state.get_value(&arg.first_argument, arg.size());
         match arg.first_argument {
-            InstructionArgument::Immediate { immediate } => machine_state.rip += immediate,
-            _ => panic!("JMP: Unsupported argument."),
+            InstructionArgument::Register {..} => {
+                machine_state.rip = value
+            },
+            InstructionArgument::Immediate {..} => {
+                machine_state.rip += value
+            },
+            InstructionArgument::EffectiveAddress {..} => {
+                panic!("Unsupported argument for jmp");
+            },
         }
     }
 
