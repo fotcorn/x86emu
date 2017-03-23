@@ -5,34 +5,40 @@ use machine_state::MachineState;
 use decoder::Decoder;
 use cpu::cpu_trait::CPU;
 
-const SETUP_SECT_POSITION: usize = 0x1F1;
-const BIT64_OFFSET: usize = 0x200;
+const SETUP_HEADER_OFFSET: usize = 0x1F1;
+const BIT64_OFFSET: i64 = 0x200;
+const ZERO_PAGE_ADDRESS: u64 = 0x10000;
+const LOAD_ADDRESS: u64 = 0x100000;
 
-
-// see <linux kernel source>/Documentation/x86/boot.txt and zero-page.txt for documentation of the boot protocol
+/* see <linux kernel source>/Documentation/x86/boot.txt and zero-page.txt
+ * for documentation of the 64 bit boot protocol
+ */
 pub fn linux(filename: &str, cpu: &CPU) {
-    /*
-    TODO
-    copy setup_header to 0x10.000 + 1f1
-    load kernel at 0x100.000
-    set %rsi to boot_params (0x10.000)
-    jmp to 0x100.000 + 0x200
-    */
+    // load kernel image from disk
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
-
     file.read_to_end(&mut buffer).expect("Failed to read file.");
 
-    let setup_sect = buffer[SETUP_SECT_POSITION];
-
-    let mut offset = (setup_sect + 1) as usize * 512;
-    offset += BIT64_OFFSET;
-
-    let main_code = &buffer[offset as usize..(offset + 0x10000) as usize];
-
     let mut machine_state = MachineState::new();
-    machine_state.mem_write(0x100000, main_code);
-    machine_state.rip = 0x100000;
+
+    // create zero page and copy setup header into it
+    let setup_header_end: usize = 0x202 as usize + buffer[0x201] as usize;
+    let setup_header = &buffer[SETUP_HEADER_OFFSET..setup_header_end];
+    machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x1F1, setup_header);
+    machine_state.rsi = ZERO_PAGE_ADDRESS as i64;
+
+    // count of setup sects is the first value in the setup header struct
+    let setup_sect = buffer[SETUP_HEADER_OFFSET];
+    let offset = (setup_sect + 1) as usize * 512;
+
+    // load code at address 0
+    machine_state.mem_write(0, &buffer[offset..]);
+    machine_state.rip = BIT64_OFFSET;
+
+    // load code at 0x100.000
+    machine_state.mem_write(LOAD_ADDRESS, &buffer[offset..]);
+
+    // start execution
     let mut decoder = Decoder::new(cpu, &mut machine_state);
     decoder.execute();
 }
