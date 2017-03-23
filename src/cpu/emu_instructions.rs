@@ -214,18 +214,26 @@ impl CPU for EmulationCPU {
         println!("{:<6}", "std");
         machine_state.rflags |= 10;
     }
+
     fn cld(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "cld");
         machine_state.rflags &= !10;
     }
 
-    fn movs(&self, _machine_state: &mut MachineState, repeat: bool) {
+    fn movs(&self, machine_state: &mut MachineState, repeat: bool) {
+        let from = machine_state.get_value(&InstructionArgument::Register {register: Register::RSI}, ArgumentSize::Bit64);
+        let to = machine_state.get_value(&InstructionArgument::Register {register: Register::RDI}, ArgumentSize::Bit64);
+
         if repeat {
             println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
+            let length = machine_state.get_value(&InstructionArgument::Register {register: Register::RCX}, ArgumentSize::Bit64);
+            // TODO: should we really ignore the direction flag?
+            let data = machine_state.mem_read(from as u64, length as u64);
+            machine_state.mem_write(to as u64, &data);
         } else {
             println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
+            panic!("Not implemented");
         }
-        panic!("Not implemented");
     }
 
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
