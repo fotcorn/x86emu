@@ -114,7 +114,7 @@ impl MachineState {
     }
 
     // stack operations
-    pub fn stack_push(&mut self, data: Vec<u8>) {
+    pub fn stack_push(&mut self, data: &[u8]) {
         let rsp = self.rsp - data.len() as i64;
         self.mem_write(rsp as u64, data);
         self.rsp = rsp;
@@ -137,7 +137,7 @@ impl MachineState {
                     _ => panic!("unsupported argument size in set_value/effective address"),
                 };
 
-                self.mem_write(address as u64, vector);
+                self.mem_write(address as u64, &vector);
             }
             InstructionArgument::Immediate { .. } => panic!("Cannot set value on immediate value"),
         }

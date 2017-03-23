@@ -20,7 +20,7 @@ impl CPU for EmulationCPU {
             }
             _ => panic!("Unsupported push value size"),
         };
-        machine_state.stack_push(vector);
+        machine_state.stack_push(&vector);
     }
 
     fn pop(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

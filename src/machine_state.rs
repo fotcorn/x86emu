@@ -98,7 +98,7 @@ impl MachineState {
         }
     }
 
-    pub fn mem_write(&mut self, address: u64, data: Vec<u8>) {
+    pub fn mem_write(&mut self, address: u64, data: &[u8]) {
         let mut page_number = address / PAGE_SIZE;
         let mut page_offset = address % PAGE_SIZE;
         let mut data_offset = 0;

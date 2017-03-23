@@ -38,7 +38,7 @@ pub fn elf(filename: &str, symbol: &str, cpu: &CPU) {
     let main_code = &code[offset as usize..end];
 
     let mut machine_state = MachineState::new();
-    machine_state.mem_write(0x10000, main_code.to_vec());
+    machine_state.mem_write(0x10000, main_code);
     machine_state.rip = 0x10000;
     machine_state.rsp = 0x1000;
 
