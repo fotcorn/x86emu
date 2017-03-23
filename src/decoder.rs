@@ -340,7 +340,7 @@ impl<'a> Decoder<'a> {
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
                     0b01 => {
-                        let rip = (self.machine_state.rip + 1) as u64;
+                        let rip = (self.machine_state.rip + 2) as u64;
                         (self.machine_state.mem_read_byte(rip) as i8 as i32, 1)
                     },
                     0b10 | 0b100 => {
@@ -384,7 +384,7 @@ impl<'a> Decoder<'a> {
                     }
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                        let immediate = self.get_i32_value(0);
+                        let immediate = self.get_i32_value(ip_offset);
 
                         let argument_size = match register_size {
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
