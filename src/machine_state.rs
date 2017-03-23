@@ -1,4 +1,6 @@
-use std::collections::HashMap;
+use std::collections::hash_map::{HashMap, Entry};
+
+const PAGE_SIZE: u64 = 4096;
 
 pub struct MachineState {
     pub rip: usize,
@@ -60,11 +62,64 @@ impl MachineState {
         }
     }
 
-    pub fn mem_read(&self, address: u64, length: u64) -> Vec<u8> {
-        vec![0,1,2,3]
+    fn get_page(&mut self, cell: u64) -> &mut Vec<u8>{
+        match self.memory.entry(cell) {
+            Entry::Occupied(entry) => &mut *entry.into_mut(),
+            Entry::Vacant(entry) => {
+                let page = vec![0; PAGE_SIZE as usize];
+                &mut *entry.insert(page)
+            }
+        }
+    }
+
+    pub fn mem_read(&mut self, address: u64, length: u64) -> Vec<u8> {
+        let mut page_number = address / PAGE_SIZE;
+        let mut page_offset = address % PAGE_SIZE;
+        let mut data_offset = 0;
+        let mut data = Vec::new();
+        loop {
+            let page = self.get_page(page_number);
+
+            loop {
+                if data_offset >= length {
+                    return data;
+                }
+                if page_offset >= PAGE_SIZE {
+                    page_number += 1;
+                    page_offset = 0;
+                    break;
+                }
+
+                data.push(page[page_offset as usize]);
+
+                data_offset += 1;
+                page_offset += 1;
+            }
+        }
     }
 
     pub fn mem_write(&mut self, address: u64, data: Vec<u8>) {
+        let mut page_number = address / PAGE_SIZE;
+        let mut page_offset = address % PAGE_SIZE;
+        let mut data_offset = 0;
+        loop {
+            let mut page = self.get_page(page_number);
 
+            loop {
+                if data_offset >= data.len() {
+                    return;
+                }
+                if page_offset >= PAGE_SIZE {
+                    page_number += 1;
+                    page_offset = 0;
+                    break;
+                }
+
+                page[page_offset as usize] = data[data_offset];
+
+                data_offset += 1;
+                page_offset += 1;
+            }
+        }
     }
 }
