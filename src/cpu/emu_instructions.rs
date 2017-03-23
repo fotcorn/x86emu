@@ -35,6 +35,7 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let value = machine_state.get_value(&arg.first_argument, arg.size());
         let argument_size = arg.size();
+        println!("mov: {}", value);
         machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
     }
 
@@ -93,8 +94,14 @@ impl CPU for EmulationCPU {
         machine_state.set_value(value1 ^ value2, &second_argument, argument_size);
     }
 
-    fn cmp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn cmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmp", arg);
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+        println!("cmp: {} {}", value1, value2);
         println!("WARNING: cmp not implemented");
     }
 
@@ -115,6 +122,8 @@ impl CPU for EmulationCPU {
                 let reg = InstructionArgument::Register { register: register };
                 let mut value = machine_state.get_value(&reg, argument_size);
                 value += displacement as i64;
+                println!("lea: {}", value);
+                if value == -6 { value = 0;}
                 let second_argument = arg.second_argument.unwrap();
                 match second_argument {
                     InstructionArgument::Register { .. } => {
@@ -244,6 +253,7 @@ impl CPU for EmulationCPU {
         let value = machine_state.get_value(&arg.first_argument, arg.size());
         match arg.first_argument {
             InstructionArgument::Register {..} => {
+                println!("jmp absolute: {}", value);
                 machine_state.rip = value
             },
             InstructionArgument::Immediate {..} => {
@@ -255,8 +265,9 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jge", arg);
+        self.jmp(machine_state, arg);
         println!("WARNING: jge not implemented");
     }
 }

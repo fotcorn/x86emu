@@ -340,12 +340,17 @@ preferred_addr:
 1:
 
 	/* Target address to relocate to for decompression */
+//    48d4:       48 8d 9d 00 40 fa 00    lea    0xfa4000(%rbp),%rbx
 	movl	BP_init_size(%rsi), %ebx
 	subl	$_end, %ebx
 	addq	%rbp, %rbx
 
 	/* Set up the stack */
+//	  48db:       48 8d a3 c0 7d 6c 00    lea    0x6c7dc0(%rbx),%rsp
 	leaq	boot_stack_end(%rbx), %rsp
+
+
+
 
 	/* Zero EFLAGS */
 	pushq	$0
