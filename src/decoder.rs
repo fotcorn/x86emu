@@ -20,7 +20,8 @@ impl<'a> Decoder<'a> {
 
     pub fn execute(&mut self) {
         loop {
-            let mut first_byte = self.machine_state.code[self.machine_state.rip];
+            let rip = self.machine_state.rip as u64;
+            let mut first_byte = self.machine_state.mem_read_byte(rip);
 
             let mut rex: Option<REX> = None;
             let mut decoder_flags = DecoderFlags { bits: 0 };
@@ -42,7 +43,8 @@ impl<'a> Decoder<'a> {
                 _ => (),
             }
 
-            first_byte = self.machine_state.code[self.machine_state.rip];
+            let rip = self.machine_state.rip as u64;
+            first_byte = self.machine_state.mem_read_byte(rip);
             match first_byte {
                 0x40...0x4F => {
                     // 64bit REX prefix
@@ -67,8 +69,9 @@ impl<'a> Decoder<'a> {
                 _ => RegisterSize::Bit32,
             };
 
-            let first_byte = self.machine_state.code[self.machine_state.rip];
-            let ip_offset: usize =
+            let rip = self.machine_state.rip as u64;
+            first_byte = self.machine_state.mem_read_byte(rip);
+            let ip_offset: i64 =
                 match first_byte {
                     opcode @ 0x50...0x57 => {
                         self.cpu.push(self.machine_state,
@@ -116,18 +119,20 @@ impl<'a> Decoder<'a> {
                         ip_offset
                     }
                     0x7D => {
-                        let immediate = self.machine_state.code[self.machine_state.rip + 1] as i8;
+                        let rip = self.machine_state.rip as u64;
+                        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
                         self.cpu.jge(self.machine_state,
                                  InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                     immediate: immediate as i64,
+                                     immediate: immediate,
                                  }).finalize());
                         2
                     }
                     0x6A => {
-                        let immediate = self.machine_state.code[self.machine_state.rip + 1] as i8;
+                        let rip = self.machine_state.rip as u64;
+                        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
                         self.cpu.push(self.machine_state,
                                   InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                      immediate: immediate as i64,
+                                      immediate: immediate,
                                   }).finalize());
                         2
                     }
@@ -281,7 +286,8 @@ impl<'a> Decoder<'a> {
                     0x0F => {
                         // two byte instructions
                         self.machine_state.rip += 1;
-                        let second_byte = self.machine_state.code[self.machine_state.rip];
+                        let rip = self.machine_state.rip as u64;
+                        let second_byte = self.machine_state.mem_read_byte(rip);
                         match second_byte {
                             0x48 => {
                                 let (argument, ip_offset) = self.get_argument(register_size,
@@ -301,19 +307,21 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn get_i32_value(&self, ip_offset: usize) -> i32 {
-        let value = &self.machine_state.code[self.machine_state.rip + ip_offset..
-                     self.machine_state.rip + ip_offset + 4];
-        *zero::read::<i32>(value)
+    fn get_i32_value(&mut self, ip_offset: i64) -> i32 {
+        let rip = (self.machine_state.rip + ip_offset) as u64;
+        let value = self.machine_state.mem_read(rip, 4);
+        *zero::read::<i32>(&value)
     }
 
-    fn get_argument(&self,
+    fn get_argument(&mut self,
                     register_size: RegisterSize,
                     reg_or_opcode: RegOrOpcode,
                     immediate_size: ImmediateSize,
                     decoder_flags: DecoderFlags)
-                    -> (InstructionArguments, usize) {
-        let modrm = self.machine_state.code[self.machine_state.rip + 1];
+                    -> (InstructionArguments, i64) {
+        let rip = (self.machine_state.rip + 1) as u64;
+        let modrm = self.machine_state.mem_read_byte(rip);
+
         let mut address_mod = modrm >> 6;
 
         match address_mod {
@@ -331,19 +339,19 @@ impl<'a> Decoder<'a> {
 
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
-                    0b01 => (self.machine_state.code[self.machine_state.rip + 2] as i8 as i32, 1),
+                    0b01 => {
+                        let rip = (self.machine_state.rip + 1) as u64;
+                        (self.machine_state.mem_read_byte(rip) as i8 as i32, 1)
+                    },
                     0b10 | 0b100 => {
-                        let displacement = &self.machine_state.code[self.machine_state.rip + 2..
-                                            self.machine_state.rip + 6];
-                        let displacement = *zero::read::<i32>(displacement);
-
+                        let displacement = self.get_i32_value(2);
                         // change RIP relative addressing mode back to 0b00
                         if address_mod == 0b100 {
                             address_mod = 0b00;
                         }
 
                         (displacement, 4)
-                    }
+                    },
                     _ => unreachable!(),
                 };
                 ip_offset += 2; // skip instruction + modrm byte
@@ -353,7 +361,8 @@ impl<'a> Decoder<'a> {
                 match immediate_size {
                     ImmediateSize::Bit8 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                        let immediate = self.machine_state.code[self.machine_state.rip + ip_offset];
+                        let rip = (self.machine_state.rip + ip_offset) as u64;
+                        let immediate = self.machine_state.mem_read_byte(rip);
 
                         let argument_size = match register_size {
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
@@ -375,10 +384,7 @@ impl<'a> Decoder<'a> {
                     }
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                        let immediate = &self.machine_state.code[self.machine_state.rip + ip_offset..
-                                         self.machine_state.rip + ip_offset +
-                                         4];
-                        let immediate = *zero::read::<i32>(immediate);
+                        let immediate = self.get_i32_value(0);
 
                         let argument_size = match register_size {
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
@@ -467,10 +473,10 @@ impl<'a> Decoder<'a> {
                     RegOrOpcode::Opcode => {
                         match immediate_size {
                             ImmediateSize::Bit8 => {
+                                let rip = (self.machine_state.rip + 2) as u64;
+                                let immediate = self.machine_state.mem_read_byte(rip);
                                 (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                         immediate: self.machine_state.code[self.machine_state.rip +
-                                                    2] as
-                                                    i64,
+                                         immediate: immediate as i64,
                                      })
                                      .second_argument(InstructionArgument::Register {
                                          register: register1,
@@ -480,10 +486,9 @@ impl<'a> Decoder<'a> {
                                  3)
                             }
                             ImmediateSize::Bit32 => {
+                                let immediate = self.get_i32_value(2);
                                 (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                         immediate: self.machine_state.code[self.machine_state.rip +
-                                                    2] as
-                                                    i64,
+                                         immediate: immediate as i64,
                                      })
                                      .second_argument(InstructionArgument::Register {
                                          register: register1,

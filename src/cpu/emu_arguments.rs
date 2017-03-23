@@ -3,7 +3,7 @@ use machine_state::MachineState;
 use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
 impl MachineState {
-    pub fn get_value(&self, arg: &InstructionArgument, argument_size: ArgumentSize) -> i64 {
+    pub fn get_value(&mut self, arg: &InstructionArgument, argument_size: ArgumentSize) -> i64 {
         match *arg {
             InstructionArgument::Register { ref register } => self.get_register_value(register),
             InstructionArgument::Immediate { immediate } => immediate,
@@ -13,15 +13,19 @@ impl MachineState {
                 match argument_size {
                     ArgumentSize::Bit32 => {
                         let mut value: i32 = 0;
-                        for i in 0..3 {
-                            value |= (self.stack[address as usize + i] as i32) << (i * 8);
+                        let val = self.mem_read(address as u64, 4);
+
+                        for (i, v) in val.iter().enumerate() {
+                            value |= (*v as i32) << (i * 8);
                         }
                         value as i64
                     }
                     ArgumentSize::Bit64 => {
                         let mut value: i64 = 0;
-                        for i in 0..7 {
-                            value |= (self.stack[address as usize + i] as i64) << (i * 8);
+                        let val = self.mem_read(address as u64, 8);
+
+                        for (i, v) in val.iter().enumerate() {
+                            value |= (*v as i64) << (i * 8);
                         }
                         value
                     }
@@ -73,7 +77,7 @@ impl MachineState {
             Register::RSI => self.rsi = value,
             Register::RDI => self.rdi = value,
 
-            Register::RIP => self.rip = value as usize,
+            Register::RIP => self.rip = value,
 
             Register::EAX => {
                 self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
@@ -111,10 +115,9 @@ impl MachineState {
 
     // stack operations
     pub fn stack_push(&mut self, data: Vec<u8>) {
-        for v in data {
-            self.rsp -= 1;
-            self.stack[self.rsp as usize] = v;
-        }
+        let rsp = self.rsp - data.len() as i64;
+        self.mem_write(rsp as u64, data);
+        self.rsp = rsp;
     }
 
     pub fn set_value(&mut self,
@@ -133,10 +136,8 @@ impl MachineState {
                     ArgumentSize::Bit64 => convert_i64_to_u8vec(value),
                     _ => panic!("unsupported argument size in set_value/effective address"),
                 };
-                for v in vector {
-                    self.stack[address as usize] = v;
-                    address += 1;
-                }
+
+                self.mem_write(address as u64, vector);
             }
             InstructionArgument::Immediate { .. } => panic!("Cannot set value on immediate value"),
         }

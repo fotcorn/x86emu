@@ -3,9 +3,7 @@ use std::collections::hash_map::{HashMap, Entry};
 const PAGE_SIZE: u64 = 4096;
 
 pub struct MachineState {
-    pub rip: usize,
-    pub code: Vec<u8>,
-    pub stack: Vec<u8>,
+    pub rip: i64,
 
     pub rax: i64,
     pub rbx: i64,
@@ -31,15 +29,14 @@ pub struct MachineState {
 }
 
 impl MachineState {
-    pub fn new(code: Vec<u8>) -> MachineState {
-        let stack = vec![0; 8192];
+    pub fn new() -> MachineState {
         MachineState {
             rip: 0,
             rax: 0,
             rbx: 0,
             rcx: 0,
             rdx: 0,
-            rsp: stack.len() as i64,
+            rsp: 0,
             rbp: 0,
             rsi: 0,
             rdi: 0,
@@ -54,10 +51,6 @@ impl MachineState {
             r15: 0,
 
             rflags: 0,
-
-            stack: stack,
-            code: code,
-
             memory: HashMap::new()
         }
     }
@@ -70,6 +63,13 @@ impl MachineState {
                 &mut *entry.insert(page)
             }
         }
+    }
+
+    pub fn mem_read_byte(&mut self, address: u64) -> u8 {
+         let page_number = address / PAGE_SIZE;
+         let page = self.get_page(page_number);
+         let page_offset = address % PAGE_SIZE;
+         page[page_offset as usize]
     }
 
     pub fn mem_read(&mut self, address: u64, length: u64) -> Vec<u8> {

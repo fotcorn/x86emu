@@ -30,7 +30,9 @@ pub fn linux(filename: &str, cpu: &CPU) {
 
     let main_code = &buffer[offset as usize..(offset + 0x10000) as usize];
 
-    let mut machine_state = MachineState::new(main_code.to_vec());
+    let mut machine_state = MachineState::new();
+    machine_state.mem_write(0x100000, main_code.to_vec());
+    machine_state.rip = 0x100000;
     let mut decoder = Decoder::new(cpu, &mut machine_state);
     decoder.execute();
 }
