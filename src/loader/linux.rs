@@ -32,7 +32,8 @@ pub fn linux(filename: &str, cpu: &CPU) {
     let offset = (setup_sect + 1) as usize * 512;
 
     // load code at address 0
-    machine_state.mem_write(0, &buffer[offset..]);
+    // TODO: how much code do we need to load?
+    machine_state.mem_write(0, &buffer[offset..offset+0x1000]);
     machine_state.rip = BIT64_OFFSET;
 
     // load code at 0x100.000
