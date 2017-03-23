@@ -23,9 +23,11 @@ impl CPU for EmulationCPU {
         machine_state.stack_push(&vector);
     }
 
-    fn pop(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn pop(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "pop", arg);
-        panic!("Not implemented");
+        arg.assert_one_argument();
+        let value = machine_state.stack_pop();
+        machine_state.set_value(value, &arg.first_argument, arg.size());
     }
 
     fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
