@@ -210,13 +210,13 @@ impl CPU for EmulationCPU {
         machine_state.rflags = value;
     }
 
-    fn std(&self, _machine_state: &mut MachineState) {
+    fn std(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "std");
-        panic!("Not implemented");
+        machine_state.rflags |= 10;
     }
-    fn cld(&self, _machine_state: &mut MachineState) {
+    fn cld(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "cld");
-        panic!("Not implemented");
+        machine_state.rflags &= !10;
     }
 
     fn movs(&self, _machine_state: &mut MachineState, repeat: bool) {
