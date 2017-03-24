@@ -5,6 +5,9 @@ use machine_state::MachineState;
 
 use zero;
 
+use std::io;
+use std::io::prelude::*;
+
 pub struct Decoder<'a> {
     machine_state: &'a mut MachineState,
     cpu: &'a CPU,
@@ -18,7 +21,8 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    pub fn execute(&mut self) {
+    pub fn execute(&mut self, debug: bool) {
+        let mut stdin = io::stdin();
         loop {
             let rip = self.machine_state.rip as u64;
             let mut first_byte = self.machine_state.mem_read_byte(rip);
@@ -304,6 +308,11 @@ impl<'a> Decoder<'a> {
                     _ => panic!("Unknown instruction: {:x}", first_byte),
                 };
             self.machine_state.rip += ip_offset;
+
+            if debug {
+                println!("{}", self.machine_state);
+                stdin.read(&mut [0u8]).unwrap();
+            }
         }
     }
 

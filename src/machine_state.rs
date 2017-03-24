@@ -1,4 +1,5 @@
 use std::collections::hash_map::{HashMap, Entry};
+use std::fmt;
 
 const PAGE_SIZE: u64 = 4096;
 
@@ -121,5 +122,16 @@ impl MachineState {
                 page_offset += 1;
             }
         }
+    }
+}
+
+impl fmt::Display for MachineState {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "rax: {:20x} rbx: {:20x} rcx: {:20x}\n\
+                  rdx: {:20x} rsp: {:20x} rbp: {:20x}\n\
+                  rsi: {:20x} rdi: {:20x} rip: {:20x}\n",
+               self.rax, self.rbx, self.rcx,
+               self.rdx, self.rsp, self.rbp,
+               self.rsi, self.rdi, self.rip)
     }
 }

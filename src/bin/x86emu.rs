@@ -27,25 +27,30 @@ fn main() {
             .short("c")
             .takes_value(true)
             .possible_values(&["emu", "print"]))
+        .arg(Arg::with_name("debug")
+            .help("run in debug mode (single step, print all registers after every instruction)")
+            .long("debug")
+            .short("d"))
         .get_matches();
 
     let symbol = matches.value_of("symbol").unwrap_or("main");
     let cpu = matches.value_of("cpu").unwrap_or("print");
     let loader = matches.value_of("loader").unwrap_or("elf");
     let filename = matches.value_of("file").unwrap();
+    let debug = matches.is_present("debug");
 
     match loader {
         "linux" => {
             match cpu {
-                "print" => linux(filename, &PrintCPU {}),
-                "emu" => linux(filename, &EmulationCPU {}),
+                "print" => linux(filename, &PrintCPU {}, debug),
+                "emu" => linux(filename, &EmulationCPU {}, debug),
                 _ => unreachable!("Values already validated by clap"),
             };
         }
         "elf" => {
             match cpu {
-                "print" => elf(filename, symbol, &PrintCPU {}),
-                "emu" => elf(filename, symbol, &EmulationCPU {}),
+                "print" => elf(filename, symbol, &PrintCPU {}, debug),
+                "emu" => elf(filename, symbol, &EmulationCPU {}, debug),
                 _ => unreachable!("Values already validated by clap"),
             };
         }

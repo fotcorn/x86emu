@@ -10,7 +10,7 @@ use machine_state::MachineState;
 use decoder::Decoder;
 use cpu::cpu_trait::CPU;
 
-pub fn elf(filename: &str, symbol: &str, cpu: &CPU) {
+pub fn elf(filename: &str, symbol: &str, cpu: &CPU, debug: bool) {
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
@@ -43,7 +43,7 @@ pub fn elf(filename: &str, symbol: &str, cpu: &CPU) {
     machine_state.rsp = 0x1000;
 
     let mut decoder = Decoder::new(cpu, &mut machine_state);
-    decoder.execute();
+    decoder.execute(debug);
 }
 
 fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
