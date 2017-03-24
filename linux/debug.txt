@@ -1,0 +1,67 @@
+Linux git checkout, tag v4.10
+make defconfig
+CONFIG_DEBUG_INFO=y
+
+
+0x0000000000100200:	xor    %eax,%eax
+0x0000000000100202:	mov    %eax,%ds
+0x0000000000100204:	mov    %eax,%es
+0x0000000000100206:	mov    %eax,%ss
+0x0000000000100208:	mov    %eax,%fs
+0x000000000010020a:	mov    %eax,%gs
+0x000000000010020c:	lea    -0x213(%rip),%rbp        # 0x100000
+rbp            0x100000	0x100000
+
+0x0000000000100213:	mov    0x230(%rsi),%eax
+rax            0x200000	2097152
+
+0x0000000000100219:	dec    %eax
+0x000000000010021b:	add    %rax,%rbp
+0x000000000010021e:	not    %rax
+0x0000000000100221:	and    %rax,%rbp
+0x0000000000100224:	cmp    $0x1000000,%rbp
+rbp            0x200000	0x200000
+
+0x000000000010022b:	jge    0x100234
+=> jump not taken
+0x000000000010022d:	mov    $0x1000000,%rbp
+rbp            0x1000000
+rbx            0x1e30000
+0x0000000000100234:	mov    0x260(%rsi),%ebx
+rbx            0x1493000
+0x000000000010023a:	sub    $0x663000,%ebx
+rbx            0xe30000
+rbp            0x1000000
+0x0000000000100240:	add    %rbp,%rbx
+rbx            0x1e30000
+0x0000000000100243:	lea    0x65c840(%rbx),%rsp
+rsp            0x248c840
+0x000000000010024a:	pushq  $0x0
+0x000000000010024c:	popfq  
+0x000000000010024d:	push   %rsi
+
+rip            0x10024e	0x10024e
+
+0x000000000010024e:	lea    0x6485e3(%rip),%rsi        # 0x748838
+rsi            0x748838	
+rbx            0x1e30000
+
+0x0000000000100255:	lea    0x648838(%rbx),%rdi
+rdi            0x2478838
+
+0x000000000010025c:	mov    $0x648840,%rcx
+0x0000000000100263:	shr    $0x3,%rcx
+rcx            0xc9108	
+
+0x0000000000100267:	std    
+0x0000000000100268:	rep movsq %ds:(%rsi),%es:(%rdi)
+0x000000000010026b:	cld    
+0x000000000010026c:	pop    %rsi
+0x000000000010026d:	lea    0x6435d0(%rbx),%rax
+rbx            0x1e30000
+rax            0x24735d0
+
+0x0000000000100274:	jmpq   *%rax
+rip            0x24735d0
+
+
