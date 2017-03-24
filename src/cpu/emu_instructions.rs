@@ -35,7 +35,6 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let value = machine_state.get_value(&arg.first_argument, arg.size());
         let argument_size = arg.size();
-        println!("mov: {}", value);
         machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
     }
 
@@ -122,8 +121,8 @@ impl CPU for EmulationCPU {
                 let reg = InstructionArgument::Register { register: register };
                 let mut value = machine_state.get_value(&reg, argument_size);
                 value += displacement as i64;
-                println!("lea: {}", value);
                 if value == -6 { value = 0;}
+                println!("WARNING: hacked lea implementation");
                 let second_argument = arg.second_argument.unwrap();
                 match second_argument {
                     InstructionArgument::Register { .. } => {
@@ -253,7 +252,6 @@ impl CPU for EmulationCPU {
         let value = machine_state.get_value(&arg.first_argument, arg.size());
         match arg.first_argument {
             InstructionArgument::Register {..} => {
-                println!("jmp absolute: {}", value);
                 machine_state.rip = value
             },
             InstructionArgument::Immediate {..} => {
