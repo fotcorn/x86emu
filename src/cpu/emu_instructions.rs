@@ -265,9 +265,9 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jge", arg);
-        self.jmp(machine_state, arg);
+        //self.jmp(machine_state, arg);
         println!("WARNING: jge not implemented");
     }
 }
