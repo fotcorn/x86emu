@@ -228,8 +228,9 @@ impl<'a> Decoder<'a> {
                                               ImmediateSize::None,
                                               // TODO: REVERSED_REGISTER_DIRECTION correct?
                                               decoder_flags | REVERSED_REGISTER_DIRECTION);
+                        self.machine_state.rip += ip_offset;
                         self.cpu.lea(self.machine_state, argument);
-                        ip_offset
+                        0
                     }
                     0xA5 => {
                         self.cpu.movs(self.machine_state, true);
