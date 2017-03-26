@@ -233,15 +233,24 @@ impl CPU for EmulationCPU {
     }
 
     fn movs(&self, machine_state: &mut MachineState, repeat: bool) {
-        let from = machine_state.get_value(&InstructionArgument::Register {register: Register::RSI}, ArgumentSize::Bit64);
-        let to = machine_state.get_value(&InstructionArgument::Register {register: Register::RDI}, ArgumentSize::Bit64);
-
+        let mut from = machine_state.get_value(&InstructionArgument::Register {register: Register::RSI}, ArgumentSize::Bit64);
+        let mut to = machine_state.get_value(&InstructionArgument::Register {register: Register::RDI}, ArgumentSize::Bit64);
+        // TODO: do not hardcode to 8byte operand
         if repeat {
             println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
-            let length = machine_state.get_value(&InstructionArgument::Register {register: Register::RCX}, ArgumentSize::Bit64);
-            // TODO: should we really ignore the direction flag?
-            let data = machine_state.mem_read(from as u64, length as u64);
-            machine_state.mem_write(to as u64, &data);
+            let mut length = machine_state.get_value(&InstructionArgument::Register {register: Register::RCX}, ArgumentSize::Bit64);
+            length *= 8; // 8 bytes per mov
+            if machine_state.rflags & 10 == 10 {
+                println!("WARNING: address calculation could be incorrect");
+                from -= length;
+                to -= length;
+                let data = machine_state.mem_read(from as u64, length as u64);
+                machine_state.mem_write(to as u64, &data);
+            } else {
+                let data = machine_state.mem_read(from as u64, length as u64);
+                machine_state.mem_write(to as u64, &data);
+            }
+            // TODO: set rsi, rdi, rcx registers
         } else {
             println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
             panic!("Not implemented");
