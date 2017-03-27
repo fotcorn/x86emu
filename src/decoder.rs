@@ -241,7 +241,13 @@ impl<'a> Decoder<'a> {
                         0
                     }
                     0xA5 => {
-                        self.cpu.movs(self.machine_state, true);
+                        let repeat = decoder_flags.contains(REPEAT);
+                        self.cpu.movs(self.machine_state, repeat);
+                        1
+                    }
+                    0xAB => {
+                        let repeat = decoder_flags.contains(REPEAT);
+                        self.cpu.stos(self.machine_state, repeat);
                         1
                     }
                     0xC1 => {

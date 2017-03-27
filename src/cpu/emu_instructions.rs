@@ -232,6 +232,16 @@ impl CPU for EmulationCPU {
         machine_state.rflags &= !10;
     }
 
+    fn stos(&self, _machine_state: &mut MachineState, repeat: bool) {
+        if repeat {
+            println!("{:<6}", "rep stos %ds:(%rsi),%es:(%rdi)");
+        } else {
+            println!("{:<6}", "stos %ds:(%rsi),%es:(%rdi)");
+        }
+        println!("WARNING: stos: NOOP");
+    }
+
+
     fn movs(&self, machine_state: &mut MachineState, repeat: bool) {
         let mut from = machine_state.get_value(&InstructionArgument::Register {register: Register::RSI}, ArgumentSize::Bit64);
         let mut to = machine_state.get_value(&InstructionArgument::Register {register: Register::RDI}, ArgumentSize::Bit64);

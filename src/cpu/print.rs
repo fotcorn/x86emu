@@ -128,6 +128,14 @@ impl CPU for PrintCPU {
         }
     }
 
+    fn stos(&self, _machine_state: &mut MachineState, repeat: bool) {
+        if repeat {
+            println!("{:<6}", "rep stos %ds:(%rsi),%es:(%rdi)");
+        } else {
+            println!("{:<6}", "stos %ds:(%rsi),%es:(%rdi)");
+        }
+    }
+
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jmp", arg);
         arg.assert_one_argument();

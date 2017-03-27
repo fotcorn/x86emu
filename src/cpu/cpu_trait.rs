@@ -62,6 +62,8 @@ pub trait CPU {
 
     fn movs(&self, machine_state: &mut MachineState, repeat: bool);
 
+    fn stos(&self, machine_state: &mut MachineState, repeat: bool);
+
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments);
