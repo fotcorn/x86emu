@@ -122,6 +122,14 @@ impl<'a> Decoder<'a> {
                         self.cpu.and(self.machine_state, argument);
                         ip_offset
                     }
+                    0x29 => {
+                        let (argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.cpu.sub(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x7D => {
                         let rip = self.machine_state.rip as u64;
                         let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
