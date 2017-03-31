@@ -1,0 +1,21 @@
+Source:
+http://ref.x86asm.net/coder64.html
+
+opcode	mnem	description
+70	JO	Jump short if overflow (OF=1)
+71	JNO	Jump short if not overflow (OF=0)
+72	JC	Jump short if below/not above or equal/carry (CF=1)
+73	JNC	Jump short if not below/above or equal/not carry (CF=0)
+74	JZ	Jump short if zero/equal (ZF=1)
+75	JNZ	Jump short if not zero/not equal (ZF=0)
+76	JBE	Jump short if below or equal/not above (CF=1 OR ZF=1)
+77	JA	Jump short if not below or equal/above (CF=0 AND ZF=0)
+78	JS	Jump short if sign (SF=1)
+79	JNS	Jump short if not sign (SF=0)
+7A	JP	Jump short if parity/parity even (PF=1)
+7B	JNP	Jump short if not parity/parity odd (PF=0)
+7C	JL	Jump short if less/not greater (SF!=OF)
+7D	JGE	Jump short if not less/greater or equal (SF=OF)
+7E	JLE	Jump short if less or equal/not greater ((ZF=1) OR (SF!=OF))
+7F	JG	Jump short if not less nor equal/greater ((ZF=0) AND (SF=OF))
+
