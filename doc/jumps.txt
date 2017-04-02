@@ -1,5 +1,5 @@
 Source:
-http://ref.x86asm.net/coder64.html
+http://unixwiz.net/techtips/x86-jumps.html
 
 opcode	mnem	description
 70	JO	Jump short if overflow (OF=1)
