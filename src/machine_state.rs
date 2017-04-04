@@ -2,6 +2,7 @@ use std::collections::hash_map::{HashMap, Entry};
 use std::fmt;
 
 const PAGE_SIZE: u64 = 4096;
+const DIRECTION_FLAG: i64 = 10;
 
 pub struct MachineState {
     pub rip: i64,
@@ -121,6 +122,18 @@ impl MachineState {
                 data_offset += 1;
                 page_offset += 1;
             }
+        }
+    }
+
+    pub fn get_direction_flag(&self) -> bool {
+        self.rflags & DIRECTION_FLAG == DIRECTION_FLAG
+    }
+
+    pub fn set_direction_flag(&mut self, direction: bool) {
+        if direction {
+            self.rflags |= DIRECTION_FLAG;
+        } else {
+            self.rflags &= !DIRECTION_FLAG;
         }
     }
 }

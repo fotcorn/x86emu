@@ -224,12 +224,12 @@ impl CPU for EmulationCPU {
 
     fn std(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "std");
-        machine_state.rflags |= 10;
+        machine_state.set_direction_flag(true);
     }
 
     fn cld(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "cld");
-        machine_state.rflags &= !10;
+        machine_state.set_direction_flag(false);
     }
 
     fn stos(&self, _machine_state: &mut MachineState, repeat: bool) {
@@ -250,7 +250,7 @@ impl CPU for EmulationCPU {
             println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
             let mut length = machine_state.get_value(&InstructionArgument::Register {register: Register::RCX}, ArgumentSize::Bit64);
             length *= 8; // 8 bytes per mov
-            if machine_state.rflags & 10 == 10 {
+            if machine_state.get_direction_flag() {
                 println!("WARNING: address calculation could be incorrect");
                 from -= length;
                 to -= length;
