@@ -115,7 +115,7 @@ jump13:
     jl fail
 
     mov     $-5,%rax
-    mov     $-6,%rdx
+    mov     $-5,%rdx
     cmp     %rax,%rdx
     jge jump14
     int3
