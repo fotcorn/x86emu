@@ -131,22 +131,14 @@ impl<'a> Decoder<'a> {
                         ip_offset
                     }
                     0x7D => {
-                        let rip = self.machine_state.rip as u64;
-                        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
-                        self.cpu.jge(self.machine_state,
-                                 InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                     immediate: immediate,
-                                 }).finalize());
-                        2
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jge(self.machine_state, arg);
+                        ip_offset
                     }
                     0x6A => {
-                        let rip = self.machine_state.rip as u64;
-                        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
-                        self.cpu.push(self.machine_state,
-                                  InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                      immediate: immediate,
-                                  }).finalize());
-                        2
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.push(self.machine_state, arg);
+                        ip_offset
                     }
                     0xE8 => {
                         let immediate = self.get_i32_value(1);
@@ -343,6 +335,16 @@ impl<'a> Decoder<'a> {
         let rip = (self.machine_state.rip + ip_offset) as u64;
         let value = self.machine_state.mem_read(rip, 4);
         *zero::read::<i32>(&value)
+    }
+
+    fn read_immediate_8bit(&mut self) -> (InstructionArguments, i64) {
+        let rip = self.machine_state.rip as u64;
+        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
+
+        (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+            immediate: immediate,
+        }).finalize(),
+        2)
     }
 
     fn get_argument(&mut self,
