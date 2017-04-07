@@ -21,9 +21,10 @@ def end():
 
 
 def jump(instruction, value1, value2, jump_instr_taken, jump_instr_not_taken):
-    print_tab('mov     ${},%rax'.format(value1))
-    print_tab('mov     ${},%rdx'.format(value2))
-    print_tab('{:8s}%rax,%rdx'.format(instruction))
+    print('# {}, {}, {}', value1, value2, value2 - value1)
+    print_tab('mov     ${},%al'.format(value1))
+    print_tab('mov     ${},%bl'.format(value2))
+    print_tab('{:8s}%al,%bl'.format(instruction))
     print_tab('{} jump{}'.format(jump_instr_taken, jump.counter))
     print_tab('int3')
     print('jump{}:'.format(jump.counter))
@@ -37,14 +38,25 @@ jump.counter = 0
 
 def main():
     start()
+    """
     # zero
-    jump('cmp', 0, 0, 'jz', 'jnz')
-    jump('cmp', 5, 0, 'jnz', 'jz')
-
+    for i in range(0, 256):
+        for j in range(0, 256):
+            if j - i == 0: 
+                jump('cmp', i, j, 'jz', 'jnz')
+            else:
+                jump('cmp', i, j, 'jnz', 'jz')
+    """
     # sign
-    jump('cmp', 5, 4, 'js', 'jns')
-    jump('cmp', 4, 5, 'jns', 'js')
+    for i in range(0, 256):
+        for j in range(0, 256):
+            ret = j - i
+            if ret < 0 and ret > -127 or ret > 127:
+                jump('cmp', i, j, 'js', 'jns')
+            else:
+                jump('cmp', i, j, 'jns', 'js')
 
+    """
     # overflow
     jump('imul', 2**62, 2, 'jo', 'jno')
     jump('imul', 2**62 - 1, 2, 'jno', 'jo')
@@ -88,7 +100,7 @@ def main():
     jump('add', 0, 0 + 256, 'jp', 'jnp')
     jump('add', 0, 0 + 512, 'jp', 'jnp')
     jump('add', 0, 0 + 768, 'jp', 'jnp')
-
+    """
     end()
 
 if __name__ == '__main__':
