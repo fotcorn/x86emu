@@ -1,5 +1,5 @@
 from __future__ import print_function
-
+import ctypes
 
 def print_tab(string):
     print('    {}'.format(string))
@@ -21,7 +21,6 @@ def end():
 
 
 def jump(instruction, value1, value2, jump_instr_taken, jump_instr_not_taken):
-    print('# {}, {}, {}', value1, value2, value2 - value1)
     print_tab('mov     ${},%al'.format(value1))
     print_tab('mov     ${},%bl'.format(value2))
     print_tab('{:8s}%al,%bl'.format(instruction))
@@ -48,10 +47,10 @@ def main():
                 jump('cmp', i, j, 'jnz', 'jz')
     """
     # sign
-    for i in range(0, 256):
-        for j in range(0, 256):
-            ret = j - i
-            if ret < 0 and ret > -127 or ret > 127:
+    for i in range(-128, 128):
+        for j in range(-128, 128):
+            ret = ctypes.c_byte(j - i)  # truncate value to one byte
+            if ret.value < 0:
                 jump('cmp', i, j, 'js', 'jns')
             else:
                 jump('cmp', i, j, 'jns', 'js')
