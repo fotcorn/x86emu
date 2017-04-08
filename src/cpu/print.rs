@@ -145,6 +145,14 @@ impl CPU for PrintCPU {
         }
     }
 
+    fn jc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jc", arg);
+    }
+
+    fn jnc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jnc", arg);
+    }
+
     fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jge", arg);
     }
