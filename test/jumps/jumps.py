@@ -45,7 +45,7 @@ def main():
                 jump('cmp', i, j, 'jz', 'jnz')
             else:
                 jump('cmp', i, j, 'jnz', 'jz')
-    """
+
     # sign
     for i in range(-128, 128):
         for j in range(-128, 128):
@@ -55,16 +55,24 @@ def main():
             else:
                 jump('cmp', i, j, 'jns', 'js')
 
-    """
-    # overflow
+    # TODO: overflow
     jump('imul', 2**62, 2, 'jo', 'jno')
     jump('imul', 2**62 - 1, 2, 'jno', 'jo')
-
+    """
     ## below
-    # unsigned
-    jump('cmp', 5, 4, 'jc', 'jnc')
-    jump('cmp', 4, 5, 'jnc', 'jc')
-    jump('cmp', 5, 5, 'jnc', 'jc')
+    # unsigned/carry
+    for i in range(0, 256):
+        for j in range(0, 256):
+            if i + j > 255:
+                jump('add', i, j, 'jc', 'jnc')
+            else:
+                jump('add', i, j, 'jnc', 'jc')
+            if j - i < 0:
+                jump('sub', i, j, 'jc', 'jnc')
+            else:
+                jump('sub', i, j, 'jnc', 'jc')
+
+    """
     # signed
     jump('cmp', 5, 4, 'jl', 'jge')
     jump('cmp', 4, 5, 'jge', 'jl')
