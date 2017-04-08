@@ -472,7 +472,7 @@ impl<'a> Decoder<'a> {
                         } else {
                             get_register(rm, second_register_size, decoder_flags.contains(NEW_64BIT_REGISTER))
                         };
-                        let register2 = get_register(register_or_opcode, register_size, decoder_flags.contains(NEW_64BIT_REGISTER));
+                        let register2 = get_register(register_or_opcode, register_size, false);
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
                              InstructionArgumentsBuilder::new(
@@ -508,12 +508,12 @@ impl<'a> Decoder<'a> {
                                      register: register1,
                                  })
                                  .second_argument(InstructionArgument::Register {
-                                     register: get_register(value2, register_size, decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                     register: get_register(value2, register_size, false),
                                  })
                                  .finalize()
                          } else {
                              InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                     register: get_register(value2, register_size, decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                     register: get_register(value2, register_size, false),
                                  })
                                  .second_argument(InstructionArgument::Register {
                                      register: register1,
