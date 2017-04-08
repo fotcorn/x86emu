@@ -6,6 +6,40 @@ use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
 pub struct EmulationCPU {}
 
+impl EmulationCPU {
+
+    fn sub_impl(&self, machine_state: &mut MachineState, arg: InstructionArguments, set: bool) {
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+
+        let (result, carry) = match argument_size {
+            ArgumentSize::Bit8 => {
+                let (result, carry) = (value2 as u8).overflowing_sub(value1 as u8);
+                (result as i64, carry)
+            },
+            ArgumentSize::Bit16 => {
+                let (result, carry) = (value2 as u16).overflowing_sub(value1 as u16);
+                (result as i64, carry)
+            },
+            ArgumentSize::Bit32 => {
+                let (result, carry) = (value2 as u32).overflowing_sub(value1 as u32);
+                (result as i64, carry)
+            },
+            ArgumentSize::Bit64 => {
+                let (result, carry) = (value2 as u64).overflowing_sub(value1 as u64);
+                (result as i64, carry)
+            }
+        };
+        machine_state.set_flag(Flags::Carry, carry);
+        if set {
+            machine_state.set_value(result, &second_argument, argument_size);
+        }
+    }
+}
+
 impl CPU for EmulationCPU {
     fn push(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "push", arg);
@@ -75,12 +109,7 @@ impl CPU for EmulationCPU {
 
     fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sub", arg);
-        arg.assert_two_arguments();
-        let argument_size = arg.size();
-        let second_argument = arg.second_argument.unwrap();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
-        let value2 = machine_state.get_value(&second_argument, argument_size);
-        machine_state.set_value(value2 - value1, &second_argument, argument_size);
+        self.sub_impl(machine_state, arg, true);
     }
 
     fn xor(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -95,13 +124,8 @@ impl CPU for EmulationCPU {
 
     fn cmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "cmp", arg);
-        arg.assert_two_arguments();
-        let argument_size = arg.size();
-        let second_argument = arg.second_argument.unwrap();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
-        let value2 = machine_state.get_value(&second_argument, argument_size);
-        println!("cmp: {} {}", value1, value2);
-        println!("WARNING: cmp not implemented");
+        self.sub_impl(machine_state, arg, false);
+        println!("WARNING: cmp not fully implemented");
     }
 
     fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
