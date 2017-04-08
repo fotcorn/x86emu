@@ -37,6 +37,11 @@ pub enum Register {
     GS,
 }
 
+pub enum Flags {
+    Carry = 1 << 0,
+    Direction = 1 << 10,
+}
+
 #[derive(Debug, Copy, Clone)]
 pub enum ArgumentSize {
     Bit64,

@@ -1,8 +1,8 @@
 use std::collections::hash_map::{HashMap, Entry};
 use std::fmt;
+use instruction_set::Flags;
 
 const PAGE_SIZE: u64 = 4096;
-const DIRECTION_FLAG: i64 = 10;
 
 pub struct MachineState {
     pub rip: i64,
@@ -125,15 +125,16 @@ impl MachineState {
         }
     }
 
-    pub fn get_direction_flag(&self) -> bool {
-        self.rflags & DIRECTION_FLAG == DIRECTION_FLAG
+    pub fn get_flag(&self, flag: Flags) -> bool {
+        let f = flag as i64;
+        self.rflags & f == f
     }
 
-    pub fn set_direction_flag(&mut self, direction: bool) {
-        if direction {
-            self.rflags |= DIRECTION_FLAG;
+    pub fn set_flag(&mut self, flag: Flags, value: bool) {
+        if value {
+            self.rflags |= flag as i64;
         } else {
-            self.rflags &= !DIRECTION_FLAG;
+            self.rflags &= flag as i64;
         }
     }
 }

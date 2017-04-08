@@ -1,4 +1,4 @@
-use instruction_set::{InstructionArgument, InstructionArguments, Register};
+use instruction_set::{InstructionArgument, InstructionArguments, Register, Flags};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 use instruction_set::ArgumentSize;
@@ -224,12 +224,12 @@ impl CPU for EmulationCPU {
 
     fn std(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "std");
-        machine_state.set_direction_flag(true);
+        machine_state.set_flag(Flags::Direction, true);
     }
 
     fn cld(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "cld");
-        machine_state.set_direction_flag(false);
+        machine_state.set_flag(Flags::Direction, false);
     }
 
     fn stos(&self, _machine_state: &mut MachineState, repeat: bool) {
@@ -250,7 +250,7 @@ impl CPU for EmulationCPU {
             println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
             let mut length = machine_state.get_value(&InstructionArgument::Register {register: Register::RCX}, ArgumentSize::Bit64);
             length *= 8; // 8 bytes per mov
-            if machine_state.get_direction_flag() {
+            if machine_state.get_flag(Flags::Direction) {
                 println!("WARNING: address calculation could be incorrect");
                 from -= length;
                 to -= length;
