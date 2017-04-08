@@ -3,3 +3,4 @@ script:
     - test/decoder/test.sh test/decoder/generated.asm
     - test/decoder/test.sh test/decoder/direction.asm
     - test/decoder/test.sh test/decoder/register_address.asm
+    - test/execution/test.sh test/execution/jc_jnc.S
