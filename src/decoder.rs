@@ -152,11 +152,12 @@ impl<'a> Decoder<'a> {
                     }
                     0xE8 => {
                         let immediate = self.get_i32_value(1);
+                        self.machine_state.rip += 5;
                         self.cpu.call(self.machine_state,
                                   InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                       immediate: immediate as i64,
                                   }).finalize());
-                        5
+                        0
                     }
                     0x89 => {
                         // mov

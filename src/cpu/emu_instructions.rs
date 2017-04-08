@@ -130,10 +130,12 @@ impl CPU for EmulationCPU {
 
     fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "call", arg);
-        let value =
-            machine_state.get_value(&InstructionArgument::Register { register: Register::RSI },
-                                    ArgumentSize::Bit64);
-        println!("{}", value);
+        arg.assert_one_argument();
+
+        let rip = convert_i64_to_u8vec(machine_state.rip);
+        machine_state.stack_push(&rip);
+
+        self.jmp(machine_state, arg);
     }
 
     fn lea(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
