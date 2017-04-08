@@ -330,6 +330,14 @@ impl<'a> Decoder<'a> {
                         }
 
                     }
+                    0xCC => {
+                        // abuse int 3 instruction to signal failed test program
+                        panic!("int3 instruction");
+                    }
+                    0xCD => {
+                        // abuse int X instruction to signal passed test program
+                        return
+                    }
                     _ => panic!("Unknown instruction: {:x}", first_byte),
                 };
             self.machine_state.rip += ip_offset;
