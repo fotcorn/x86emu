@@ -54,7 +54,7 @@ impl<'a> Decoder<'a> {
                     // 64bit REX prefix
                     let temp_rex = REX { bits: first_byte };
                     if temp_rex.contains(B) {
-                        panic!("REX B flag not supported");
+                        decoder_flags |= NEW_64BIT_REGISTER;
                     }
                     if temp_rex.contains(MOD_R_M_EXTENSION) {
                         panic!("REX mod rm extension not supported")
@@ -80,14 +80,14 @@ impl<'a> Decoder<'a> {
                     opcode @ 0x50...0x57 => {
                         self.cpu.push(self.machine_state,
                                   InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                      register: get_register(opcode - 0x50, RegisterSize::Bit64),
+                                      register: get_register(opcode - 0x50, RegisterSize::Bit64, decoder_flags.contains(NEW_64BIT_REGISTER)),
                                   }).finalize());
                         1
                     }
                     opcode @ 0x58...0x5F => {
                         let argument =
                             InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                    register: get_register(opcode - 0x58, RegisterSize::Bit64),
+                                    register: get_register(opcode - 0x58, RegisterSize::Bit64, decoder_flags.contains(NEW_64BIT_REGISTER)),
                                 })
                                 .finalize();
                         self.cpu.pop(self.machine_state, argument);
@@ -100,7 +100,7 @@ impl<'a> Decoder<'a> {
                                     immediate: immediate as i64,
                                 })
                                 .second_argument(InstructionArgument::Register {
-                                    register: get_register(opcode - 0xB8, register_size),
+                                    register: get_register(opcode - 0xB8, register_size, decoder_flags.contains(NEW_64BIT_REGISTER)),
                                 })
                                 .finalize();
                         self.cpu.mov(self.machine_state, argument);
@@ -387,7 +387,7 @@ impl<'a> Decoder<'a> {
                     address_mod = 0b100;
                 }
 
-                let register = get_register(rm, register_size);
+                let register = get_register(rm, register_size, decoder_flags.contains(NEW_64BIT_REGISTER));
 
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
@@ -470,9 +470,9 @@ impl<'a> Decoder<'a> {
                         let register1 = if address_mod == 0b00 && rm == 0x5 {
                             Register::RIP
                         } else {
-                            get_register(rm, second_register_size)
+                            get_register(rm, second_register_size, decoder_flags.contains(NEW_64BIT_REGISTER))
                         };
-                        let register2 = get_register(register_or_opcode, register_size);
+                        let register2 = get_register(register_or_opcode, register_size, decoder_flags.contains(NEW_64BIT_REGISTER));
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
                              InstructionArgumentsBuilder::new(
@@ -499,7 +499,7 @@ impl<'a> Decoder<'a> {
             }
             0b11 => {
                 // register
-                let register1 = get_register(modrm & 0b00000111, register_size);
+                let register1 = get_register(modrm & 0b00000111, register_size, decoder_flags.contains(NEW_64BIT_REGISTER));
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
@@ -508,12 +508,12 @@ impl<'a> Decoder<'a> {
                                      register: register1,
                                  })
                                  .second_argument(InstructionArgument::Register {
-                                     register: get_register(value2, register_size),
+                                     register: get_register(value2, register_size, decoder_flags.contains(NEW_64BIT_REGISTER)),
                                  })
                                  .finalize()
                          } else {
                              InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                     register: get_register(value2, register_size),
+                                     register: get_register(value2, register_size, decoder_flags.contains(NEW_64BIT_REGISTER)),
                                  })
                                  .second_argument(InstructionArgument::Register {
                                      register: register1,
@@ -596,11 +596,11 @@ bitflags! {
         // const OPERAND_64_BIT = 0b1000,
         // const REGISTER_EXTENSION = 0b10000,
         // const SIB_EXTENSION = 0b100000,
-        // const REX_B = 0b1000000,
+        const NEW_64BIT_REGISTER = 0b1000000,
     }
 }
 
-fn get_register(num: u8, size: RegisterSize) -> Register {
+fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Register {
     match size {
         RegisterSize::Bit32 => {
             match num {
@@ -616,16 +616,30 @@ fn get_register(num: u8, size: RegisterSize) -> Register {
             }
         }
         RegisterSize::Bit64 => {
-            match num {
-                0 => Register::RAX,
-                1 => Register::RCX,
-                2 => Register::RDX,
-                3 => Register::RBX,
-                4 => Register::RSP,
-                5 => Register::RBP,
-                6 => Register::RSI,
-                7 => Register::RDI,
-                _ => panic!("Unknown instruction argument"),
+            if new_64bit_register {
+                match num {
+                    0 => Register::R8,
+                    1 => Register::R9,
+                    2 => Register::R10,
+                    3 => Register::R11,
+                    4 => Register::R12,
+                    5 => Register::R13,
+                    6 => Register::R14,
+                    7 => Register::R15,
+                    _ => panic!("Unknown instruction argument"),
+                }
+            } else {
+                match num {
+                    0 => Register::RAX,
+                    1 => Register::RCX,
+                    2 => Register::RDX,
+                    3 => Register::RBX,
+                    4 => Register::RSP,
+                    5 => Register::RBP,
+                    6 => Register::RSI,
+                    7 => Register::RDI,
+                    _ => panic!("Unknown instruction argument"),
+                }
             }
         }
         RegisterSize::Segment => {

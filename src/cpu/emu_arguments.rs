@@ -47,6 +47,15 @@ impl MachineState {
             Register::RSI => self.rsi,
             Register::RDI => self.rdi,
 
+            Register::R8 => self.r8,
+            Register::R9 => self.r9,
+            Register::R10 => self.r10,
+            Register::R11 => self.r11,
+            Register::R12 => self.r12,
+            Register::R13 => self.r13,
+            Register::R14 => self.r14,
+            Register::R15 => self.r15,
+
             Register::RIP => self.rip as i64,
 
             Register::EAX => self.rax as i32 as i64,
@@ -77,6 +86,15 @@ impl MachineState {
             Register::RBP => self.rbp = value,
             Register::RSI => self.rsi = value,
             Register::RDI => self.rdi = value,
+
+            Register::R8 => self.r8 = value,
+            Register::R9 => self.r9 = value,
+            Register::R10 => self.r10 = value,
+            Register::R11 => self.r11 = value,
+            Register::R12 => self.r12 = value,
+            Register::R13 => self.r13 = value,
+            Register::R14 => self.r14 = value,
+            Register::R15 => self.r15 = value,
 
             Register::RIP => self.rip = value,
 

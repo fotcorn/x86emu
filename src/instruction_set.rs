@@ -18,6 +18,15 @@ pub enum Register {
     RSI,
     RDI,
 
+    R8,
+    R9,
+    R10,
+    R11,
+    R12,
+    R13,
+    R14,
+    R15,
+
     RIP,
 
     EAX,
@@ -53,7 +62,9 @@ pub enum ArgumentSize {
 pub fn get_register_size(reg: &Register) -> ArgumentSize {
     match *reg {
         Register::RAX | Register::RBX | Register::RCX | Register::RDX | Register::RSP |
-        Register::RBP | Register::RSI | Register::RDI | Register::RIP => ArgumentSize::Bit64,
+        Register::RBP | Register::RSI | Register::RDI | Register::RIP | Register::R8 |
+        Register::R9 | Register::R10 | Register::R11 | Register::R12 | Register::R13 |
+        Register::R14 | Register::R15 => ArgumentSize::Bit64,
         Register::EAX | Register::EBX | Register::ECX | Register::EDX | Register::ESP |
         Register::EBP | Register::ESI | Register::EDI => ArgumentSize::Bit32,
         Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => {
