@@ -1,5 +1,5 @@
 language: rust
 script:
-    - test/test.sh test/generated.asm
-    - test/test.sh test/direction.asm
-    - test/test.sh test/register_address.asm
+    - test/decoder/test.sh test/decoder/generated.asm
+    - test/decoder/test.sh test/decoder/direction.asm
+    - test/decoder/test.sh test/decoder/register_address.asm
