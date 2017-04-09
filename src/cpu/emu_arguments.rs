@@ -1,6 +1,6 @@
 use instruction_set::{InstructionArgument, Register, ArgumentSize};
 use machine_state::MachineState;
-use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
+use utils::{convert_i8_to_u8vec, convert_i16_to_u8vec, convert_i32_to_u8vec, convert_i64_to_u8vec};
 use zero;
 
 impl MachineState {
@@ -171,9 +171,10 @@ impl MachineState {
                 let mut address = self.get_register_value(register);
                 address += displacement as i64;
                 let vector = match argument_size {
+                    ArgumentSize::Bit8 => convert_i8_to_u8vec(value as i8),
+                    ArgumentSize::Bit16 => convert_i16_to_u8vec(value as i16),
                     ArgumentSize::Bit32 => convert_i32_to_u8vec(value as i32),
                     ArgumentSize::Bit64 => convert_i64_to_u8vec(value),
-                    _ => panic!("unsupported argument size in set_value/effective address"),
                 };
 
                 self.mem_write(address as u64, &vector);

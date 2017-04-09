@@ -1,4 +1,4 @@
-/*pub fn convert_i8_to_u8vec(value: i8) -> Vec<u8> {
+pub fn convert_i8_to_u8vec(value: i8) -> Vec<u8> {
     vec![value as u8]
 }
 
@@ -7,7 +7,7 @@ pub fn convert_i16_to_u8vec(value: i16) -> Vec<u8> {
         (value as u16 & 0x00FF) as u8,
         (value as u16 & 0xFF00 >> 8) as u8,
     ]
-}*/
+}
 
 pub fn convert_i32_to_u8vec(value: i32) -> Vec<u8> {
     vec![(value as u32 & 0x000000FF) as u8,
