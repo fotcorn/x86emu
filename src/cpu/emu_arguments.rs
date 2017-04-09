@@ -12,6 +12,18 @@ impl MachineState {
                 let mut address = self.get_register_value(register);
                 address += displacement as i64;
                 match argument_size {
+                    ArgumentSize::Bit8 => {
+                        self.mem_read_byte(address as u64) as i64
+                    }
+                    ArgumentSize::Bit16 => {
+                        let mut value: i16 = 0;
+                        let val = self.mem_read(address as u64, 2);
+
+                        for (i, v) in val.iter().enumerate() {
+                            value |= (*v as i16) << (i * 8);
+                        }
+                        value as i64
+                    }
                     ArgumentSize::Bit32 => {
                         let mut value: i32 = 0;
                         let val = self.mem_read(address as u64, 4);
@@ -30,7 +42,6 @@ impl MachineState {
                         }
                         value
                     }
-                    _ => panic!("unsupported argument size in set_value/effective address"),
                 }
             }
         }
