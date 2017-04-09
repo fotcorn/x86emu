@@ -67,6 +67,15 @@ impl MachineState {
             Register::ESI => self.rsi as i32 as i64,
             Register::EDI => self.rdi as i32 as i64,
 
+            Register::AL => self.rax as i8 as i64,
+            Register::CL => self.rcx as i8 as i64,
+            Register::DL => self.rdx as i8 as i64,
+            Register::BL => self.rbx as i8 as i64,
+            Register::AH => (self.rax as i16 >> 8) as i64,
+            Register::CH => (self.rcx as i16 >> 8) as i64,
+            Register::DH => (self.rdx as i16 >> 8) as i64,
+            Register::BH => (self.rbx as i16 >> 8) as i64,
+
             Register::ES => 0,
             Register::CS => 0,
             Register::SS => 0,
@@ -122,6 +131,15 @@ impl MachineState {
             Register::EDI => {
                 self.rdi = ((self.rdi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
             }
+
+            Register::AL => self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::CL => self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::DL => self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::BL => self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::AH => self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
+            Register::CH => self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
+            Register::DH => self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
+            Register::BH => self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
 
             Register::ES => (),
             Register::CS => (),

@@ -2,6 +2,7 @@ use std::fmt;
 
 #[derive(Clone, Copy, Debug)]
 pub enum RegisterSize {
+    Bit8,
     Bit32,
     Bit64,
     Segment,
@@ -38,6 +39,15 @@ pub enum Register {
     ESI,
     EDI,
 
+    AL,
+    CL,
+    DL,
+    BL,
+    AH,
+    CH,
+    DH,
+    BH,
+
     ES,
     CS,
     SS,
@@ -67,9 +77,8 @@ pub fn get_register_size(reg: &Register) -> ArgumentSize {
         Register::R14 | Register::R15 => ArgumentSize::Bit64,
         Register::EAX | Register::EBX | Register::ECX | Register::EDX | Register::ESP |
         Register::EBP | Register::ESI | Register::EDI => ArgumentSize::Bit32,
-        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => {
-            ArgumentSize::Bit16
-        }
+        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => ArgumentSize::Bit16,
+        Register::AL | Register::CL | Register::DL | Register::BL | Register::AH | Register::CH | Register::DH | Register::BH => ArgumentSize::Bit8,
     }
 }
 

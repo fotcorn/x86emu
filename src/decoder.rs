@@ -197,8 +197,17 @@ impl<'a> Decoder<'a> {
                         self.cpu.cmp(self.machine_state, argument);
                         ip_offset
                     }
+                    0x80 => {
+                        // arithmetic operation (8bit register target, 8bit immediate)
+                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                      RegOrOpcode::Opcode,
+                                                                      ImmediateSize::Bit8,
+                                                                      decoder_flags);
+                        self.cpu.arithmetic(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x81 => {
-                        // arithmetic operation (64bit register target, 8bit immediate)
+                        // arithmetic operation (32/64bit register target, 32bit immediate)
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Opcode,
                                                                       ImmediateSize::Bit32,
@@ -207,7 +216,7 @@ impl<'a> Decoder<'a> {
                         ip_offset
                     }
                     0x83 => {
-                        // arithmetic operation (64bit register target, 8bit immediate)
+                        // arithmetic operation (32/64bit register target, 8bit immediate)
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Opcode,
                                                                       ImmediateSize::Bit8,
@@ -421,6 +430,7 @@ impl<'a> Decoder<'a> {
                         let immediate = self.machine_state.mem_read_byte(rip);
 
                         let argument_size = match register_size {
+                            RegisterSize::Bit8 => ArgumentSize::Bit8,
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
                             RegisterSize::Bit64 => ArgumentSize::Bit64,
                             RegisterSize::Segment => panic!("Unsupported register size"),
@@ -443,6 +453,7 @@ impl<'a> Decoder<'a> {
                         let immediate = self.get_i32_value(ip_offset);
 
                         let argument_size = match register_size {
+                            RegisterSize::Bit8 => ArgumentSize::Bit8,
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
                             RegisterSize::Bit64 => ArgumentSize::Bit64,
                             RegisterSize::Segment => panic!("Unsupported register size"),
@@ -652,6 +663,19 @@ fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Regist
                 3 => Register::DS,
                 4 => Register::FS,
                 5 => Register::GS,
+                _ => panic!("Unknown instruction argument"),
+            }
+        }
+        RegisterSize::Bit8 => {
+            match num {
+                0 => Register::AL,
+                1 => Register::CL,
+                2 => Register::DL,
+                3 => Register::BL,
+                4 => Register::AH,
+                5 => Register::CH,
+                6 => Register::DH,
+                7 => Register::BH,
                 _ => panic!("Unknown instruction argument"),
             }
         }
