@@ -62,6 +62,9 @@ impl<'a> Decoder<'a> {
                     if temp_rex.contains(SIB_EXTENSION) {
                         panic!("REX mod rm extension not supported")
                     }
+                    if first_byte == 0x40 {
+                        panic!("New 8bit registers not supported")
+                    }
                     self.machine_state.rip += 1;
                     rex = Some(temp_rex);
                 }
