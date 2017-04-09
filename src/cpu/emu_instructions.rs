@@ -232,9 +232,10 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn ret(&self, _machine_state: &mut MachineState) {
+    fn ret(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "ret");
-        panic!("Not implemented");
+        let value = machine_state.stack_pop();
+        machine_state.rip = value;
     }
 
     fn leave(&self, _machine_state: &mut MachineState) {
