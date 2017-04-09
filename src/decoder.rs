@@ -133,6 +133,17 @@ impl<'a> Decoder<'a> {
                         self.cpu.and(self.machine_state, argument);
                         ip_offset
                     }
+                    0x24 => {
+                        let rip = self.machine_state.rip as u64;
+                        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
+
+                        self.cpu.and(self.machine_state, InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                                        immediate: immediate,
+                                    }).second_argument(InstructionArgument::Register {
+                                        register: Register::AL,
+                                    }).finalize());
+                        1
+                    }
                     0x29 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Register,
