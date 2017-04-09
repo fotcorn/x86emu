@@ -7,7 +7,6 @@ use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 pub struct EmulationCPU {}
 
 impl EmulationCPU {
-
     fn sub_impl(&self, machine_state: &mut MachineState, arg: InstructionArguments, set: bool) {
         arg.assert_two_arguments();
         let argument_size = arg.size();
@@ -19,15 +18,15 @@ impl EmulationCPU {
             ArgumentSize::Bit8 => {
                 let (result, carry) = (value2 as u8).overflowing_sub(value1 as u8);
                 (result as i64, carry)
-            },
+            }
             ArgumentSize::Bit16 => {
                 let (result, carry) = (value2 as u16).overflowing_sub(value1 as u16);
                 (result as i64, carry)
-            },
+            }
             ArgumentSize::Bit32 => {
                 let (result, carry) = (value2 as u32).overflowing_sub(value1 as u32);
                 (result as i64, carry)
-            },
+            }
             ArgumentSize::Bit64 => {
                 let (result, carry) = (value2 as u64).overflowing_sub(value1 as u64);
                 (result as i64, carry)
@@ -47,10 +46,12 @@ impl CPU for EmulationCPU {
         arg.assert_one_argument();
         let vector = match arg.size() {
             ArgumentSize::Bit32 => {
-                convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument, ArgumentSize::Bit32) as i32)
+                convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument,
+                                                             ArgumentSize::Bit32) as i32)
             }
             ArgumentSize::Bit64 => {
-                convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument, ArgumentSize::Bit64))
+                convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument,
+                                                             ArgumentSize::Bit64))
             }
             _ => panic!("Unsupported push value size"),
         };
@@ -275,12 +276,18 @@ impl CPU for EmulationCPU {
 
 
     fn movs(&self, machine_state: &mut MachineState, repeat: bool) {
-        let mut from = machine_state.get_value(&InstructionArgument::Register {register: Register::RSI}, ArgumentSize::Bit64);
-        let mut to = machine_state.get_value(&InstructionArgument::Register {register: Register::RDI}, ArgumentSize::Bit64);
+        let mut from =
+            machine_state.get_value(&InstructionArgument::Register { register: Register::RSI },
+                                    ArgumentSize::Bit64);
+        let mut to =
+            machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
+                                    ArgumentSize::Bit64);
         // TODO: do not hardcode to 8byte operand
         if repeat {
             println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
-            let mut length = machine_state.get_value(&InstructionArgument::Register {register: Register::RCX}, ArgumentSize::Bit64);
+            let mut length =
+                machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
+                                        ArgumentSize::Bit64);
             length *= 8; // 8 bytes per mov
             if machine_state.get_flag(Flags::Direction) {
                 println!("WARNING: address calculation could be incorrect");
@@ -304,15 +311,11 @@ impl CPU for EmulationCPU {
         arg.assert_one_argument();
         let value = machine_state.get_value(&arg.first_argument, arg.size());
         match arg.first_argument {
-            InstructionArgument::Register {..} => {
-                machine_state.rip = value
-            },
-            InstructionArgument::Immediate {..} => {
-                machine_state.rip += value
-            },
-            InstructionArgument::EffectiveAddress {..} => {
+            InstructionArgument::Register { .. } => machine_state.rip = value,
+            InstructionArgument::Immediate { .. } => machine_state.rip += value,
+            InstructionArgument::EffectiveAddress { .. } => {
                 panic!("Unsupported argument for jmp");
-            },
+            }
         }
     }
 

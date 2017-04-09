@@ -83,14 +83,18 @@ impl<'a> Decoder<'a> {
                     opcode @ 0x50...0x57 => {
                         self.cpu.push(self.machine_state,
                                   InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                      register: get_register(opcode - 0x50, RegisterSize::Bit64, decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                      register: get_register(opcode - 0x50, RegisterSize::Bit64,
+                                                decoder_flags.contains(NEW_64BIT_REGISTER)),
                                   }).finalize());
                         1
                     }
                     opcode @ 0x58...0x5F => {
                         let argument =
                             InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                    register: get_register(opcode - 0x58, RegisterSize::Bit64, decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                    register:
+                                        get_register(opcode - 0x58,
+                                                     RegisterSize::Bit64,
+                                                     decoder_flags.contains(NEW_64BIT_REGISTER)),
                                 })
                                 .finalize();
                         self.cpu.pop(self.machine_state, argument);
@@ -103,7 +107,10 @@ impl<'a> Decoder<'a> {
                                     immediate: immediate as i64,
                                 })
                                 .second_argument(InstructionArgument::Register {
-                                    register: get_register(opcode - 0xB8, register_size, decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                    register:
+                                        get_register(opcode - 0xB8,
+                                                     register_size,
+                                                     decoder_flags.contains(NEW_64BIT_REGISTER)),
                                 })
                                 .finalize();
                         self.cpu.mov(self.machine_state, argument);
@@ -137,7 +144,8 @@ impl<'a> Decoder<'a> {
                         let rip = self.machine_state.rip as u64;
                         let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
 
-                        self.cpu.and(self.machine_state, InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                        self.cpu.and(self.machine_state, InstructionArgumentsBuilder::new(
+                                    InstructionArgument::Immediate {
                                         immediate: immediate,
                                     }).second_argument(InstructionArgument::Register {
                                         register: Register::AL,
@@ -368,7 +376,7 @@ impl<'a> Decoder<'a> {
                     }
                     0xCD => {
                         // abuse int X instruction to signal passed test program
-                        return
+                        return;
                     }
                     _ => panic!("Unknown instruction: {:x}", first_byte),
                 };
@@ -391,10 +399,9 @@ impl<'a> Decoder<'a> {
         let rip = self.machine_state.rip as u64;
         let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
 
-        (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-            immediate: immediate,
-        }).finalize(),
-        2)
+        (InstructionArgumentsBuilder::new(InstructionArgument::Immediate { immediate: immediate })
+             .finalize(),
+         2)
     }
 
     fn get_argument(&mut self,
@@ -419,14 +426,16 @@ impl<'a> Decoder<'a> {
                     address_mod = 0b100;
                 }
 
-                let register = get_register(rm, register_size, decoder_flags.contains(NEW_64BIT_REGISTER));
+                let register = get_register(rm,
+                                            register_size,
+                                            decoder_flags.contains(NEW_64BIT_REGISTER));
 
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
                     0b01 => {
                         let rip = (self.machine_state.rip + 2) as u64;
                         (self.machine_state.mem_read_byte(rip) as i8 as i32, 1)
-                    },
+                    }
                     0b10 | 0b100 => {
                         let displacement = self.get_i32_value(2);
                         // change RIP relative addressing mode back to 0b00
@@ -435,7 +444,7 @@ impl<'a> Decoder<'a> {
                         }
 
                         (displacement, 4)
-                    },
+                    }
                     _ => unreachable!(),
                 };
                 ip_offset += 2; // skip instruction + modrm byte
@@ -493,8 +502,7 @@ impl<'a> Decoder<'a> {
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
 
-                        let second_register_size = if 
-                            decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
+                        let second_reg_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
                             RegisterSize::Bit32
                         } else {
                             RegisterSize::Bit64
@@ -504,9 +512,13 @@ impl<'a> Decoder<'a> {
                         let register1 = if address_mod == 0b00 && rm == 0x5 {
                             Register::RIP
                         } else {
-                            get_register(rm, second_register_size, decoder_flags.contains(NEW_64BIT_REGISTER))
+                            get_register(rm,
+                                         second_reg_size,
+                                         decoder_flags.contains(NEW_64BIT_REGISTER))
                         };
-                        let register2 = get_register(register_or_opcode, register_size, decoder_flags.contains(MOD_R_M_EXTENSION));
+                        let register2 = get_register(register_or_opcode,
+                                                     register_size,
+                                                     decoder_flags.contains(MOD_R_M_EXTENSION));
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
                              InstructionArgumentsBuilder::new(
@@ -533,7 +545,9 @@ impl<'a> Decoder<'a> {
             }
             0b11 => {
                 // register
-                let register1 = get_register(modrm & 0b00000111, register_size, decoder_flags.contains(NEW_64BIT_REGISTER));
+                let register1 = get_register(modrm & 0b00000111,
+                                             register_size,
+                                             decoder_flags.contains(NEW_64BIT_REGISTER));
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
@@ -542,12 +556,18 @@ impl<'a> Decoder<'a> {
                                      register: register1,
                                  })
                                  .second_argument(InstructionArgument::Register {
-                                     register: get_register(value2, register_size, decoder_flags.contains(MOD_R_M_EXTENSION)),
+                                     register:
+                                         get_register(value2,
+                                                      register_size,
+                                                      decoder_flags.contains(MOD_R_M_EXTENSION)),
                                  })
                                  .finalize()
                          } else {
                              InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                     register: get_register(value2, register_size, decoder_flags.contains(MOD_R_M_EXTENSION)),
+                                     register:
+                                         get_register(value2,
+                                                      register_size,
+                                                      decoder_flags.contains(MOD_R_M_EXTENSION)),
                                  })
                                  .second_argument(InstructionArgument::Register {
                                      register: register1,

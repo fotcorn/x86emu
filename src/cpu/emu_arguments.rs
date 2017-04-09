@@ -12,9 +12,7 @@ impl MachineState {
                 let mut address = self.get_register_value(register);
                 address += displacement as i64;
                 match argument_size {
-                    ArgumentSize::Bit8 => {
-                        self.mem_read_byte(address as u64) as i64
-                    }
+                    ArgumentSize::Bit8 => self.mem_read_byte(address as u64) as i64,
                     ArgumentSize::Bit16 => {
                         let mut value: i16 = 0;
                         let val = self.mem_read(address as u64, 2);
@@ -118,23 +116,59 @@ impl MachineState {
 
             Register::RIP => self.rip = value,
 
-            Register::EAX => self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EBX => self.rbx = ((self.rbx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::ECX => self.rcx = ((self.rcx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EDX => self.rdx = ((self.rdx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::ESP => self.rsp = ((self.rsp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EBP => self.rbp = ((self.rbp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::ESI => self.rsi = ((self.rsi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
-            Register::EDI => self.rdi = ((self.rdi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+            Register::EAX => {
+                self.rax = ((self.rax as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EBX => {
+                self.rbx = ((self.rbx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::ECX => {
+                self.rcx = ((self.rcx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EDX => {
+                self.rdx = ((self.rdx as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::ESP => {
+                self.rsp = ((self.rsp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EBP => {
+                self.rbp = ((self.rbp as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::ESI => {
+                self.rsi = ((self.rsi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
+            Register::EDI => {
+                self.rdi = ((self.rdi as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64
+            }
 
-            Register::AL => self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
-            Register::CL => self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
-            Register::DL => self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
-            Register::BL => self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
-            Register::AH => self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
-            Register::CH => self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
-            Register::DH => self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
-            Register::BH => self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFF00FF) | ((value as i8 as u64) << 8)) as i64,
+            Register::AL => {
+                self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64
+            }
+            Register::CL => {
+                self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64
+            }
+            Register::DL => {
+                self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64
+            }
+            Register::BL => {
+                self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64
+            }
+            Register::AH => {
+                self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFF00FF) |
+                            ((value as i8 as u64) << 8)) as i64
+            }
+            Register::CH => {
+                self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFF00FF) |
+                            ((value as i8 as u64) << 8)) as i64
+            }
+            Register::DH => {
+                self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFF00FF) |
+                            ((value as i8 as u64) << 8)) as i64
+            }
+            Register::BH => {
+                self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFF00FF) |
+                            ((value as i8 as u64) << 8)) as i64
+            }
 
             Register::ES => (),
             Register::CS => (),

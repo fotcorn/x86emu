@@ -77,8 +77,11 @@ pub fn get_register_size(reg: &Register) -> ArgumentSize {
         Register::R14 | Register::R15 => ArgumentSize::Bit64,
         Register::EAX | Register::EBX | Register::ECX | Register::EDX | Register::ESP |
         Register::EBP | Register::ESI | Register::EDI => ArgumentSize::Bit32,
-        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => ArgumentSize::Bit16,
-        Register::AL | Register::CL | Register::DL | Register::BL | Register::AH | Register::CH | Register::DH | Register::BH => ArgumentSize::Bit8,
+        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => {
+            ArgumentSize::Bit16
+        }
+        Register::AL | Register::CL | Register::DL | Register::BL | Register::AH |
+        Register::CH | Register::DH | Register::BH => ArgumentSize::Bit8,
     }
 }
 

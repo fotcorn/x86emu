@@ -53,11 +53,11 @@ impl MachineState {
             r15: 0,
 
             rflags: 0,
-            memory: HashMap::new()
+            memory: HashMap::new(),
         }
     }
 
-    fn get_page(&mut self, cell: u64) -> &mut Vec<u8>{
+    fn get_page(&mut self, cell: u64) -> &mut Vec<u8> {
         match self.memory.entry(cell) {
             Entry::Occupied(entry) => &mut *entry.into_mut(),
             Entry::Vacant(entry) => {
@@ -68,10 +68,10 @@ impl MachineState {
     }
 
     pub fn mem_read_byte(&mut self, address: u64) -> u8 {
-         let page_number = address / PAGE_SIZE;
-         let page = self.get_page(page_number);
-         let page_offset = address % PAGE_SIZE;
-         page[page_offset as usize]
+        let page_number = address / PAGE_SIZE;
+        let page = self.get_page(page_number);
+        let page_offset = address % PAGE_SIZE;
+        page[page_offset as usize]
     }
 
     pub fn mem_read(&mut self, address: u64, length: u64) -> Vec<u8> {
@@ -141,11 +141,17 @@ impl MachineState {
 
 impl fmt::Display for MachineState {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "rax: {:20x} rbx: {:20x} rcx: {:20x}\n\
-                  rdx: {:20x} rsp: {:20x} rbp: {:20x}\n\
-                  rsi: {:20x} rdi: {:20x} rip: {:20x}\n",
-               self.rax, self.rbx, self.rcx,
-               self.rdx, self.rsp, self.rbp,
-               self.rsi, self.rdi, self.rip)
+        write!(f,
+               "rax: {:20x} rbx: {:20x} rcx: {:20x}\nrdx: {:20x} rsp: {:20x} rbp: {:20x}\nrsi: \
+                {:20x} rdi: {:20x} rip: {:20x}\n",
+               self.rax,
+               self.rbx,
+               self.rcx,
+               self.rdx,
+               self.rsp,
+               self.rbp,
+               self.rsi,
+               self.rdi,
+               self.rip)
     }
 }
