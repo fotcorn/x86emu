@@ -616,16 +616,20 @@ bitflags! {
 fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Register {
     match size {
         RegisterSize::Bit32 => {
-            match num {
-                0 => Register::EAX,
-                1 => Register::ECX,
-                2 => Register::EDX,
-                3 => Register::EBX,
-                4 => Register::ESP,
-                5 => Register::EBP,
-                6 => Register::ESI,
-                7 => Register::EDI,
-                _ => panic!("Unknown instruction argument"),
+            if new_64bit_register {
+                panic!("new 32bit registers not implemented")
+            } else {
+                match num {
+                    0 => Register::EAX,
+                    1 => Register::ECX,
+                    2 => Register::EDX,
+                    3 => Register::EBX,
+                    4 => Register::ESP,
+                    5 => Register::EBP,
+                    6 => Register::ESI,
+                    7 => Register::EDI,
+                    _ => panic!("Unknown instruction argument"),
+                }
             }
         }
         RegisterSize::Bit64 => {
@@ -667,16 +671,20 @@ fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Regist
             }
         }
         RegisterSize::Bit8 => {
-            match num {
-                0 => Register::AL,
-                1 => Register::CL,
-                2 => Register::DL,
-                3 => Register::BL,
-                4 => Register::AH,
-                5 => Register::CH,
-                6 => Register::DH,
-                7 => Register::BH,
-                _ => panic!("Unknown instruction argument"),
+            if new_64bit_register {
+                panic!("new 32bit registers not implemented")
+            } else {
+                match num {
+                    0 => Register::AL,
+                    1 => Register::CL,
+                    2 => Register::DL,
+                    3 => Register::BL,
+                    4 => Register::AH,
+                    5 => Register::CH,
+                    6 => Register::DH,
+                    7 => Register::BH,
+                    _ => panic!("Unknown instruction argument"),
+                }
             }
         }
     }
