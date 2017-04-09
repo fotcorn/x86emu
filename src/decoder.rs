@@ -56,8 +56,8 @@ impl<'a> Decoder<'a> {
                     if temp_rex.contains(B) {
                         decoder_flags |= NEW_64BIT_REGISTER;
                     }
-                    if temp_rex.contains(MOD_R_M_EXTENSION) {
-                        panic!("REX mod rm extension not supported")
+                    if temp_rex.contains(R) {
+                        decoder_flags |= MOD_R_M_EXTENSION;
                     }
                     if temp_rex.contains(SIB_EXTENSION) {
                         panic!("REX mod rm extension not supported")
@@ -476,7 +476,7 @@ impl<'a> Decoder<'a> {
                         } else {
                             get_register(rm, second_register_size, decoder_flags.contains(NEW_64BIT_REGISTER))
                         };
-                        let register2 = get_register(register_or_opcode, register_size, false);
+                        let register2 = get_register(register_or_opcode, register_size, decoder_flags.contains(MOD_R_M_EXTENSION));
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
                              InstructionArgumentsBuilder::new(
@@ -512,12 +512,12 @@ impl<'a> Decoder<'a> {
                                      register: register1,
                                  })
                                  .second_argument(InstructionArgument::Register {
-                                     register: get_register(value2, register_size, false),
+                                     register: get_register(value2, register_size, decoder_flags.contains(MOD_R_M_EXTENSION)),
                                  })
                                  .finalize()
                          } else {
                              InstructionArgumentsBuilder::new(InstructionArgument::Register {
-                                     register: get_register(value2, register_size, false),
+                                     register: get_register(value2, register_size, decoder_flags.contains(MOD_R_M_EXTENSION)),
                                  })
                                  .second_argument(InstructionArgument::Register {
                                      register: register1,
@@ -586,7 +586,7 @@ enum ImmediateSize {
 bitflags! {
     flags REX: u8 {
         const OPERAND_64_BIT = 0b00001000,
-        const MOD_R_M_EXTENSION = 0b00000100,
+        const R = 0b00000100,
         const SIB_EXTENSION = 0b00000010,
         const B = 0b00000001,
     }
@@ -594,13 +594,11 @@ bitflags! {
 
 bitflags! {
     flags DecoderFlags: u64 {
-        const REVERSED_REGISTER_DIRECTION = 0b1,
-        const ADDRESS_SIZE_OVERRIDE = 0b10,
-        const REPEAT = 0b100,
-        // const OPERAND_64_BIT = 0b1000,
-        // const REGISTER_EXTENSION = 0b10000,
-        // const SIB_EXTENSION = 0b100000,
-        const NEW_64BIT_REGISTER = 0b1000000,
+        const REVERSED_REGISTER_DIRECTION = 1 << 0,
+        const ADDRESS_SIZE_OVERRIDE = 1 << 2,
+        const REPEAT = 1 << 3,
+        const NEW_64BIT_REGISTER = 1 << 4,
+        const MOD_R_M_EXTENSION = 1 << 5,
     }
 }
 
