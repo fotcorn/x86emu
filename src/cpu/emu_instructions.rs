@@ -333,6 +333,21 @@ impl CPU for EmulationCPU {
         }
     }
 
+
+    fn jz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jz", arg);
+        if machine_state.get_flag(Flags::Zero) {
+            self.jmp(machine_state, arg);
+        }
+    }
+
+    fn jnz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jnz", arg);
+        if !machine_state.get_flag(Flags::Zero) {
+            self.jmp(machine_state, arg);
+        }
+    }
+
     fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jge", arg);
         //self.jmp(machine_state, arg);

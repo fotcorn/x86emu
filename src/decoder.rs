@@ -170,6 +170,16 @@ impl<'a> Decoder<'a> {
                         self.cpu.jnc(self.machine_state, arg);
                         ip_offset
                     }
+                    0x74 => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jz(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x75 => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jnz(self.machine_state, arg);
+                        ip_offset
+                    }
                     0x7D => {
                         let (arg, ip_offset) = self.read_immediate_8bit();
                         self.cpu.jge(self.machine_state, arg);
