@@ -426,10 +426,6 @@ impl<'a> Decoder<'a> {
                     address_mod = 0b100;
                 }
 
-                let register = get_register(rm,
-                                            register_size,
-                                            decoder_flags.contains(NEW_64BIT_REGISTER));
-
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
                     0b01 => {
@@ -463,6 +459,14 @@ impl<'a> Decoder<'a> {
                             RegisterSize::Bit64 => ArgumentSize::Bit64,
                             RegisterSize::Segment => panic!("Unsupported register size"),
                         };
+                        let register_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
+                            RegisterSize::Bit32
+                        } else {
+                            RegisterSize::Bit64
+                        };
+                        let register = get_register(rm,
+                                                    register_size,
+                                                    decoder_flags.contains(NEW_64BIT_REGISTER));
 
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
@@ -486,6 +490,14 @@ impl<'a> Decoder<'a> {
                             RegisterSize::Bit64 => ArgumentSize::Bit64,
                             RegisterSize::Segment => panic!("Unsupported register size"),
                         };
+                        let register_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
+                            RegisterSize::Bit32
+                        } else {
+                            RegisterSize::Bit64
+                        };
+                        let register = get_register(rm,
+                                                    register_size,
+                                                    decoder_flags.contains(NEW_64BIT_REGISTER));
 
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
