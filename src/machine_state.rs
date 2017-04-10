@@ -137,6 +137,10 @@ impl MachineState {
             self.rflags &= flag as i64;
         }
     }
+
+    pub fn compute_flags(&mut self, result: i64) {
+        self.set_flag(Flags::Zero, result == 0);
+    }
 }
 
 impl fmt::Display for MachineState {

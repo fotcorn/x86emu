@@ -33,6 +33,7 @@ impl EmulationCPU {
             }
         };
         machine_state.set_flag(Flags::Carry, carry);
+        machine_state.compute_flags(result);
         if set {
             machine_state.set_value(result, &second_argument, argument_size);
         }
@@ -80,7 +81,10 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        machine_state.set_value(value1 + value2, &second_argument, argument_size);
+        let result = value1 + value2;
+        machine_state.compute_flags(result);
+        // TODO: overflow/carry
+        machine_state.set_value(result, &second_argument, argument_size);
     }
 
     fn or(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -90,7 +94,9 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        machine_state.set_value(value1 | value2, &second_argument, argument_size);
+        let result = value1 | value2;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &second_argument, argument_size);
     }
 
     fn adc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -110,7 +116,9 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        machine_state.set_value(value2 & value1, &second_argument, argument_size);
+        let result = value1 & value2;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &second_argument, argument_size);
     }
 
     fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -125,7 +133,9 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        machine_state.set_value(value1 ^ value2, &second_argument, argument_size);
+        let result = value1 ^ value2;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &second_argument, argument_size);
     }
 
     fn cmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -186,7 +196,9 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        machine_state.set_value(value2 >> value1, &second_argument, argument_size);
+        let result = value2 >> value1;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &second_argument, argument_size);
     }
 
     fn inc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -194,7 +206,9 @@ impl CPU for EmulationCPU {
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
-        machine_state.set_value(value + 1, &arg.first_argument, argument_size);
+        let result = value + 1;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &arg.first_argument, argument_size);
     }
 
     fn dec(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -202,7 +216,10 @@ impl CPU for EmulationCPU {
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
-        machine_state.set_value(value - 1, &arg.first_argument, argument_size);
+        let result = value - 1;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &arg.first_argument, argument_size);
+
     }
 
     fn div(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -230,7 +247,9 @@ impl CPU for EmulationCPU {
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
-        machine_state.set_value(!value, &arg.first_argument, argument_size);
+        let result = !value;
+        machine_state.compute_flags(result);
+        machine_state.set_value(result, &arg.first_argument, argument_size);
     }
 
     fn neg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
