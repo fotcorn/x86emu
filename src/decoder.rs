@@ -376,7 +376,7 @@ impl<'a> Decoder<'a> {
                                 self.cpu.cmov(self.machine_state, argument);
                                 ip_offset
                             }
-                            _ => panic!("Unknown instruction: 0F {:x}", first_byte),
+                            _ => panic!("Unknown instruction: 0F {:X}", second_byte),
                         }
 
                     }
