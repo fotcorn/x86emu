@@ -229,7 +229,7 @@ impl fmt::Display for InstructionArgument {
                 } else if displacement > 0 {
                     write!(f, "{:#x}({})", displacement, register)
                 } else {
-                    write!(f, "({})", register)
+                    write!(f, "0x0({})", register)
                 }
             }
         }

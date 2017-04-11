@@ -15,6 +15,7 @@ sed -e 's/leaveq/leave/g' | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/retq/ret/g' | \
 sed -e 's/cmovs/cmov /g' | \
+sed -e 's/\s*#.*$//' | \
 sed -e '/^$/d' \
 > temp/dis_objdump.asm
 cargo run -- --loader elf --cpu print --symbol _start temp/out | sed -e 's/call.*/call/g' > temp/dis_emu.asm
