@@ -8,6 +8,8 @@ pub trait CPU {
 
     fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
+    fn movzbl(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
     fn add(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn or(&self, machine_state: &mut MachineState, arg: InstructionArguments);
