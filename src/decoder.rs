@@ -391,7 +391,7 @@ impl<'a> Decoder<'a> {
                                 let (argument, ip_offset) = self.get_argument(register_size,
                                                 RegOrOpcode::Register,
                                                 ImmediateSize::None,
-                                                decoder_flags);
+                                                decoder_flags | REVERSED_REGISTER_DIRECTION);
                                 self.cpu.movzbl(self.machine_state, argument);
                                 ip_offset
                             }
