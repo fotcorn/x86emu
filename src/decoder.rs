@@ -375,6 +375,17 @@ impl<'a> Decoder<'a> {
                                                   decoder_flags | REVERSED_REGISTER_DIRECTION);
                                 self.cpu.cmov(self.machine_state, argument);
                                 ip_offset
+                            },
+                            0x84 => {
+                                // TODO: could also be 16bit value
+                                let immediate = self.get_i32_value(1);
+                                let argument =
+                                    InstructionArgumentsBuilder::new(
+                                        InstructionArgument::Immediate {
+                                            immediate: immediate as i64,
+                                        }).finalize();
+                                self.cpu.jz(self.machine_state, argument);
+                                5
                             }
                             _ => panic!("Unknown instruction: 0F {:X}", second_byte),
                         }
