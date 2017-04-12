@@ -455,14 +455,21 @@ impl<'a> Decoder<'a> {
                     address_mod = 0b100;
                 }
 
+                // sib byte
+                let offset = if rm == 0b100 {
+                    3
+                } else {
+                    2
+                };
+
                 let (displacement, mut ip_offset) = match address_mod {
                     0b00 => (0, 0),
                     0b01 => {
-                        let rip = (self.machine_state.rip + 2) as u64;
+                        let rip = (self.machine_state.rip + offset) as u64;
                         (self.machine_state.mem_read_byte(rip) as i8 as i32, 1)
                     }
                     0b10 | 0b100 => {
-                        let displacement = self.get_i32_value(2);
+                        let displacement = self.get_i32_value(offset);
                         // change RIP relative addressing mode back to 0b00
                         if address_mod == 0b100 {
                             address_mod = 0b00;
@@ -472,7 +479,7 @@ impl<'a> Decoder<'a> {
                     }
                     _ => unreachable!(),
                 };
-                ip_offset += 2; // skip instruction + modrm byte
+                ip_offset += offset; // skip instruction + modrm byte
 
                 let register_or_opcode = (modrm & 0b00111000) >> 3;
                 // TODO: based on REX, this could be a 64bit value
