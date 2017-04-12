@@ -717,7 +717,17 @@ fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Regist
     match size {
         RegisterSize::Bit32 => {
             if new_64bit_register {
-                panic!("new 32bit registers not implemented")
+                match num {
+                    0 => Register::R8D,
+                    1 => Register::R9D,
+                    2 => Register::R10D,
+                    3 => Register::R11D,
+                    4 => Register::R12D,
+                    5 => Register::R13D,
+                    6 => Register::R14D,
+                    7 => Register::R15D,
+                    _ => panic!("Unknown instruction argument"),
+                }
             } else {
                 match num {
                     0 => Register::EAX,
