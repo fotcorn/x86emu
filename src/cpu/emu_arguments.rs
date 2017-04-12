@@ -94,6 +94,20 @@ impl MachineState {
             Register::DH => (self.rdx as i16 >> 8) as i64,
             Register::BH => (self.rbx as i16 >> 8) as i64,
 
+            Register::R8B => self.r8 as i8 as i64,
+            Register::R9B => self.r9 as i8 as i64,
+            Register::R10B => self.r10 as i8 as i64,
+            Register::R11B => self.r11 as i8 as i64,
+            Register::R12B => self.r12 as i8 as i64,
+            Register::R13B => self.r13 as i8 as i64,
+            Register::R14B => self.r14 as i8 as i64,
+            Register::R15B => self.r15 as i8 as i64,
+
+            Register::SPL => self.rsp as i8 as i64,
+            Register::BPL => self.rbp as i8 as i64,
+            Register::SIL => self.rsi as i8 as i64,
+            Register::DIL => self.rdi as i8 as i64,
+
             Register::ES => 0,
             Register::CS => 0,
             Register::SS => 0,
@@ -203,6 +217,20 @@ impl MachineState {
                 self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFF00FF) |
                             ((value as i8 as u64) << 8)) as i64
             }
+
+            Register::R8B => self.r8 = ((self.r8 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R9B => self.r9 = ((self.r9 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R10B => self.r10 = ((self.r10 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R11B => self.r11 = ((self.r11 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R12B => self.r12 = ((self.r12 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R13B => self.r13 = ((self.r13 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R14B => self.r14 = ((self.r14 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::R15B => self.r15 = ((self.r15 as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+
+            Register::SPL => self.rsp = ((self.rsp as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::BPL => self.rbp = ((self.rbp as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::SIL => self.rsi = ((self.rsi as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
+            Register::DIL => self.rdi = ((self.rdi as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
 
             Register::ES => (),
             Register::CS => (),

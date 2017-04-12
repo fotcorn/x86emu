@@ -57,6 +57,20 @@ pub enum Register {
     DH,
     BH,
 
+    SPL,
+    BPL,
+    SIL,
+    DIL,
+
+    R8B,
+    R9B,
+    R10B,
+    R11B,
+    R12B,
+    R13B,
+    R14B,
+    R15B,
+
     ES,
     CS,
     SS,
@@ -95,7 +109,10 @@ pub fn get_register_size(reg: &Register) -> ArgumentSize {
         Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => ArgumentSize::Bit16,
 
         Register::AL | Register::CL | Register::DL | Register::BL | Register::AH |
-        Register::CH | Register::DH | Register::BH => ArgumentSize::Bit8,
+        Register::CH | Register::DH | Register::BH | Register::SPL | Register::BPL |
+        Register::SIL | Register::DIL | Register::R8B | Register::R9B |
+        Register::R10B | Register::R11B | Register::R12B | Register::R13B | Register::R14B |
+        Register::R15B => ArgumentSize::Bit8,
     }
 }
 

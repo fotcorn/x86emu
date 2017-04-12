@@ -62,9 +62,7 @@ impl<'a> Decoder<'a> {
                     if temp_rex.contains(SIB_EXTENSION) {
                         panic!("REX mod rm extension not supported")
                     }
-                    if first_byte == 0x40 {
-                        panic!("New 8bit registers not supported")
-                    }
+                    decoder_flags |= NEW_8BIT_REGISTER;
                     self.machine_state.rip += 1;
                     rex = Some(temp_rex);
                 }
@@ -84,7 +82,8 @@ impl<'a> Decoder<'a> {
                         self.cpu.push(self.machine_state,
                                   InstructionArgumentsBuilder::new(InstructionArgument::Register {
                                       register: get_register(opcode - 0x50, RegisterSize::Bit64,
-                                                decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                                decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                decoder_flags.contains(NEW_8BIT_REGISTER)),
                                   }).finalize());
                         1
                     }
@@ -94,7 +93,8 @@ impl<'a> Decoder<'a> {
                                     register:
                                         get_register(opcode - 0x58,
                                                      RegisterSize::Bit64,
-                                                     decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                                     decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                     decoder_flags.contains(NEW_8BIT_REGISTER)),
                                 })
                                 .finalize();
                         self.cpu.pop(self.machine_state, argument);
@@ -110,7 +110,8 @@ impl<'a> Decoder<'a> {
                                     register:
                                         get_register(opcode - 0xB8,
                                                      register_size,
-                                                     decoder_flags.contains(NEW_64BIT_REGISTER)),
+                                                     decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                     decoder_flags.contains(NEW_8BIT_REGISTER)),
                                 })
                                 .finalize();
                         self.cpu.mov(self.machine_state, argument);
@@ -214,6 +215,15 @@ impl<'a> Decoder<'a> {
                                                                       ImmediateSize::None,
                                                                       decoder_flags);
                         self.cpu.mov(self.machine_state, argument);
+                        ip_offset
+                    }
+                    0x84 => {
+                        // test
+                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.cpu.test(self.machine_state, argument);
                         ip_offset
                     }
                     0x85 => {
@@ -511,7 +521,8 @@ impl<'a> Decoder<'a> {
                             } else {
                                 RegisterSize::Bit64
                             };
-                            get_register(rm, register_size, decoder_flags.contains(NEW_64BIT_REGISTER))
+                            get_register(rm, register_size, decoder_flags.contains(NEW_64BIT_REGISTER),
+                                         decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
 
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
@@ -545,7 +556,8 @@ impl<'a> Decoder<'a> {
                             } else {
                                 RegisterSize::Bit64
                             };
-                            get_register(rm, register_size, decoder_flags.contains(NEW_64BIT_REGISTER))
+                            get_register(rm, register_size, decoder_flags.contains(NEW_64BIT_REGISTER),
+                                         decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
 
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
@@ -575,11 +587,12 @@ impl<'a> Decoder<'a> {
                         } else {
                             get_register(rm,
                                          second_reg_size,
-                                         decoder_flags.contains(NEW_64BIT_REGISTER))
+                                         decoder_flags.contains(NEW_64BIT_REGISTER),
+                                         decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
                         let register2 = get_register(register_or_opcode,
                                                      register_size,
-                                                     decoder_flags.contains(MOD_R_M_EXTENSION));
+                                                     decoder_flags.contains(MOD_R_M_EXTENSION), false);
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
                              InstructionArgumentsBuilder::new(
@@ -608,7 +621,8 @@ impl<'a> Decoder<'a> {
                 // register
                 let register1 = get_register(modrm & 0b00000111,
                                              register_size,
-                                             decoder_flags.contains(NEW_64BIT_REGISTER));
+                                             decoder_flags.contains(NEW_64BIT_REGISTER),
+                                             decoder_flags.contains(NEW_8BIT_REGISTER));
                 let value2 = (modrm & 0b00111000) >> 3;
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
@@ -620,7 +634,7 @@ impl<'a> Decoder<'a> {
                                      register:
                                          get_register(value2,
                                                       register_size,
-                                                      decoder_flags.contains(MOD_R_M_EXTENSION)),
+                                                      decoder_flags.contains(MOD_R_M_EXTENSION), false),
                                  })
                                  .finalize()
                          } else {
@@ -628,7 +642,7 @@ impl<'a> Decoder<'a> {
                                      register:
                                          get_register(value2,
                                                       register_size,
-                                                      decoder_flags.contains(MOD_R_M_EXTENSION)),
+                                                      decoder_flags.contains(MOD_R_M_EXTENSION), false),
                                  })
                                  .second_argument(InstructionArgument::Register {
                                      register: register1,
@@ -709,11 +723,12 @@ bitflags! {
         const ADDRESS_SIZE_OVERRIDE = 1 << 2,
         const REPEAT = 1 << 3,
         const NEW_64BIT_REGISTER = 1 << 4,
-        const MOD_R_M_EXTENSION = 1 << 5,
+        const NEW_8BIT_REGISTER = 1 << 5,
+        const MOD_R_M_EXTENSION = 1 << 6,
     }
 }
 
-fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Register {
+fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool, new_8bit_register: bool) -> Register {
     match size {
         RegisterSize::Bit32 => {
             if new_64bit_register {
@@ -782,18 +797,42 @@ fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool) -> Regist
         }
         RegisterSize::Bit8 => {
             if new_64bit_register {
-                panic!("new 32bit registers not implemented")
-            } else {
                 match num {
-                    0 => Register::AL,
-                    1 => Register::CL,
-                    2 => Register::DL,
-                    3 => Register::BL,
-                    4 => Register::AH,
-                    5 => Register::CH,
-                    6 => Register::DH,
-                    7 => Register::BH,
+                    0 => Register::R8B,
+                    1 => Register::R9B,
+                    2 => Register::R10B,
+                    3 => Register::R11B,
+                    4 => Register::R12B,
+                    5 => Register::R13B,
+                    6 => Register::R14B,
+                    7 => Register::R15B,
                     _ => panic!("Unknown instruction argument"),
+                }
+            } else {
+                if new_8bit_register {
+                    match num {
+                        0 => Register::AL,
+                        1 => Register::CL,
+                        2 => Register::DL,
+                        3 => Register::BL,
+                        4 => Register::SPL,
+                        5 => Register::BPL,
+                        6 => Register::SIL,
+                        7 => Register::DIL,
+                        _ => panic!("Unknown instruction argument"),
+                    }
+                } else {
+                    match num {
+                        0 => Register::AL,
+                        1 => Register::CL,
+                        2 => Register::DL,
+                        3 => Register::BL,
+                        4 => Register::AH,
+                        5 => Register::CH,
+                        6 => Register::DH,
+                        7 => Register::BH,
+                        _ => panic!("Unknown instruction argument"),
+                    }
                 }
             }
         }
