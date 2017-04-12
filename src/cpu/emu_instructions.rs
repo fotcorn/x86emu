@@ -38,6 +38,21 @@ impl EmulationCPU {
             machine_state.set_value(result, &second_argument, argument_size);
         }
     }
+
+    fn and_impl(&self, machine_state: &mut MachineState, arg: InstructionArguments, set: bool) {
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+        let result = value1 & value2;
+        machine_state.compute_flags(result);
+        machine_state.set_flag(Flags::Carry, false);
+        machine_state.set_flag(Flags::Overflow, false);
+        if set {
+            machine_state.set_value(result, &second_argument, argument_size);
+        }
+    }
 }
 
 impl CPU for EmulationCPU {
@@ -118,14 +133,7 @@ impl CPU for EmulationCPU {
 
     fn and(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "and", arg);
-        arg.assert_two_arguments();
-        let argument_size = arg.size();
-        let second_argument = arg.second_argument.unwrap();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
-        let value2 = machine_state.get_value(&second_argument, argument_size);
-        let result = value1 & value2;
-        machine_state.compute_flags(result);
-        machine_state.set_value(result, &second_argument, argument_size);
+        self.and_impl(machine_state, arg, true);
     }
 
     fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -186,9 +194,10 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn test(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn test(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "test", arg);
-        println!("WARNING: test not implemented");
+        println!("WARNING: test not fully implemented");
+        self.and_impl(machine_state, arg, false);
     }
 
     fn cmov(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

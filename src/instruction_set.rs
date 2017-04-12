@@ -58,8 +58,9 @@ pub enum Register {
 
 pub enum Flags {
     Carry = 1 << 0,
-    Direction = 1 << 10,
     Zero = 1 << 6,
+    Direction = 1 << 10,
+    Overflow = 1 << 11,
 }
 
 #[derive(Debug, Copy, Clone)]
