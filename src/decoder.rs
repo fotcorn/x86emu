@@ -509,10 +509,10 @@ impl<'a> Decoder<'a> {
                 }
 
                 // sib byte
-                let offset = if rm == 0b100 {
-                    3
+                let (sib, offset) = if rm == 0b100 {
+                    (Some(self.machine_state.mem_read_byte(rip + 1)), 3)
                 } else {
-                    2
+                    (None, 2)
                 };
 
                 let (displacement, mut ip_offset) = match address_mod {
