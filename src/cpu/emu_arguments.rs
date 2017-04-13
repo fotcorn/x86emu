@@ -8,14 +8,13 @@ impl MachineState {
         match *arg {
             InstructionArgument::Register { ref register } => self.get_register_value(register),
             InstructionArgument::Immediate { immediate } => immediate,
-            InstructionArgument::EffectiveAddress { ref base, displacement, .. } => {
-                let mut address = self.get_register_value(base);
-                address += displacement as i64;
+            InstructionArgument::EffectiveAddress { .. } => {
+                let address = self.calculate_effective_address(arg);
                 match argument_size {
-                    ArgumentSize::Bit8 => self.mem_read_byte(address as u64) as i64,
+                    ArgumentSize::Bit8 => self.mem_read_byte(address) as i64,
                     ArgumentSize::Bit16 => {
                         let mut value: i16 = 0;
-                        let val = self.mem_read(address as u64, 2);
+                        let val = self.mem_read(address, 2);
 
                         for (i, v) in val.iter().enumerate() {
                             value |= (*v as i16) << (i * 8);
@@ -24,7 +23,7 @@ impl MachineState {
                     }
                     ArgumentSize::Bit32 => {
                         let mut value: i32 = 0;
-                        let val = self.mem_read(address as u64, 4);
+                        let val = self.mem_read(address, 4);
 
                         for (i, v) in val.iter().enumerate() {
                             value |= (*v as i32) << (i * 8);
@@ -33,7 +32,7 @@ impl MachineState {
                     }
                     ArgumentSize::Bit64 => {
                         let mut value: i64 = 0;
-                        let val = self.mem_read(address as u64, 8);
+                        let val = self.mem_read(address, 8);
 
                         for (i, v) in val.iter().enumerate() {
                             value |= (*v as i64) << (i * 8);
@@ -45,7 +44,7 @@ impl MachineState {
         }
     }
 
-    fn get_register_value(&self, register: &Register) -> i64 {
+    pub fn get_register_value(&self, register: &Register) -> i64 {
         match *register {
             Register::RAX => self.rax,
             Register::RBX => self.rbx,
@@ -263,9 +262,8 @@ impl MachineState {
             InstructionArgument::Register { ref register } => {
                 self.set_register_value(register, value)
             }
-            InstructionArgument::EffectiveAddress { ref base, displacement, .. } => {
-                let mut address = self.get_register_value(base);
-                address += displacement as i64;
+            InstructionArgument::EffectiveAddress { .. } => {
+                let address = self.calculate_effective_address(arg);
                 let vector = match argument_size {
                     ArgumentSize::Bit8 => convert_i8_to_u8vec(value as i8),
                     ArgumentSize::Bit16 => convert_i16_to_u8vec(value as i16),
@@ -273,9 +271,24 @@ impl MachineState {
                     ArgumentSize::Bit64 => convert_i64_to_u8vec(value),
                 };
 
-                self.mem_write(address as u64, &vector);
+                self.mem_write(address, &vector);
             }
             InstructionArgument::Immediate { .. } => panic!("Cannot set value on immediate value"),
+        }
+    }
+
+    pub fn calculate_effective_address(&self, arg: &InstructionArgument) -> u64 {
+        match *arg {
+            InstructionArgument::EffectiveAddress { ref base, ref index, scale, displacement} => {
+                let mut address = self.get_register_value(base) as u64;
+                address += match *index {
+                    None => 0,
+                    Some(ref index) => self.get_register_value(index) as u64 * scale.unwrap() as u64,
+                };
+                address += displacement as u64;
+                address
+            }
+            _ => unreachable!(),
         }
     }
 }

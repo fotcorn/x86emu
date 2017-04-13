@@ -174,14 +174,8 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let argument_size = arg.size();
         match arg.first_argument {
-            InstructionArgument::EffectiveAddress { base, displacement, .. } => {
-                let reg = InstructionArgument::Register { register: base };
-                let mut value = machine_state.get_value(&reg, argument_size);
-                value += displacement as i64;
-                if value == -6 {
-                    value = 0;
-                    println!("WARNING: hacked lea implementation");
-                }
+            InstructionArgument::EffectiveAddress { .. } => {
+                let value = machine_state.calculate_effective_address(&arg.first_argument) as i64;
                 let second_argument = arg.second_argument.unwrap();
                 match second_argument {
                     InstructionArgument::Register { .. } => {
