@@ -76,6 +76,10 @@ pub trait CPU {
 
     fn jnz(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
+    fn ja(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jbe(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
     fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn arithmetic(&self, machine_state: &mut MachineState, arg: InstructionArguments) {

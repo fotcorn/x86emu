@@ -388,4 +388,19 @@ impl CPU for EmulationCPU {
         //self.jmp(machine_state, arg);
         println!("WARNING: jge not implemented");
     }
+
+    fn ja(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "ja", arg);
+        // CF=0 AND ZF=0)
+        if !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero) {
+            self.jmp(machine_state, arg);
+        }
+    }
+
+    fn jbe(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jbe", arg);
+        if machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero) {
+            self.jmp(machine_state, arg);
+        }
+    }
 }
