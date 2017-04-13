@@ -254,6 +254,14 @@ impl<'a> Decoder<'a> {
                         self.cpu.xor(self.machine_state, argument);
                         ip_offset
                     }
+                    0x38 => {
+                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.cpu.cmp(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x39 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Register,
