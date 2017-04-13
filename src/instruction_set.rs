@@ -129,7 +129,9 @@ pub enum InstructionArgument {
     Immediate { immediate: i64 },
     Register { register: Register },
     EffectiveAddress {
-        register: Register,
+        base: Register,
+        index: Option<Register>,
+        scale: Option<u8>,
         displacement: i32,
     },
 }
@@ -253,15 +255,27 @@ impl fmt::Display for InstructionArgument {
         match *self {
             InstructionArgument::Register { ref register } => write!(f, "{}", register),
             InstructionArgument::Immediate { immediate } => write!(f, "$0x{:x}", immediate),
-            InstructionArgument::EffectiveAddress { ref register, displacement } => {
+            InstructionArgument::EffectiveAddress { displacement, .. } => {
                 if displacement < 0 {
-                    write!(f, "-{:#x}({})", displacement.abs(), register)
+                    write!(f, "-{:#x}({})", displacement.abs(), format_effective_address(self))
                 } else if displacement > 0 {
-                    write!(f, "{:#x}({})", displacement, register)
+                    write!(f, "{:#x}({})", displacement, format_effective_address(self))
                 } else {
-                    write!(f, "0x0({})", register)
+                    write!(f, "0x0({})", format_effective_address(self))
                 }
             }
         }
+    }
+}
+
+fn format_effective_address(arg: &InstructionArgument) -> String {
+    match *arg {
+        InstructionArgument::EffectiveAddress { ref base, ref index, scale, .. } => {
+            match *index {
+                None => format!("{}", base),
+                Some(ref index) => format!("{},{},{}", base, index, scale.unwrap()),
+            }
+        },
+        _ => unreachable!()
     }
 }

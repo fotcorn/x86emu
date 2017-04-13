@@ -564,8 +564,10 @@ impl<'a> Decoder<'a> {
                                  immediate: immediate as i64,
                              })
                              .second_argument(InstructionArgument::EffectiveAddress {
-                                 register: register,
+                                 base: register,
                                  displacement: displacement,
+                                 index: None,
+                                 scale: None,
                              })
                              .opcode(register_or_opcode)
                              .explicit_size(argument_size)
@@ -599,8 +601,10 @@ impl<'a> Decoder<'a> {
                                  immediate: immediate as i64,
                              })
                              .second_argument(InstructionArgument::EffectiveAddress {
-                                 register: register,
+                                 base: register,
                                  displacement: displacement,
+                                 index: None,
+                                 scale: None,
                              })
                              .opcode(register_or_opcode)
                              .explicit_size(argument_size)
@@ -728,17 +732,31 @@ impl<'a> Decoder<'a> {
         match sib {
             None => {
                 InstructionArgument::EffectiveAddress {
-                    register: register,
+                    base: register,
+                    index: None,
+                    scale: None,
                     displacement: displacement,
                 }
             }
             Some(sib) => {
                 let base = sib & 0b00000111;
-                let index = sib & 0b00111000 >> 3;
-                let scale = sib & 0b11000000 >> 6;
+                let index = (sib & 0b00111000) >> 3;
+                let scale = (sib & 0b11000000) >> 6;
+                let scale = 2u8.pow(scale as u32) as u8;
+
+                let register_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
+                    RegisterSize::Bit32
+                } else {
+                    RegisterSize::Bit64
+                };
+
                 InstructionArgument::EffectiveAddress {
-                    register: register,
+                    base: get_register(base, register_size,
+                                       decoder_flags.contains(NEW_64BIT_REGISTER), false),
                     displacement: displacement,
+                    scale: Some(scale),
+                    index: Some(get_register(index, register_size,
+                                        decoder_flags.contains(SIB_EXTENSION), false)),
                 }
             }
         }

@@ -8,8 +8,8 @@ impl MachineState {
         match *arg {
             InstructionArgument::Register { ref register } => self.get_register_value(register),
             InstructionArgument::Immediate { immediate } => immediate,
-            InstructionArgument::EffectiveAddress { ref register, displacement } => {
-                let mut address = self.get_register_value(register);
+            InstructionArgument::EffectiveAddress { ref base, displacement, .. } => {
+                let mut address = self.get_register_value(base);
                 address += displacement as i64;
                 match argument_size {
                     ArgumentSize::Bit8 => self.mem_read_byte(address as u64) as i64,
@@ -263,8 +263,8 @@ impl MachineState {
             InstructionArgument::Register { ref register } => {
                 self.set_register_value(register, value)
             }
-            InstructionArgument::EffectiveAddress { ref register, displacement } => {
-                let mut address = self.get_register_value(register);
+            InstructionArgument::EffectiveAddress { ref base, displacement, .. } => {
+                let mut address = self.get_register_value(base);
                 address += displacement as i64;
                 let vector = match argument_size {
                     ArgumentSize::Bit8 => convert_i8_to_u8vec(value as i8),
