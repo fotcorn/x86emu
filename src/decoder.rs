@@ -630,11 +630,8 @@ impl<'a> Decoder<'a> {
                                                      decoder_flags.contains(MOD_R_M_EXTENSION), false);
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                             InstructionArgumentsBuilder::new(
-                                InstructionArgument::EffectiveAddress {
-                                    register: register1,
-                                    displacement: displacement,
-                                }).second_argument(
+                             InstructionArgumentsBuilder::new(self.effective_address(sib, register1, displacement, decoder_flags))
+                             .second_argument(
                                 InstructionArgument::Register {
                                     register: register2,
                                 }).finalize()
@@ -642,10 +639,7 @@ impl<'a> Decoder<'a> {
                              InstructionArgumentsBuilder::new(InstructionArgument::Register {
                                      register: register2,
                                  })
-                                 .second_argument(InstructionArgument::EffectiveAddress {
-                                     register: register1,
-                                     displacement: displacement,
-                                 })
+                                 .second_argument(self.effective_address(sib, register1, displacement, decoder_flags))
                                  .finalize()
                          },
                          ip_offset)
@@ -728,6 +722,29 @@ impl<'a> Decoder<'a> {
             _ => unreachable!(),
         }
     }
+
+
+    fn effective_address(&self, sib: Option<u8>, register: Register, displacement: i32, decoder_flags: DecoderFlags) -> InstructionArgument {
+        match sib {
+            None => {
+                InstructionArgument::EffectiveAddress {
+                    register: register,
+                    displacement: displacement,
+                }
+            }
+            Some(sib) => {
+                let base = sib & 0b00000111;
+                let index = sib & 0b00111000 >> 3;
+                let scale = sib & 0b11000000 >> 6;
+                InstructionArgument::EffectiveAddress {
+                    register: register,
+                    displacement: displacement,
+                }
+            }
+        }
+
+    }
+
 }
 
 #[derive(PartialEq)]
