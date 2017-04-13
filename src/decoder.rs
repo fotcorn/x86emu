@@ -100,6 +100,23 @@ impl<'a> Decoder<'a> {
                         self.cpu.pop(self.machine_state, argument);
                         1
                     }
+                    opcode @ 0xB0...0xB7 => {
+                        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
+                        let argument =
+                            InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                                    immediate: immediate as i64,
+                                })
+                                .second_argument(InstructionArgument::Register {
+                                    register:
+                                        get_register(opcode - 0xB0,
+                                                     RegisterSize::Bit8,
+                                                     decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                     decoder_flags.contains(NEW_8BIT_REGISTER)),
+                                })
+                                .finalize();
+                        self.cpu.mov(self.machine_state, argument);
+                        2
+                    }
                     opcode @ 0xB8...0xBF => {
                         let immediate = self.get_i32_value(1);
                         let argument =
