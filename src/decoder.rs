@@ -59,8 +59,8 @@ impl<'a> Decoder<'a> {
                     if temp_rex.contains(R) {
                         decoder_flags |= MOD_R_M_EXTENSION;
                     }
-                    if temp_rex.contains(SIB_EXTENSION) {
-                        panic!("REX mod rm extension not supported")
+                    if temp_rex.contains(X) {
+                        decoder_flags |= SIB_EXTENSION;
                     }
                     decoder_flags |= NEW_8BIT_REGISTER;
                     self.machine_state.rip += 1;
@@ -747,7 +747,7 @@ bitflags! {
     flags REX: u8 {
         const OPERAND_64_BIT = 0b00001000,
         const R = 0b00000100,
-        const SIB_EXTENSION = 0b00000010,
+        const X = 0b00000010,
         const B = 0b00000001,
     }
 }
@@ -760,6 +760,7 @@ bitflags! {
         const NEW_64BIT_REGISTER = 1 << 4,
         const NEW_8BIT_REGISTER = 1 << 5,
         const MOD_R_M_EXTENSION = 1 << 6,
+        const SIB_EXTENSION = 1 << 7,
     }
 }
 
