@@ -474,26 +474,102 @@ impl<'a> Decoder<'a> {
                                 self.cpu.cmov(self.machine_state, argument);
                                 ip_offset
                             },
+
+
+                            0x80 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jo(self.machine_state, argument);
+                                5
+                            },
+                            0x81 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jno(self.machine_state, argument);
+                                5
+                            },
+                            0x82 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jc(self.machine_state, argument);
+                                5
+                            },
+                            0x83 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jnc(self.machine_state, argument);
+                                5
+                            },
                             0x84 => {
                                 // TODO: could also be 16bit value
-                                let immediate = self.get_i32_value(1);
-                                let argument =
-                                    InstructionArgumentsBuilder::new(
-                                        InstructionArgument::Immediate {
-                                            immediate: immediate as i64,
-                                        }).finalize();
+                                let argument = self.read_immediate_32bit();
                                 self.cpu.jz(self.machine_state, argument);
                                 5
                             },
                             0x85 => {
                                 // TODO: could also be 16bit value
-                                let immediate = self.get_i32_value(1);
-                                let argument =
-                                    InstructionArgumentsBuilder::new(
-                                        InstructionArgument::Immediate {
-                                            immediate: immediate as i64,
-                                        }).finalize();
+                                let argument = self.read_immediate_32bit();
                                 self.cpu.jnz(self.machine_state, argument);
+                                5
+                            },
+                            0x86 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jbe(self.machine_state, argument);
+                                5
+                            },
+                            0x87 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.ja(self.machine_state, argument);
+                                5
+                            },
+                            0x88 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.js(self.machine_state, argument);
+                                5
+                            },
+                            0x89 => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jns(self.machine_state, argument);
+                                5
+                            },
+                            0x8A => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jp(self.machine_state, argument);
+                                5
+                            },
+                            0x8B => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jnp(self.machine_state, argument);
+                                5
+                            },
+                            0x8C => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jl(self.machine_state, argument);
+                                5
+                            },
+                            0x8D => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jge(self.machine_state, argument);
+                                5
+                            },
+                            0x8E => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jle(self.machine_state, argument);
+                                5
+                            },
+                            0x8F => {
+                                // TODO: could also be 16bit value
+                                let argument = self.read_immediate_32bit();
+                                self.cpu.jg(self.machine_state, argument);
                                 5
                             },
                             0xB6 => {
@@ -540,6 +616,14 @@ impl<'a> Decoder<'a> {
         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate { immediate: immediate })
              .finalize(),
          2)
+    }
+
+    fn read_immediate_32bit(&mut self) -> InstructionArguments {
+        let rip = self.machine_state.rip as u64;
+        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
+
+        InstructionArgumentsBuilder::new(InstructionArgument::Immediate { immediate: immediate })
+             .finalize()
     }
 
     fn get_argument(&mut self,
