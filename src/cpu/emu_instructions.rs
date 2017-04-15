@@ -434,23 +434,36 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn jl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        // SF!=OF
         println!("{:<6} {}", "jl", arg);
-        panic!("not implemented");
+        if machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow){
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        // SF=OF
         println!("{:<6} {}", "jge", arg);
-        panic!("not implemented");
+        if machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow){
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jle(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jle", arg);
-        panic!("not implemented");
+    fn jle(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        // (ZF=1) OR (SF!=OF)
+        if machine_state.get_flag(Flags::Zero) ||
+                (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow)) {
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jg(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        // (ZF=0) AND (SF=OF)
         println!("{:<6} {}", "jg", arg);
-        panic!("not implemented");
+        if !machine_state.get_flag(Flags::Zero) &&
+                (machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow)) {
+            self.jmp(machine_state, arg);
+        }
     }
 }
