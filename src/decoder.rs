@@ -440,6 +440,17 @@ impl<'a> Decoder<'a> {
                                 self.cpu.jz(self.machine_state, argument);
                                 5
                             },
+                            0x85 => {
+                                // TODO: could also be 16bit value
+                                let immediate = self.get_i32_value(1);
+                                let argument =
+                                    InstructionArgumentsBuilder::new(
+                                        InstructionArgument::Immediate {
+                                            immediate: immediate as i64,
+                                        }).finalize();
+                                self.cpu.jnz(self.machine_state, argument);
+                                5
+                            },
                             0xB6 => {
                                 let (argument, ip_offset) = self.get_argument(register_size,
                                                 RegOrOpcode::Register,
