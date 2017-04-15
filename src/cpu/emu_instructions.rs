@@ -33,7 +33,7 @@ impl EmulationCPU {
             }
         };
         machine_state.set_flag(Flags::Carry, carry);
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         if set {
             machine_state.set_value(result, &second_argument, argument_size);
         }
@@ -46,7 +46,7 @@ impl EmulationCPU {
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 & value2;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_flag(Flags::Carry, false);
         machine_state.set_flag(Flags::Overflow, false);
         if set {
@@ -104,7 +104,7 @@ impl CPU for EmulationCPU {
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 + value2;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         // TODO: overflow/carry
         machine_state.set_value(result, &second_argument, argument_size);
     }
@@ -117,7 +117,7 @@ impl CPU for EmulationCPU {
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 | value2;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
     }
 
@@ -149,7 +149,7 @@ impl CPU for EmulationCPU {
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 ^ value2;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
     }
 
@@ -207,7 +207,7 @@ impl CPU for EmulationCPU {
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value2 >> value1;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
     }
 
@@ -217,7 +217,7 @@ impl CPU for EmulationCPU {
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
         let result = value + 1;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &arg.first_argument, argument_size);
     }
 
@@ -227,7 +227,7 @@ impl CPU for EmulationCPU {
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
         let result = value - 1;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &arg.first_argument, argument_size);
 
     }
@@ -258,7 +258,7 @@ impl CPU for EmulationCPU {
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
         let result = !value;
-        machine_state.compute_flags(result);
+        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &arg.first_argument, argument_size);
     }
 

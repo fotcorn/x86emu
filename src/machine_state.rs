@@ -1,6 +1,6 @@
 use std::collections::hash_map::{HashMap, Entry};
 use std::fmt;
-use instruction_set::Flags;
+use instruction_set::{Flags, ArgumentSize};
 
 const PAGE_SIZE: u64 = 4096;
 
@@ -138,8 +138,15 @@ impl MachineState {
         }
     }
 
-    pub fn compute_flags(&mut self, result: i64) {
+    pub fn compute_flags(&mut self, result: i64, argument_size: ArgumentSize) {
         self.set_flag(Flags::Zero, result == 0);
+        let sign = match argument_size {
+            ArgumentSize::Bit8 => (result as u64) & 0x80 != 0,
+            ArgumentSize::Bit16 => (result as u64) & 0x8000 != 0,
+            ArgumentSize::Bit32 => (result as u64) & 0x80000000 != 0,
+            ArgumentSize::Bit64 => (result as u64) & 0x8000000000000000 != 0,
+        };
+        self.set_flag(Flags::Sign, sign);
     }
 }
 
