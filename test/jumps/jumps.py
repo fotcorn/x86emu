@@ -20,10 +20,11 @@ def end():
     print_tab('int3')
 
 
-def jump(instruction, value1, value2, jump_instr_taken, jump_instr_not_taken):
-    print_tab('mov     ${},%al'.format(value1))
-    print_tab('mov     ${},%bl'.format(value2))
-    print_tab('{:8s}%al,%bl'.format(instruction))
+def jump(instruction, value1, value2, jump_instr_taken, jump_instr_not_taken,
+        register1='al', register2='bl'):
+    print_tab('mov     ${},%{}'.format(value1, register1))
+    print_tab('mov     ${},%{}'.format(value2, register2))
+    print_tab('{:8s}%{},%{}'.format(instruction, register1, register2))
     print_tab('{} jump{}'.format(jump_instr_taken, jump.counter))
     print_tab('int3')
     print('jump{}:'.format(jump.counter))
@@ -37,7 +38,6 @@ jump.counter = 0
 
 def main():
     start()
-    """
     # zero
     for i in range(0, 256):
         for j in range(0, 256):
@@ -56,9 +56,9 @@ def main():
                 jump('cmp', i, j, 'jns', 'js')
 
     # TODO: overflow
-    jump('imul', 2**62, 2, 'jo', 'jno')
-    jump('imul', 2**62 - 1, 2, 'jno', 'jo')
-    """
+    jump('imul', 2**62, 2, 'jo', 'jno', register1='rax', register2='rbx')
+    jump('imul', 2**62 - 1, 2, 'jno', 'jo', register1='rax', register2='rbx')
+
     ## below
     # unsigned/carry
     for i in range(0, 256):
@@ -71,8 +71,6 @@ def main():
                 jump('sub', i, j, 'jc', 'jnc')
             else:
                 jump('sub', i, j, 'jnc', 'jc')
-
-    """
     # signed
     jump('cmp', 5, 4, 'jl', 'jge')
     jump('cmp', 4, 5, 'jge', 'jl')
@@ -104,10 +102,9 @@ def main():
     jump('add', 0, 6, 'jp', 'jnp')
     jump('add', 0, 7, 'jnp', 'jp')
     # parity only cares about the least significant byte
-    jump('add', 0, 0 + 256, 'jp', 'jnp')
-    jump('add', 0, 0 + 512, 'jp', 'jnp')
-    jump('add', 0, 0 + 768, 'jp', 'jnp')
-    """
+    jump('add', 0, 0 + 256, 'jp', 'jnp', register1='rax', register2='rbx')
+    jump('add', 0, 0 + 512, 'jp', 'jnp', register1='rax', register2='rbx')
+    jump('add', 0, 0 + 768, 'jp', 'jnp',register1='rax', register2='rbx')
     end()
 
 if __name__ == '__main__':
