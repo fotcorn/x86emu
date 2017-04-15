@@ -81,7 +81,9 @@ pub enum Register {
 
 pub enum Flags {
     Carry = 1 << 0,
+    Parity = 1 << 2,
     Zero = 1 << 6,
+    Sign = 1 << 7,
     Direction = 1 << 10,
     Overflow = 1 << 11,
 }

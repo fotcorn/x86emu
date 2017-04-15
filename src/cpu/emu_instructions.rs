@@ -348,14 +348,18 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn jo(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jo(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jo", arg);
-        panic!("not implemented");
+        if machine_state.get_flag(Flags::Overflow) {
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jno(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jno(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jno", arg);
-        panic!("not implemented");
+        if !machine_state.get_flag(Flags::Overflow) {
+            self.jmp(machine_state, arg);
+        }
     }
 
     fn jc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -388,6 +392,7 @@ impl CPU for EmulationCPU {
 
     fn jbe(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jbe", arg);
+        // CF=1 OR ZF=1
         if machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero) {
             self.jmp(machine_state, arg);
         }
@@ -395,30 +400,38 @@ impl CPU for EmulationCPU {
 
     fn ja(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "ja", arg);
-        // CF=0 AND ZF=0)
+        // CF=0 AND ZF=0
         if !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero) {
             self.jmp(machine_state, arg);
         }
     }
 
-    fn js(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn js(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "js", arg);
-        panic!("not implemented");
+        if machine_state.get_flag(Flags::Sign) {
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jns(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jns(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jns", arg);
-        panic!("not implemented");
+        if !machine_state.get_flag(Flags::Sign) {
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jp", arg);
-        panic!("not implemented");
+        if machine_state.get_flag(Flags::Parity) {
+            self.jmp(machine_state, arg);
+        }
     }
 
-    fn jnp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn jnp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jnp", arg);
-        panic!("not implemented");
+        if !machine_state.get_flag(Flags::Parity) {
+            self.jmp(machine_state, arg);
+        }
     }
 
     fn jl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
