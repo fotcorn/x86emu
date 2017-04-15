@@ -68,6 +68,10 @@ pub trait CPU {
 
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
+    fn jo(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jno(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
     fn jc(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn jnc(&self, machine_state: &mut MachineState, arg: InstructionArguments);
@@ -76,11 +80,25 @@ pub trait CPU {
 
     fn jnz(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn ja(&self, machine_state: &mut MachineState, arg: InstructionArguments);
-
     fn jbe(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
+    fn ja(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn js(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jns(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jp(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jnp(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jl(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
     fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jle(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn jg(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn arithmetic(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         let opcode = match arg.opcode {

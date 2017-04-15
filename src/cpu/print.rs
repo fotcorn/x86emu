@@ -149,6 +149,14 @@ impl CPU for PrintCPU {
         }
     }
 
+    fn jo(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jo", arg);
+    }
+
+    fn jno(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jno", arg);
+    }
+
     fn jc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jc", arg);
     }
@@ -156,7 +164,6 @@ impl CPU for PrintCPU {
     fn jnc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jnc", arg);
     }
-
 
     fn jz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jz", arg);
@@ -166,15 +173,43 @@ impl CPU for PrintCPU {
         println!("{:<6} {}", "jnz", arg);
     }
 
-    fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jge", arg);
+    fn jbe(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jbe", arg);
     }
 
     fn ja(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "ja", arg);
     }
 
-    fn jbe(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jbe", arg);
+    fn js(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "js", arg);
+    }
+
+    fn jns(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jns", arg);
+    }
+
+    fn jp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jp", arg);
+    }
+
+    fn jnp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jnp", arg);
+    }
+
+    fn jl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jl", arg);
+    }
+
+    fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jge", arg);
+    }
+
+    fn jle(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jle", arg);
+    }
+
+    fn jg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "jg", arg);
     }
 }

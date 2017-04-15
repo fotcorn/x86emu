@@ -186,6 +186,16 @@ impl<'a> Decoder<'a> {
                         self.cpu.sub(self.machine_state, argument);
                         ip_offset
                     }
+                    0x70 => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jo(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x71 => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jno(self.machine_state, arg);
+                        ip_offset
+                    }
                     0x72 => {
                         let (arg, ip_offset) = self.read_immediate_8bit();
                         self.cpu.jc(self.machine_state, arg);
@@ -216,9 +226,44 @@ impl<'a> Decoder<'a> {
                         self.cpu.ja(self.machine_state, arg);
                         ip_offset
                     }
+                    0x78 => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.js(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x79 => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jns(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x7A => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jp(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x7B => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jnp(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x7C => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jl(self.machine_state, arg);
+                        ip_offset
+                    }
                     0x7D => {
                         let (arg, ip_offset) = self.read_immediate_8bit();
                         self.cpu.jge(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x7E => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jle(self.machine_state, arg);
+                        ip_offset
+                    }
+                    0x7F => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jg(self.machine_state, arg);
                         ip_offset
                     }
                     0x6A => {
