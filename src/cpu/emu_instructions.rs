@@ -108,9 +108,33 @@ impl CPU for EmulationCPU {
         let second_argument = arg.second_argument.unwrap();
         let value1 = machine_state.get_value(&arg.first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        let result = value1 + value2;
+
+        let (result, carry, overflow) = match argument_size {
+            ArgumentSize::Bit8 => {
+                let (result, carry) = (value2 as u8).overflowing_add(value1 as u8);
+                let (_, overflow) = (value2 as i8).overflowing_add(value1 as i8);
+                (result as i64, carry, overflow)
+            }
+            ArgumentSize::Bit16 => {
+                let (result, carry) = (value2 as u16).overflowing_add(value1 as u16);
+                let (_, overflow) = (value2 as i16).overflowing_add(value1 as i16);
+                (result as i64, carry, overflow)
+            }
+            ArgumentSize::Bit32 => {
+                let (result, carry) = (value2 as u32).overflowing_add(value1 as u32);
+                let (_, overflow) = (value2 as i32).overflowing_add(value1 as i32);
+                (result as i64, carry, overflow)
+            }
+            ArgumentSize::Bit64 => {
+                let (result, carry) = (value2 as u64).overflowing_add(value1 as u64);
+                let (_, overflow) = (value2 as i64).overflowing_add(value1 as i64);
+                (result as i64, carry, overflow)
+            }
+        };
+        machine_state.set_flag(Flags::Carry, carry);
+        machine_state.set_flag(Flags::Overflow, overflow);
+
         machine_state.compute_flags(result, argument_size);
-        // TODO: overflow/carry
         machine_state.set_value(result, &second_argument, argument_size);
     }
 
