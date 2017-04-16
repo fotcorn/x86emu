@@ -154,7 +154,7 @@ impl MachineState {
         for i in 0..7 {
             parity ^= (byte >> i) & 0b1
         }
-        self.set_flag(Flags::Parity, parity == 0b1)
+        self.set_flag(Flags::Parity, parity != 0b1)
     }
 }
 
