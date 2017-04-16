@@ -55,11 +55,23 @@ def main():
                 jump('cmp', i, j, 'js', 'jns')
             else:
                 jump('cmp', i, j, 'jns', 'js')
+    """
 
-    # TODO: overflow
-    jump('imul', 2**62, 2, 'jo', 'jno', register1='rax', register2='rbx')
-    jump('imul', 2**62 - 1, 2, 'jno', 'jo', register1='rax', register2='rbx')
+    # overflow aka signed carry
+    for i in range(-128, 128):
+        for j in range(-128, 128):
+            res = i + j
+            if res > 127 or res < -128:
+                jump('add', i, j, 'jo', 'jno')
+            else:
+                jump('add', i, j, 'jno', 'jo')
+            res = j - i
+            if res > 127 or res < -128:
+                jump('sub', i, j, 'jo', 'jno')
+            else:
+                jump('sub', i, j, 'jno', 'jo')
 
+    """
     ## below
     # unsigned/carry
     for i in range(0, 256):
@@ -93,7 +105,6 @@ def main():
     jump('cmp', -5, -5, 'jle', 'jg')
     jump('cmp', -5, -4, 'jg', 'jle')
 
-    """
     # parity, even count of ones
     jump('add', 0, 0, 'jp', 'jnp')
     jump('add', 0, 1, 'jnp', 'jp')
@@ -107,6 +118,7 @@ def main():
     jump('add', 0, 0 + 256, 'jp', 'jnp', register1='rax', register2='rbx')
     jump('add', 0, 0 + 512, 'jp', 'jnp', register1='rax', register2='rbx')
     jump('add', 0, 0 + 768, 'jp', 'jnp',register1='rax', register2='rbx')
+    """
     end()
 
 if __name__ == '__main__':
