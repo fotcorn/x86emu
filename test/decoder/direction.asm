@@ -14,3 +14,5 @@ mov    %rax,-0x4(%rbp)
 
 cmovs  %edx,%eax
 cmovs  %eax,%edx
+
+int     $0x80

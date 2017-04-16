@@ -49,3 +49,5 @@ lea    -4(%rax, %r9, 4), %r10
 
 # 4F 							E 			REX.WRXB 										REX.W, REX.R, REX.X and REX.B combination
 lea    -4(%r8, %r9, 4), %r10
+
+int     $0x80

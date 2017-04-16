@@ -25,3 +25,4 @@ callq  0x400400
 mov    $0x0,%eax
 leaveq
 retq
+int     $0x80

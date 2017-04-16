@@ -41,3 +41,5 @@ for r in registers64:
 
 for r in registers32:
     print('mov %{0},%{0}'.format(r))
+
+print('int     $0x80')

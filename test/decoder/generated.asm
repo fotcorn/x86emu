@@ -17,3 +17,5 @@ mov %esp,%esp
 mov %ebp,%ebp
 mov %esi,%esi
 mov %edi,%edi
+
+int     $0x80

@@ -606,6 +606,7 @@ impl<'a> Decoder<'a> {
                     }
                     0xCD => {
                         // abuse int X instruction to signal passed test program
+                        println!("int    $0x80");
                         return;
                     }
                     _ => panic!("Unknown instruction: {:x}", first_byte),
