@@ -11,3 +11,4 @@ test/decoder/test.sh test/decoder/rex.asm
 test/decoder/test.sh test/decoder/rip_relative.asm
 test/execution/test.sh test/execution/jc_jnc.S
 test/execution/test.sh test/execution/call_ret.S
+test/jumps/jumps.sh

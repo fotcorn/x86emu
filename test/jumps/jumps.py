@@ -38,7 +38,6 @@ jump.counter = 0
 
 def main():
     start()
-    """
     # zero
     for i in range(0, 256):
         for j in range(0, 256):
@@ -55,7 +54,6 @@ def main():
                 jump('cmp', i, j, 'js', 'jns')
             else:
                 jump('cmp', i, j, 'jns', 'js')
-    """
 
     # overflow aka signed carry
     for i in range(-128, 128):
@@ -71,7 +69,6 @@ def main():
             else:
                 jump('sub', i, j, 'jno', 'jo')
 
-    """
     ## below
     # unsigned/carry
     for i in range(0, 256):
@@ -118,7 +115,6 @@ def main():
     jump('add', 0, 0 + 256, 'jp', 'jnp', register1='rax', register2='rbx')
     jump('add', 0, 0 + 512, 'jp', 'jnp', register1='rax', register2='rbx')
     jump('add', 0, 0 + 768, 'jp', 'jnp',register1='rax', register2='rbx')
-    """
     end()
 
 if __name__ == '__main__':
