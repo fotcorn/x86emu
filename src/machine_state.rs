@@ -147,6 +147,14 @@ impl MachineState {
             ArgumentSize::Bit64 => (result as u64) & 0x8000000000000000 != 0,
         };
         self.set_flag(Flags::Sign, sign);
+
+
+        let byte = result as u8;
+        let mut parity = 0;
+        for i in 0..7 {
+            parity ^= (byte >> i) & 0b1
+        }
+        self.set_flag(Flags::Parity, parity == 0b1)
     }
 }
 

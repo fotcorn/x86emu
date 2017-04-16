@@ -38,6 +38,7 @@ jump.counter = 0
 
 def main():
     start()
+    """
     # zero
     for i in range(0, 256):
         for j in range(0, 256):
@@ -92,6 +93,7 @@ def main():
     jump('cmp', -5, -5, 'jle', 'jg')
     jump('cmp', -5, -4, 'jg', 'jle')
 
+    """
     # parity, even count of ones
     jump('add', 0, 0, 'jp', 'jnp')
     jump('add', 0, 1, 'jnp', 'jp')
