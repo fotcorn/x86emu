@@ -134,7 +134,7 @@ impl MachineState {
         if value {
             self.rflags |= flag as i64;
         } else {
-            self.rflags &= flag as i64;
+            self.rflags &= !(flag as i64);
         }
     }
 
