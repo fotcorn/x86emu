@@ -134,6 +134,14 @@ impl<'a> Decoder<'a> {
                         self.cpu.mov(self.machine_state, argument);
                         5
                     }
+                    0x00 => {
+                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.cpu.add(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x01 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Register,
