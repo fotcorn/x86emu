@@ -97,7 +97,7 @@ impl CPU for EmulationCPU {
     fn movzbl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "movzbl", arg);
         arg.assert_two_arguments();
-        let value = machine_state.get_value(&arg.first_argument, arg.size());
+        let value = machine_state.get_value(&arg.first_argument, arg.size()) as i8 as i64;
         machine_state.set_value(value, &arg.second_argument.unwrap(), ArgumentSize::Bit32);
     }
 
