@@ -30,8 +30,12 @@ pub fn linux(filename: &str, cpu: &CPU, debug: bool) {
     machine_state.rsi = ZERO_PAGE_ADDRESS as i64;
 
     // set kernel command line
-    machine_state.mem_write(COMMAND_LINE_ADDRESS, b"debug earlyprintk=vga vga=792");
+    machine_state.mem_write(COMMAND_LINE_ADDRESS, b"debug earlyprintk=vga");
     machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x228, &convert_i32_to_u8vec(COMMAND_LINE_ADDRESS as i32));
+
+    // set video mode
+    machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x0e, &vec![80]); // screeninfo.orig_video_cols
+    machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x07, &vec![25]); // screeninfo.orig_video_lines
 
     // load code at 0x100.000
     // count of setup sects is the first value in the setup header struct
