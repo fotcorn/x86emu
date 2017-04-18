@@ -443,7 +443,7 @@ impl<'a> Decoder<'a> {
                     }
                     0xC3 => {
                         self.cpu.ret(self.machine_state);
-                        1
+                        0
                     }
                     0xC9 => {
                         self.cpu.leave(self.machine_state);
