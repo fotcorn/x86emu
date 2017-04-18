@@ -550,6 +550,10 @@ impl<'a> Decoder<'a> {
                         let rip = self.machine_state.rip as u64;
                         let second_byte = self.machine_state.mem_read_byte(rip);
                         match second_byte {
+                            0x1F => {
+                                // NOP with hint
+                                3
+                            }
                             0x44 => {
                                 let (argument, ip_offset) = self.get_argument(register_size,
                                                   RegOrOpcode::Register,
