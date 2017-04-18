@@ -250,7 +250,7 @@ impl MachineState {
     pub fn stack_pop(&mut self) -> i64 {
         let rsp = self.rsp as u64;
         let data = self.mem_read(rsp, 8);
-        self.rsp -= 8;
+        self.rsp += 8;
         *zero::read::<i64>(&data)
     }
 
