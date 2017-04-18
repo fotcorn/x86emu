@@ -34,6 +34,20 @@ pub trait CPU {
 
     fn cmov(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
+    // rotate
+    fn rol(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn ror(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn rcl(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn rcr(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    // shift
+    fn shl(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn shr(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
     fn sar(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn inc(&self, machine_state: &mut MachineState, arg: InstructionArguments);
@@ -149,6 +163,24 @@ pub trait CPU {
             5 => self.imul(machine_state, arg),
             6 => self.div(machine_state, arg),
             7 => self.idiv(machine_state, arg),
+            _ => unreachable!(),
+        }
+    }
+
+    fn shift_rotate(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        let opcode = match arg.opcode {
+            Some(opcode) => opcode,
+            None => panic!("Unsupported argument type for shift_rotate"),
+        };
+        match opcode {
+            0 => self.rol(machine_state, arg),
+            1 => self.ror(machine_state, arg),
+            2 => self.rcl(machine_state, arg),
+            3 => self.rcr(machine_state, arg),
+            4 => self.shl(machine_state, arg),
+            5 => self.shr(machine_state, arg),
+            6 => self.shl(machine_state, arg), // sal and shl are the same
+            7 => self.sar(machine_state, arg),
             _ => unreachable!(),
         }
     }

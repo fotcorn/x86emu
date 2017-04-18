@@ -228,6 +228,43 @@ impl CPU for EmulationCPU {
         println!("WARNING: not implemented");
     }
 
+        fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "rol", arg);
+    }
+
+    fn ror(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "ror", arg);
+        panic!("Not implemented");
+    }
+
+    fn rcl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "rcl", arg);
+        panic!("Not implemented");
+    }
+
+    fn rcr(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "rcr", arg);
+        panic!("Not implemented");
+    }
+
+    fn shl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "shl", arg);
+        panic!("Not implemented");
+    }
+
+    fn shr(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "shr", arg);
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+        let result = value2 >> value1;
+        machine_state.compute_flags(result, argument_size);
+        machine_state.set_value(result, &second_argument, argument_size);
+        println!("WARNING: shr does not set carry flag");
+    }
+
     fn sar(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sar", arg);
         arg.assert_two_arguments();

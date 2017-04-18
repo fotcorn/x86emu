@@ -69,6 +69,30 @@ impl CPU for PrintCPU {
         println!("{:<6} {}", "cmov", arg);
     }
 
+    fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "rol", arg);
+    }
+
+    fn ror(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "ror", arg);
+    }
+
+    fn rcl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "rcl", arg);
+    }
+
+    fn rcr(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "rcr", arg);
+    }
+
+    fn shl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "shl", arg);
+    }
+
+    fn shr(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "shr", arg);
+    }
+
     fn sar(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sar", arg);
     }
