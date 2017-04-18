@@ -3,6 +3,7 @@ use std::fmt;
 #[derive(Clone, Copy, Debug)]
 pub enum RegisterSize {
     Bit8,
+    Bit16,
     Bit32,
     Bit64,
     Segment,
@@ -10,6 +11,7 @@ pub enum RegisterSize {
 
 #[derive(Debug)]
 pub enum Register {
+    // 64 Bit
     RAX,
     RBX,
     RCX,
@@ -30,6 +32,7 @@ pub enum Register {
 
     RIP,
 
+    // 32 Bit
     EAX,
     EBX,
     ECX,
@@ -48,6 +51,25 @@ pub enum Register {
     R14D,
     R15D,
 
+    // 32 Bit
+    AX,
+    CX,
+    DX,
+    BX,
+    SP,
+    BP,
+    SI,
+    DI,
+    R8W,
+    R9W,
+    R10W,
+    R11W,
+    R12W,
+    R13W,
+    R14W,
+    R15W,
+
+    // 16 Bit
     AL,
     CL,
     DL,
@@ -108,7 +130,11 @@ pub fn get_register_size(reg: &Register) -> ArgumentSize {
         Register::R10D | Register::R11D | Register::R12D | Register::R13D | Register::R14D |
         Register::R15D => ArgumentSize::Bit32,
 
-        Register::ES | Register::CS | Register::SS | Register::DS | Register::FS | Register::GS => ArgumentSize::Bit16,
+        Register::AX | Register::CX | Register::DX | Register::BX | Register::SP |
+        Register::BP | Register::SI | Register::DI | Register::R8W | Register::R9W |
+        Register::R10W | Register::R11W | Register::R12W | Register::R13W | Register::R14W |
+        Register::R15W | Register::ES | Register::CS | Register::SS | Register::DS |
+        Register::FS | Register::GS => ArgumentSize::Bit16,
 
         Register::AL | Register::CL | Register::DL | Register::BL | Register::AH |
         Register::CH | Register::DH | Register::BH | Register::SPL | Register::BPL |

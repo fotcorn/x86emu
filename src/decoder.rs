@@ -35,7 +35,10 @@ impl<'a> Decoder<'a> {
                 0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
                     panic!("Segment override prefixes/branch hints not supported")
                 }
-                0x66 => panic!("Operand-size override prefix not supported"),
+                0x66 => {
+                    decoder_flags |= OPERAND_16_BIT;
+                    self.machine_state.rip += 1;
+                }
                 0x67 => {
                     decoder_flags |= ADDRESS_SIZE_OVERRIDE;
                     self.machine_state.rip += 1;
@@ -67,7 +70,13 @@ impl<'a> Decoder<'a> {
 
             let register_size = match rex {
                 Some(r) if r.contains(OPERAND_64_BIT) => RegisterSize::Bit64,
-                _ => RegisterSize::Bit32,
+                _ => {
+                    if decoder_flags.contains(OPERAND_16_BIT) {
+                        RegisterSize::Bit16
+                    } else {
+                        RegisterSize::Bit32
+                    }
+                }
             };
 
             let rip = self.machine_state.rip as u64;
@@ -707,6 +716,7 @@ impl<'a> Decoder<'a> {
 
                         let argument_size = match register_size {
                             RegisterSize::Bit8 => ArgumentSize::Bit8,
+                            RegisterSize::Bit16 => ArgumentSize::Bit16,
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
                             RegisterSize::Bit64 => ArgumentSize::Bit64,
                             RegisterSize::Segment => panic!("Unsupported register size"),
@@ -743,6 +753,7 @@ impl<'a> Decoder<'a> {
 
                         let argument_size = match register_size {
                             RegisterSize::Bit8 => ArgumentSize::Bit8,
+                            RegisterSize::Bit16 => ArgumentSize::Bit16,
                             RegisterSize::Bit32 => ArgumentSize::Bit32,
                             RegisterSize::Bit64 => ArgumentSize::Bit64,
                             RegisterSize::Segment => panic!("Unsupported register size"),
@@ -959,38 +970,12 @@ bitflags! {
         const NEW_8BIT_REGISTER = 1 << 5,
         const MOD_R_M_EXTENSION = 1 << 6,
         const SIB_EXTENSION = 1 << 7,
+        const OPERAND_16_BIT = 1 << 8,
     }
 }
 
 fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool, new_8bit_register: bool) -> Register {
     match size {
-        RegisterSize::Bit32 => {
-            if new_64bit_register {
-                match num {
-                    0 => Register::R8D,
-                    1 => Register::R9D,
-                    2 => Register::R10D,
-                    3 => Register::R11D,
-                    4 => Register::R12D,
-                    5 => Register::R13D,
-                    6 => Register::R14D,
-                    7 => Register::R15D,
-                    _ => panic!("Unknown instruction argument"),
-                }
-            } else {
-                match num {
-                    0 => Register::EAX,
-                    1 => Register::ECX,
-                    2 => Register::EDX,
-                    3 => Register::EBX,
-                    4 => Register::ESP,
-                    5 => Register::EBP,
-                    6 => Register::ESI,
-                    7 => Register::EDI,
-                    _ => panic!("Unknown instruction argument"),
-                }
-            }
-        }
         RegisterSize::Bit64 => {
             if new_64bit_register {
                 match num {
@@ -1018,15 +1003,58 @@ fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool, new_8bit_
                 }
             }
         }
-        RegisterSize::Segment => {
-            match num {
-                0 => Register::ES,
-                1 => Register::CS,
-                2 => Register::SS,
-                3 => Register::DS,
-                4 => Register::FS,
-                5 => Register::GS,
-                _ => panic!("Unknown instruction argument"),
+        RegisterSize::Bit32 => {
+            if new_64bit_register {
+                match num {
+                    0 => Register::R8D,
+                    1 => Register::R9D,
+                    2 => Register::R10D,
+                    3 => Register::R11D,
+                    4 => Register::R12D,
+                    5 => Register::R13D,
+                    6 => Register::R14D,
+                    7 => Register::R15D,
+                    _ => panic!("Unknown instruction argument"),
+                }
+            } else {
+                match num {
+                    0 => Register::EAX,
+                    1 => Register::ECX,
+                    2 => Register::EDX,
+                    3 => Register::EBX,
+                    4 => Register::ESP,
+                    5 => Register::EBP,
+                    6 => Register::ESI,
+                    7 => Register::EDI,
+                    _ => panic!("Unknown instruction argument"),
+                }
+            }
+        }
+        RegisterSize::Bit16 => {
+            if new_64bit_register {
+                match num {
+                    0 => Register::R8W,
+                    1 => Register::R9W,
+                    2 => Register::R10W,
+                    3 => Register::R11W,
+                    4 => Register::R12W,
+                    5 => Register::R13W,
+                    6 => Register::R14W,
+                    7 => Register::R15W,
+                    _ => panic!("Unknown instruction argument"),
+                }
+            } else {
+                match num {
+                    0 => Register::AX,
+                    1 => Register::CX,
+                    2 => Register::DX,
+                    3 => Register::BX,
+                    4 => Register::SP,
+                    5 => Register::BP,
+                    6 => Register::SI,
+                    7 => Register::DI,
+                    _ => panic!("Unknown instruction argument"),
+                }
             }
         }
         RegisterSize::Bit8 => {
@@ -1068,6 +1096,17 @@ fn get_register(num: u8, size: RegisterSize, new_64bit_register: bool, new_8bit_
                         _ => panic!("Unknown instruction argument"),
                     }
                 }
+            }
+        }
+        RegisterSize::Segment => {
+            match num {
+                0 => Register::ES,
+                1 => Register::CS,
+                2 => Register::SS,
+                3 => Register::DS,
+                4 => Register::FS,
+                5 => Register::GS,
+                _ => panic!("Unknown instruction argument"),
             }
         }
     }

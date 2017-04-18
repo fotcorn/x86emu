@@ -66,6 +66,7 @@ impl MachineState {
 
             Register::RIP => self.rip as i64,
 
+            // 32 Bit
             Register::EAX => self.rax as i32 as i64,
             Register::EBX => self.rbx as i32 as i64,
             Register::ECX => self.rcx as i32 as i64,
@@ -84,6 +85,26 @@ impl MachineState {
             Register::R14D => self.r14 as i32 as i64,
             Register::R15D => self.r15 as i32 as i64,
 
+            // 16 Bit
+            Register::AX => self.rax as i16 as i64,
+            Register::BX => self.rbx as i16 as i64,
+            Register::CX => self.rcx as i16 as i64,
+            Register::DX => self.rdx as i16 as i64,
+            Register::SP => self.rsp as i16 as i64,
+            Register::BP => self.rbp as i16 as i64,
+            Register::SI => self.rsi as i16 as i64,
+            Register::DI => self.rdi as i16 as i64,
+
+            Register::R8W => self.r8 as i16 as i64,
+            Register::R9W => self.r9 as i16 as i64,
+            Register::R10W => self.r10 as i16 as i64,
+            Register::R11W => self.r11 as i16 as i64,
+            Register::R12W => self.r12 as i16 as i64,
+            Register::R13W => self.r13 as i16 as i64,
+            Register::R14W => self.r14 as i16 as i64,
+            Register::R15W => self.r15 as i16 as i64,
+
+            // 8 Bit
             Register::AL => self.rax as i8 as i64,
             Register::CL => self.rcx as i8 as i64,
             Register::DL => self.rdx as i8 as i64,
@@ -118,6 +139,7 @@ impl MachineState {
 
     fn set_register_value(&mut self, register: &Register, value: i64) {
         match *register {
+            // 64 Bit
             Register::RAX => self.rax = value,
             Register::RBX => self.rbx = value,
             Register::RCX => self.rcx = value,
@@ -156,6 +178,25 @@ impl MachineState {
             Register::R13D => self.r13 = ((self.r13 as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
             Register::R14D => self.r14 = ((self.r14 as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
             Register::R15D => self.r15 = ((self.r15 as u64 & 0xFFFFFFFF00000000) | (value as i32 as u64)) as i64,
+
+            // 16 Bit
+            Register::AX => self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::BX => self.rbx = ((self.rbx as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::CX => self.rcx = ((self.rcx as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::DX => self.rdx = ((self.rdx as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::SP => self.rsp = ((self.rsp as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::BP => self.rbp = ((self.rbp as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::SI => self.rsi = ((self.rsi as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::DI => self.rdi = ((self.rdi as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+
+            Register::R8W => self.r8 = ((self.r8 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R9W => self.r9 = ((self.r9 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R10W => self.r10 = ((self.r10 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R11W => self.r11 = ((self.r11 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R12W => self.r12 = ((self.r12 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R13W => self.r13 = ((self.r13 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R14W => self.r14 = ((self.r14 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
+            Register::R15W => self.r15 = ((self.r15 as u64 & 0xFFFFFFFFFFFF0000) | (value as i16 as u64)) as i64,
 
             // 8 Bit
             Register::AL => self.rax = ((self.rax as u64 & 0xFFFFFFFFFFFFFF00) | (value as i8 as u64)) as i64,
