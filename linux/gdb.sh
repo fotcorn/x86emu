@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 gdb-multiarch \
 	-ex "target remote localhost:1234" \
-	-ex "break *0x2476d20" \
+	-ex "break *0x2476da9" \
 	-ex "set step-mode on" \
 	-ex "c" \
 	-ex "disconnect" \
@@ -20,3 +20,7 @@ gdb-multiarch \
 # 0x2476d48
 # 0x2476db6
 # 0x2476dc4
+# 0x2476df4
+# 0x2476e0c
+# 0x24770f5
+# 0x2476da9
