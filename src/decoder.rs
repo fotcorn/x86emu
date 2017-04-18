@@ -23,7 +23,6 @@ impl<'a> Decoder<'a> {
             let rip = self.machine_state.rip as u64;
             let mut first_byte = self.machine_state.mem_read_byte(rip);
 
-            let mut rex: Option<REX> = None;
             let mut decoder_flags = DecoderFlags { bits: 0 };
 
             match first_byte {
@@ -61,21 +60,22 @@ impl<'a> Decoder<'a> {
                     if temp_rex.contains(X) {
                         decoder_flags |= SIB_EXTENSION;
                     }
+                    if temp_rex.contains(W) {
+                        decoder_flags |= OPERAND_64_BIT;
+                    }
                     decoder_flags |= NEW_8BIT_REGISTER;
                     self.machine_state.rip += 1;
-                    rex = Some(temp_rex);
                 }
                 _ => (),
             }
 
-            let register_size = match rex {
-                Some(r) if r.contains(OPERAND_64_BIT) => RegisterSize::Bit64,
-                _ => {
-                    if decoder_flags.contains(OPERAND_16_BIT) {
-                        RegisterSize::Bit16
-                    } else {
-                        RegisterSize::Bit32
-                    }
+            let register_size = if decoder_flags.contains(OPERAND_64_BIT) {
+                RegisterSize::Bit64
+            } else {
+                if decoder_flags.contains(OPERAND_16_BIT) {
+                    RegisterSize::Bit16
+                } else {
+                    RegisterSize::Bit32
                 }
             };
 
@@ -123,10 +123,14 @@ impl<'a> Decoder<'a> {
                         2
                     }
                     opcode @ 0xB8...0xBF => {
-                        let immediate = self.get_i32_value(1);
+                        let (immediate, ip_offset) = if decoder_flags.contains(OPERAND_64_BIT) {
+                            (self.get_i64_value(1) as i64, 9)
+                        } else {
+                            (self.get_i32_value(1) as i64, 5)
+                        };
                         let argument =
                             InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                    immediate: immediate as i64,
+                                    immediate: immediate,
                                 })
                                 .second_argument(InstructionArgument::Register {
                                     register:
@@ -137,7 +141,7 @@ impl<'a> Decoder<'a> {
                                 })
                                 .finalize();
                         self.cpu.mov(self.machine_state, argument);
-                        5
+                        ip_offset
                     }
                     0x00 => {
                         let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
@@ -683,6 +687,12 @@ impl<'a> Decoder<'a> {
         }
     }
 
+    fn get_i64_value(&mut self, ip_offset: i64) -> i64 {
+        let rip = (self.machine_state.rip + ip_offset) as u64;
+        let value = self.machine_state.mem_read(rip, 8);
+        *zero::read::<i64>(&value)
+    }
+
     fn get_i32_value(&mut self, ip_offset: i64) -> i32 {
         let rip = (self.machine_state.rip + ip_offset) as u64;
         let value = self.machine_state.mem_read(rip, 4);
@@ -1014,10 +1024,10 @@ enum ImmediateSize {
 
 bitflags! {
     flags REX: u8 {
-        const OPERAND_64_BIT = 0b00001000,
-        const R = 0b00000100,
-        const X = 0b00000010,
         const B = 0b00000001,
+        const X = 0b00000010,
+        const R = 0b00000100,
+        const W = 0b00001000,
     }
 }
 
@@ -1031,6 +1041,7 @@ bitflags! {
         const MOD_R_M_EXTENSION = 1 << 6,
         const SIB_EXTENSION = 1 << 7,
         const OPERAND_16_BIT = 1 << 8,
+        const OPERAND_64_BIT = 1 << 9,
     }
 }
 
