@@ -496,10 +496,35 @@ impl<'a> Decoder<'a> {
                         5
                     }
                     0xF7 => {
-                        let (argument, ip_offset) = self.get_argument(register_size,
-                                                                      RegOrOpcode::Opcode,
-                                                                      ImmediateSize::None,
-                                                                      decoder_flags);
+                        let rip = self.machine_state.rip as u64;
+                        let modrm = self.machine_state.mem_read_byte(rip + 1);
+                        let opcode = (modrm & 0b00111000) >> 3;
+
+                        let (argument, ip_offset) = match opcode {
+                            0 | 1 => {
+                                self.get_argument(register_size,
+                                                  RegOrOpcode::Opcode,
+                                                  ImmediateSize::Bit32,
+                                                  decoder_flags)
+                            },
+                            2 | 3 => {
+                                self.get_argument(register_size,
+                                                  RegOrOpcode::Opcode,
+                                                  ImmediateSize::None,
+                                                  decoder_flags)
+                            },
+                            4 | 5 | 6 | 7 => {
+                                let register = get_register(
+                                    0, register_size,decoder_flags.contains(NEW_64BIT_REGISTER), false);
+
+                                (InstructionArgumentsBuilder::new(
+                                    InstructionArgument::Register{register: register})
+                                    .opcode(opcode)
+                                    .finalize(),
+                                2)
+                            },
+                            _ => unreachable!()
+                        };
                         self.cpu.compare_mul_operation(self.machine_state, argument);
                         ip_offset
                     }
