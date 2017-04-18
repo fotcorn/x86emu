@@ -499,6 +499,10 @@ impl<'a> Decoder<'a> {
                                  }).finalize());
                         5
                     }
+                    0xEE => {
+                        println!("WARNING: OUT not implemented");
+                        1
+                    }
                     0xF7 => {
                         let rip = self.machine_state.rip as u64;
                         let modrm = self.machine_state.mem_read_byte(rip + 1);
