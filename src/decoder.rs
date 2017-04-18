@@ -306,6 +306,15 @@ impl<'a> Decoder<'a> {
                                   }).finalize());
                         0
                     }
+                    0x88 => {
+                        // mov
+                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.cpu.mov(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x89 => {
                         // mov
                         let (argument, ip_offset) = self.get_argument(register_size,
