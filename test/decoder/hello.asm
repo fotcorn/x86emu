@@ -23,6 +23,4 @@ mov    $0x400604,%edi
 mov    $0x0,%eax
 callq  0x400400
 mov    $0x0,%eax
-leaveq
-retq
 int     $0x80
