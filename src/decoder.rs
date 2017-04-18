@@ -471,6 +471,18 @@ impl<'a> Decoder<'a> {
                         self.cpu.leave(self.machine_state);
                         1
                     }
+                    0xD1 => {
+                        let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Opcode,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        argument.second_argument = Some(argument.first_argument);
+                        argument.first_argument = InstructionArgument::Immediate{
+                            immediate: 1,
+                        };
+                        self.cpu.shift_rotate(self.machine_state, argument);
+                        ip_offset
+                    }
                     0xD3 => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
                                                                       RegOrOpcode::Opcode,
