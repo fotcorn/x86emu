@@ -283,6 +283,11 @@ impl<'a> Decoder<'a> {
                         self.cpu.push(self.machine_state, arg);
                         ip_offset
                     }
+                    0xEB => {
+                        let (arg, ip_offset) = self.read_immediate_8bit();
+                        self.cpu.jmp(self.machine_state, arg);
+                        ip_offset
+                    }
                     0xE8 => {
                         let immediate = self.get_i32_value(1);
                         self.machine_state.rip += 5;
