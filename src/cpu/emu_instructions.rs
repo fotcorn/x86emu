@@ -223,12 +223,21 @@ impl CPU for EmulationCPU {
         self.and_impl(machine_state, arg, false);
     }
 
-    fn cmov(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "cmov", arg);
-        println!("WARNING: not implemented");
+    fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "cmovs", arg);
+        if machine_state.get_flag(Flags::Sign) {
+            self.mov(machine_state, arg);
+        }
     }
 
-        fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn cmovz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "cmovz", arg);
+        if machine_state.get_flag(Flags::Zero) {
+            self.mov(machine_state, arg);
+        }
+    }
+
+    fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "rol", arg);
     }
 

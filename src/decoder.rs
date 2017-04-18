@@ -550,16 +550,22 @@ impl<'a> Decoder<'a> {
                         let rip = self.machine_state.rip as u64;
                         let second_byte = self.machine_state.mem_read_byte(rip);
                         match second_byte {
+                            0x44 => {
+                                let (argument, ip_offset) = self.get_argument(register_size,
+                                                  RegOrOpcode::Register,
+                                                  ImmediateSize::None,
+                                                  decoder_flags | REVERSED_REGISTER_DIRECTION);
+                                self.cpu.cmovz(self.machine_state, argument);
+                                ip_offset
+                            },
                             0x48 => {
                                 let (argument, ip_offset) = self.get_argument(register_size,
                                                   RegOrOpcode::Register,
                                                   ImmediateSize::None,
                                                   decoder_flags | REVERSED_REGISTER_DIRECTION);
-                                self.cpu.cmov(self.machine_state, argument);
+                                self.cpu.cmovs(self.machine_state, argument);
                                 ip_offset
                             },
-
-
                             0x80 => {
                                 // TODO: could also be 16bit value
                                 let argument = self.read_immediate_32bit();

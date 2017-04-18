@@ -65,8 +65,12 @@ impl CPU for PrintCPU {
         println!("{:<6} {}", "test", arg);
     }
 
-    fn cmov(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "cmov", arg);
+    fn cmovs(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "cmovs", arg);
+    }
+
+    fn cmovz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "cmovz", arg);
     }
 
     fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
