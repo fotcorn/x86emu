@@ -850,7 +850,7 @@ impl<'a> Decoder<'a> {
                                 let rip = (self.machine_state.rip + 2) as u64;
                                 let immediate = self.machine_state.mem_read_byte(rip);
                                 (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                         immediate: immediate as i64,
+                                         immediate: immediate as i8 as i64,
                                      })
                                      .second_argument(InstructionArgument::Register {
                                          register: register1,
