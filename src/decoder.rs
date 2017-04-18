@@ -636,7 +636,7 @@ impl<'a> Decoder<'a> {
 
     fn read_immediate_8bit(&mut self) -> (InstructionArguments, i64) {
         let rip = self.machine_state.rip as u64;
-        let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
+        let immediate = self.machine_state.mem_read_byte(rip + 1) as i8 as i64;
 
         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate { immediate: immediate })
              .finalize(),
