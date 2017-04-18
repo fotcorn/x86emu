@@ -924,13 +924,27 @@ impl<'a> Decoder<'a> {
                     RegisterSize::Bit64
                 };
 
-                InstructionArgument::EffectiveAddress {
-                    base: get_register(base, register_size,
-                                       decoder_flags.contains(NEW_64BIT_REGISTER), false),
-                    displacement: displacement,
-                    scale: Some(scale),
-                    index: Some(get_register(index, register_size,
-                                        decoder_flags.contains(SIB_EXTENSION), false)),
+                let base = get_register(base, register_size,
+                                       decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                match base {
+                    Register::RSP => {
+                        InstructionArgument::EffectiveAddress {
+                            base: Register::RSP,
+                            index: None,
+                            scale: None,
+                            displacement: displacement,
+                        }
+                    },
+                    Register::RBP | Register::R13 => panic!("SIB special case RBP/R13 not implemented"),
+                    _ => {
+                        InstructionArgument::EffectiveAddress {
+                            base: base,
+                            displacement: displacement,
+                            scale: Some(scale),
+                            index: Some(get_register(index, register_size,
+                                                decoder_flags.contains(SIB_EXTENSION), false)),
+                        }
+                    }
                 }
             }
         }

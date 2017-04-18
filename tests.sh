@@ -2,6 +2,7 @@
 set -e
 test/decoder/test.sh test/decoder/direction.asm
 test/decoder/test.sh test/decoder/effective_address.asm
+test/decoder/test.sh test/decoder/effective_address2.asm
 test/decoder/test.sh test/decoder/generated.asm
 test/decoder/test.sh test/decoder/hello.asm
 test/decoder/test.sh test/decoder/register_address.asm
