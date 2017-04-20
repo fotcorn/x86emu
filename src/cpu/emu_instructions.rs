@@ -164,9 +164,10 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn sbb(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn sbb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "sbb", arg);
-        panic!("Not implemented");
+        self.sub_impl(machine_state, arg, true);
+        println!("WARNING: SBB implemented without carry")
     }
 
     fn and(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
