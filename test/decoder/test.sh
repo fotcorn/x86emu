@@ -6,6 +6,7 @@ as temp/out.asm -o temp/out.o
 ld temp/out.o -o temp/out
 objdump -d temp/out | tail -n +8 | cut -d$'\t' -f3 | head -n -1 | \
 sed -e 's/movl/mov /g' | \
+sed -e 's/movs[bw][wlq]/movsx /g' | \
 sed -e 's/movq/mov /g' | \
 sed -e 's/movabs/mov   /g' | \
 sed -e 's/andb/and /g' | \

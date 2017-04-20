@@ -13,6 +13,7 @@ test/decoder/test.sh test/decoder/rex_modrm.asm
 test/decoder/test.sh test/decoder/rex.asm
 test/decoder/test.sh test/decoder/rip_relative.asm
 test/decoder/test.sh test/decoder/shift_rotate.asm
+test/decoder/test.sh test/decoder/sign_extension.asm
 test/execution/test.sh test/execution/jc_jnc.S
 test/execution/test.sh test/execution/call_ret.S
 test/execution/test.sh test/execution/negative_jump.S
