@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -ex
+test/decoder/test.sh test/decoder/8bit_register.asm
 test/decoder/test.sh test/decoder/direction.asm
 test/decoder/test.sh test/decoder/effective_address.asm
 test/decoder/test.sh test/decoder/effective_address2.asm

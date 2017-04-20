@@ -903,7 +903,8 @@ impl<'a> Decoder<'a> {
                         };
                         let register2 = get_register(register_or_opcode,
                                                      register_size,
-                                                     decoder_flags.contains(MOD_R_M_EXTENSION), false);
+                                                     decoder_flags.contains(MOD_R_M_EXTENSION),
+                                                     decoder_flags.contains(NEW_8BIT_REGISTER));
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
                              InstructionArgumentsBuilder::new(self.effective_address(sib, register1, displacement, decoder_flags))
@@ -939,7 +940,7 @@ impl<'a> Decoder<'a> {
                                      register:
                                          get_register(value2,
                                                       register_size,
-                                                      decoder_flags.contains(MOD_R_M_EXTENSION), false),
+                                                      decoder_flags.contains(MOD_R_M_EXTENSION), decoder_flags.contains(NEW_8BIT_REGISTER)),
                                  })
                                  .finalize()
                          } else {
@@ -947,7 +948,7 @@ impl<'a> Decoder<'a> {
                                      register:
                                          get_register(value2,
                                                       register_size,
-                                                      decoder_flags.contains(MOD_R_M_EXTENSION), false),
+                                                      decoder_flags.contains(MOD_R_M_EXTENSION), decoder_flags.contains(NEW_8BIT_REGISTER)),
                                  })
                                  .second_argument(InstructionArgument::Register {
                                      register: register1,
