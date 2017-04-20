@@ -558,4 +558,11 @@ impl CPU for EmulationCPU {
             self.jmp(machine_state, arg);
         }
     }
+
+    fn setz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6}", "setz");
+        if machine_state.get_flag(Flags::Zero) {
+            machine_state.set_value(1, &arg.first_argument, ArgumentSize::Bit8);
+        }
+    }
 }
