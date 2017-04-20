@@ -291,6 +291,14 @@ impl<'a> Decoder<'a> {
                         self.cpu.jg(self.machine_state, arg);
                         ip_offset
                     }
+                    0x63 => {
+                        let (argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.cpu.movsxd(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x6A => {
                         let (arg, ip_offset) = self.read_immediate_8bit();
                         self.cpu.push(self.machine_state, arg);

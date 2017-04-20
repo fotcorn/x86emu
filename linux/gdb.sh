@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 gdb-multiarch \
 	-ex "target remote localhost:1234" \
-	-ex "break *0x24765c8" \
+	-ex "break *0x24762a3" \
 	-ex "set step-mode on" \
 	-ex "c" \
 	-ex "disconnect" \
@@ -25,3 +25,5 @@ gdb-multiarch \
 # 0x24770f5
 # 0x2476da9
 # 0x2476291
+
+# 0x24762a3 => somewhere in __putstr

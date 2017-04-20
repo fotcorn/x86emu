@@ -94,6 +94,15 @@ impl CPU for EmulationCPU {
         machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
     }
 
+    fn movsxd(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "movsxd", arg);
+        arg.assert_two_arguments();
+        let value = machine_state.get_value(&arg.first_argument, arg.size());
+        let value = value as i32 as i64;
+        let argument_size = arg.size();
+        machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
+    }
+
     fn movzbl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "movzbl", arg);
         arg.assert_two_arguments();
