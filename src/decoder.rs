@@ -387,6 +387,14 @@ impl<'a> Decoder<'a> {
                         self.cpu.cmp(self.machine_state, argument);
                         ip_offset
                     }
+                    0x3B => {
+                        let (argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags | REVERSED_REGISTER_DIRECTION);
+                        self.cpu.cmp(self.machine_state, argument);
+                        ip_offset
+                    }
                     0x80 => {
                         // arithmetic operation (8bit register target, 8bit immediate)
                         let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
