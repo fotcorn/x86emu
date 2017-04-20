@@ -461,6 +461,38 @@ impl<'a> Decoder<'a> {
                         self.cpu.lea(self.machine_state, argument);
                         0
                     }
+                    0x98 => {
+                        let (register1, register2) = if decoder_flags.contains(OPERAND_16_BIT) {
+                            (Register::AL, Register::AX)
+                        } else if decoder_flags.contains(OPERAND_64_BIT) {
+                            (Register::EAX, Register::RAX)
+                        } else {
+                            (Register::AX, Register::EAX)
+                        };
+
+                        let argument = InstructionArgumentsBuilder::new(
+                            InstructionArgument::Register{register: register1}
+                        ).second_argument(InstructionArgument::Register{register: register2})
+                        .finalize();
+                        self.cpu.mov(self.machine_state, argument);
+                        1
+                    }
+                    0x99 => {
+                        let (register1, register2) = if decoder_flags.contains(OPERAND_16_BIT) {
+                            (Register::AX, Register::DX)
+                        } else if decoder_flags.contains(OPERAND_64_BIT) {
+                            (Register::RAX, Register::RDX)
+                        } else {
+                            (Register::EAX, Register::EDX)
+                        };
+
+                        let argument = InstructionArgumentsBuilder::new(
+                            InstructionArgument::Register{register: register1}
+                        ).second_argument(InstructionArgument::Register{register: register2})
+                        .finalize();
+                        self.cpu.mov(self.machine_state, argument);
+                        1
+                    }
                     0xA5 => {
                         let repeat = decoder_flags.contains(REPEAT);
                         self.cpu.movs(self.machine_state, repeat);
