@@ -281,7 +281,6 @@ impl MachineState {
                     Some(ref index) => self.get_register_value(index) * scale.unwrap() as i64,
                 };
                 address += displacement as i64;
-                println!("address: {:x}", address);
                 address as u64
             }
             _ => unreachable!(),
