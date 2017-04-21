@@ -275,9 +275,18 @@ impl CPU for EmulationCPU {
         panic!("Not implemented");
     }
 
-    fn shl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn shl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "shl", arg);
-        panic!("Not implemented");
+        println!("{:<6} {}", "shr", arg);
+        arg.assert_two_arguments();
+        let argument_size = arg.size();
+        let second_argument = arg.second_argument.unwrap();
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let value2 = machine_state.get_value(&second_argument, argument_size);
+        let result = value2 << value1;
+        machine_state.compute_flags(result, argument_size);
+        machine_state.set_value(result, &second_argument, argument_size);
+        println!("WARNING: shl does not set carry/overflow flag");
     }
 
     fn shr(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -290,7 +299,7 @@ impl CPU for EmulationCPU {
         let result = value2 >> value1;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
-        println!("WARNING: shr does not set carry flag");
+        println!("WARNING: shr does not set carry/overflow flag");
     }
 
     fn sar(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -303,6 +312,7 @@ impl CPU for EmulationCPU {
         let result = value2 >> value1;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
+        println!("WARNING: sar does not preserve highest byte; sets O/C flags");
     }
 
     fn inc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
