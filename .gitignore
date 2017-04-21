@@ -2,6 +2,6 @@ target
 a.out
 *.o
 vmlinuz
-temp/
+tmp/
 linux/
 

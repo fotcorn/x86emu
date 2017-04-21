@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-mkdir -p temp
-python test/jumps/jumps.py > temp/jumps.S
-as temp/jumps.S -o temp/jumps.o
-ld -o temp/jumps temp/jumps.o
-./temp/jumps
-cargo run -- --loader elf --cpu emu temp/jumps  --symbol _start > /dev/null
+mkdir -p tmp
+python test/jumps/jumps.py > tmp/jumps.S
+as tmp/jumps.S -o tmp/jumps.o
+ld -o tmp/jumps tmp/jumps.o
+./tmp/jumps
+cargo run -- --loader elf --cpu emu tmp/jumps  --symbol _start > /dev/null
