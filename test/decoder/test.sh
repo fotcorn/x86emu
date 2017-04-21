@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-mkdir -p temp/
-cat $1 > temp/out.asm
-echo "nop" >> temp/out.asm
-as temp/out.asm -o temp/out.o
-ld temp/out.o -o temp/out
-objdump -d temp/out | tail -n +8 | cut -d$'\t' -f3 | head -n -1 | \
+mkdir -p tmp/
+cat $1 > tmp/out.asm
+echo "nop" >> tmp/out.asm
+as tmp/out.asm -o tmp/out.o
+ld tmp/out.o -o tmp/out
+objdump -d tmp/out | tail -n +8 | cut -d$'\t' -f3 | head -n -1 | \
 sed -e 's/movl/mov /g' | \
 sed -e 's/movs[bw][wlq]/movsx /g' | \
 sed -e 's/movq/mov /g' | \
@@ -18,6 +18,6 @@ sed -e 's/call.*/call/g' | \
 sed -e 's/retq/ret/g' | \
 sed -e 's/\s*#.*$//' | \
 sed -e '/^$/d' \
-> temp/dis_objdump.asm
-cargo run -- --loader elf --cpu print --symbol _start temp/out | sed -e 's/call.*/call/g' > temp/dis_emu.asm
-diff -u temp/dis_objdump.asm temp/dis_emu.asm
+> tmp/dis_objdump.asm
+cargo run -- --loader elf --cpu print --symbol _start tmp/out | sed -e 's/call.*/call/g' > tmp/dis_emu.asm
+diff -u tmp/dis_objdump.asm tmp/dis_emu.asm
