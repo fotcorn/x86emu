@@ -17,4 +17,5 @@ test/decoder/test.sh test/decoder/sign_extension.asm
 test/execution/test.sh test/execution/jc_jnc.S
 test/execution/test.sh test/execution/call_ret.S
 test/execution/test.sh test/execution/negative_jump.S
+test/c_execution/test.sh test/c_execution/rip_relative.c
 test/jumps/jumps.sh

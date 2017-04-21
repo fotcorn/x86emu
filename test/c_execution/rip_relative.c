@@ -33,5 +33,8 @@ int main(void) {
     if (c != 18) {
         __asm__("int3");
     }
+    __asm__("mov     $0,%rbx");
+    __asm__("mov     $1,%rax");
+    __asm__("int     $0x80");
     return a;
 }
