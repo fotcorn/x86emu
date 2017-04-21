@@ -571,6 +571,23 @@ impl<'a> Decoder<'a> {
                         println!("WARNING: OUT not implemented");
                         1
                     }
+                    0xF6 => {
+                        let rip = self.machine_state.rip as u64;
+                        let modrm = self.machine_state.mem_read_byte(rip + 1);
+                        let opcode = (modrm & 0b00111000) >> 3;
+
+                        let (argument, ip_offset) = match opcode {
+                            0 | 1 => {
+                                self.get_argument(RegisterSize::Bit8,
+                                                  RegOrOpcode::Opcode,
+                                                  ImmediateSize::Bit8,
+                                                  decoder_flags)
+                            },
+                            _ => panic!("no supported"),
+                        };
+                        self.cpu.compare_mul_operation(self.machine_state, argument);
+                        ip_offset
+                    }
                     0xF7 => {
                         let rip = self.machine_state.rip as u64;
                         let modrm = self.machine_state.mem_read_byte(rip + 1);
