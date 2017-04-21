@@ -364,9 +364,14 @@ impl CPU for EmulationCPU {
         machine_state.set_value(result, &arg.first_argument, argument_size);
     }
 
-    fn neg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+    fn neg(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "neg", arg);
-        panic!("Not implemented");
+        arg.assert_one_argument();
+        let argument_size = arg.size();
+        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        let result = -value;
+        machine_state.compute_flags(result, argument_size);
+        machine_state.set_value(result, &arg.first_argument, argument_size);
     }
 
     fn ret(&self, machine_state: &mut MachineState) {
