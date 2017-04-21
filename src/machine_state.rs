@@ -101,9 +101,7 @@ impl MachineState {
     }
 
     pub fn mem_write(&mut self, address: u64, data: &[u8]) {
-        // there is currently a bug which makes linux write the display data to 0x0 instead of 0xB8000
-        // const MEMORY_OFFSET: u64 = 0xB8000;
-        const MEMORY_OFFSET: u64 = 0x0;
+        const MEMORY_OFFSET: u64 = 0xB8000;
         if address >= MEMORY_OFFSET && address <= (MEMORY_OFFSET + 80 * 25 * 2) && address % 2 == 0{
             println!("VIDEO: {}", data[0] as char);
         }
