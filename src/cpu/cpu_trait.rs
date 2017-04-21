@@ -12,7 +12,7 @@ pub trait CPU {
 
     fn movsx(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn movzbl(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn movzx(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn add(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 

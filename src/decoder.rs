@@ -761,12 +761,34 @@ impl<'a> Decoder<'a> {
                             self.cpu.setz(self.machine_state, argument);
                         },
                         0xB6 => {
-                            let (argument, ip_offset) = self.get_argument(register_size,
-                                            RegOrOpcode::Register,
-                                            ImmediateSize::None,
-                                            decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                                RegOrOpcode::Register,
+                                                                                ImmediateSize::None,
+                                                                                decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            let modrm = self.machine_state.mem_read_byte(rip + 1);
+                            let register = modrm & 0b00000111;
+                            let register = get_register(register, RegisterSize::Bit8,
+                                                        decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                            argument.first_argument = InstructionArgument::Register{
+                                register: register,
+                            };
                             self.inc_rip(ip_offset);
-                            self.cpu.movzbl(self.machine_state, argument);
+                            self.cpu.movzx(self.machine_state, argument);
+                        }
+                        0xB7 => {
+                            let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                                RegOrOpcode::Register,
+                                                                                ImmediateSize::None,
+                                                                                decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            let modrm = self.machine_state.mem_read_byte(rip + 1);
+                            let register = modrm & 0b00000111;
+                            let register = get_register(register, RegisterSize::Bit16,
+                                                        decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                            argument.first_argument = InstructionArgument::Register{
+                                register: register,
+                            };
+                            self.inc_rip(ip_offset);
+                            self.cpu.movzx(self.machine_state, argument);
                         }
                         0xBE => {
                             let (mut argument, ip_offset) = self.get_argument(register_size,
