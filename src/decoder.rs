@@ -166,6 +166,28 @@ impl<'a> Decoder<'a> {
                     self.inc_rip(ip_offset);
                     self.cpu.xor(self.machine_state, argument);
                 }
+                0x35 => {
+                    let (immediate, ip_offset) = if decoder_flags.contains(OPERAND_16_BIT) {
+                        (self.get_i16_value(1) as i64, 3)
+                    } else {
+                        (self.get_i32_value(1) as i64, 5)
+                    };
+
+                    let register = get_register(0,
+                        register_size, decoder_flags.contains(NEW_64BIT_REGISTER),
+                        false);
+
+                    let argument =
+                        InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                                immediate: immediate,
+                            })
+                            .second_argument(InstructionArgument::Register {
+                                register: register,
+                            })
+                            .finalize();
+                    self.inc_rip(ip_offset);
+                    self.cpu.xor(self.machine_state, argument);
+                }
                 0x38 => {
                     let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
                                                                     RegOrOpcode::Register,
