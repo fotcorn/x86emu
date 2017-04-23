@@ -125,7 +125,11 @@ impl<'a> Decoder<'a> {
                     let (immediate, ip_offset) = if decoder_flags.contains(OPERAND_64_BIT) {
                         (self.get_i64_value(1) as i64, 9)
                     } else {
-                        (self.get_i32_value(1) as i64, 5)
+                        if decoder_flags.contains(OPERAND_16_BIT) {
+                            (self.get_i16_value(1) as i64, 3)
+                        } else {
+                            (self.get_i32_value(1) as i64, 5)
+                        }
                     };
                     let argument =
                         InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
@@ -866,6 +870,13 @@ impl<'a> Decoder<'a> {
         let value = self.machine_state.mem_read(rip, 4);
         *zero::read::<i32>(&value)
     }
+
+    fn get_i16_value(&mut self, ip_offset: i64) -> i16 {
+        let rip = (self.machine_state.rip + ip_offset) as u64;
+        let value = self.machine_state.mem_read(rip, 2);
+        *zero::read::<i16>(&value)
+    }
+
 
     fn read_immediate_8bit(&mut self) -> (InstructionArguments, i64) {
         let rip = self.machine_state.rip as u64;

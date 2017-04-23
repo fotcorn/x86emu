@@ -7,6 +7,7 @@ test/decoder/test.sh test/decoder/effective_address2.asm
 test/decoder/test.sh test/decoder/f7.asm
 test/decoder/test.sh test/decoder/generated.asm
 test/decoder/test.sh test/decoder/hello.asm
+test/decoder/test.sh test/decoder/mov.asm
 test/decoder/test.sh test/decoder/register_address.asm
 test/decoder/test.sh test/decoder/rex_b.asm
 test/decoder/test.sh test/decoder/rex_modrm.asm
