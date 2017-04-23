@@ -157,6 +157,14 @@ impl<'a> Decoder<'a> {
                     self.inc_rip(ip_offset);
                     self.cpu.sub(self.machine_state, argument);
                 }
+                0x2B => {
+                    let (argument, ip_offset) = self.get_argument(register_size,
+                                                                    RegOrOpcode::Register,
+                                                                    ImmediateSize::None,
+                                                                    decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.inc_rip(ip_offset);
+                    self.cpu.sub(self.machine_state, argument);
+                }
                 0x31 => {
                     // xor
                     let (argument, ip_offset) = self.get_argument(register_size,
