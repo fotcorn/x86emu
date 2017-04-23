@@ -1,7 +1,7 @@
 use instruction_set::{InstructionArgument, InstructionArguments, Register, Flags};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
-use instruction_set::ArgumentSize;
+use instruction_set::{ArgumentSize, get_register_size};
 use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
 pub struct EmulationCPU {}
@@ -106,8 +106,21 @@ impl CPU for EmulationCPU {
     fn movzx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "movzx", arg);
         arg.assert_two_arguments();
-        let value = machine_state.get_value(&arg.first_argument, arg.size());
-        machine_state.set_value(value, &arg.second_argument.unwrap(), ArgumentSize::Bit32);
+        let argument_size = arg.size();
+        let value = machine_state.get_value(&arg.first_argument, argument_size);
+
+        let value = match arg.first_argument {
+            InstructionArgument::Register {ref register} => {
+                match get_register_size(register) {
+                    ArgumentSize::Bit8 => value as u8 as u64,
+                    ArgumentSize::Bit16 => value as u16 as u64,
+                    ArgumentSize::Bit32 => value as u32 as u64,
+                    ArgumentSize::Bit64 => value as u64 as u64,
+                }
+            },
+            _ => panic!("Invalid parameter for mov")
+        };
+        machine_state.set_value(value as i64, &arg.second_argument.unwrap(), argument_size);
     }
 
     fn add(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
