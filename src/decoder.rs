@@ -98,6 +98,10 @@ impl<'a> Decoder<'a> {
                     let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.add(self.machine_state, argument);
                 }
+                0x04 => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.add(self.machine_state, argument);
+                }
                 0x08 => {
                     let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
                                                                     RegOrOpcode::Opcode,
@@ -924,6 +928,10 @@ impl<'a> Decoder<'a> {
         *zero::read::<i16>(&value)
     }
 
+    fn get_i8_value(&mut self, ip_offset: i64) -> i8 {
+        let rip = (self.machine_state.rip + ip_offset) as u64;
+        self.machine_state.mem_read_byte(rip) as i8
+    }
 
     fn read_immediate_8bit(&mut self) -> (InstructionArguments, i64) {
         let rip = self.machine_state.rip as u64;
@@ -1250,6 +1258,20 @@ impl<'a> Decoder<'a> {
                                                       ImmediateSize::None,
                                                       decoder_flags);
         self.inc_rip(ip_offset);
+        argument
+    }
+
+    fn decode_al_immediate(&mut self) -> InstructionArguments {
+        let immediate = self.get_i8_value(1);
+        let argument =
+            InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                    immediate: immediate as i64,
+                })
+                .second_argument(InstructionArgument::Register {
+                    register: Register::AL,
+                })
+                .finalize();
+        self.inc_rip(2);
         argument
     }
 
