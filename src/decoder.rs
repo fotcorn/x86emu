@@ -102,6 +102,10 @@ impl<'a> Decoder<'a> {
                     let argument = self.decode_al_immediate();
                     self.cpu.add(self.machine_state, argument);
                 }
+                0x05 => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                    self.cpu.add(self.machine_state, argument);
+                }
                 0x08 => {
                     let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
                                                                     RegOrOpcode::Opcode,
