@@ -375,6 +375,7 @@ impl CPU for EmulationCPU {
         let result = value2 * value1;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
+        println!("WARNING: instruction argument decoding is invalid");
         println!("WARNING: imul does not set carry/overflow flag");
     }
 

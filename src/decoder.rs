@@ -605,8 +605,6 @@ impl<'a> Decoder<'a> {
                                                 decoder_flags)
                         },
                         4 | 5 | 6 | 7 => {
-                            panic!("invalid decoder logic, this opcodes take 3 arguments, we only decode one");
-                            /*
                             let register = get_register(
                                 0, register_size,decoder_flags.contains(NEW_64BIT_REGISTER), false);
 
@@ -614,7 +612,7 @@ impl<'a> Decoder<'a> {
                                 InstructionArgument::Register{register: register})
                                 .opcode(opcode)
                                 .finalize(),
-                            2)*/
+                            2)
                         },
                         _ => unreachable!()
                     };
