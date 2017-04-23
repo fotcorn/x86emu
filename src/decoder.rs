@@ -107,95 +107,143 @@ impl<'a> Decoder<'a> {
                     self.cpu.add(self.machine_state, argument);
                 }
                 0x08 => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
-                                                                    RegOrOpcode::Opcode,
-                                                                    ImmediateSize::Bit8,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
                     self.cpu.or(self.machine_state, argument);
                 }
                 0x09 => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
                     self.cpu.or(self.machine_state, argument);
                 }
                 0x0A => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
-                                                                    RegOrOpcode::Opcode,
-                                                                    ImmediateSize::Bit8,
-                                                                    decoder_flags | REVERSED_REGISTER_DIRECTION);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.or(self.machine_state, argument);
                 }
                 0x0B => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags | REVERSED_REGISTER_DIRECTION);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.or(self.machine_state, argument);
                 }
-                0x19 => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                0x0C => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.or(self.machine_state, argument);
+                }
+                0x0D => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                    self.cpu.or(self.machine_state, argument);
+                }
+                0x10 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
+                    self.cpu.adc(self.machine_state, argument);
+                }
+                0x11 => {
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
+                    self.cpu.adc(self.machine_state, argument);
+                }
+                0x12 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.adc(self.machine_state, argument);
+                }
+                0x13 => {
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.adc(self.machine_state, argument);
+                }
+                0x14 => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.adc(self.machine_state, argument);
+                }
+                0x15 => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                    self.cpu.adc(self.machine_state, argument);
+                }
+                0x18 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
                     self.cpu.sbb(self.machine_state, argument);
                 }
+                0x19 => {
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
+                    self.cpu.sbb(self.machine_state, argument);
+                }
+                0x1A => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.sbb(self.machine_state, argument);
+                }
+                0x1B => {
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.sbb(self.machine_state, argument);
+                }
+                0x1C => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.sbb(self.machine_state, argument);
+                }
+                0x1D => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                    self.cpu.sbb(self.machine_state, argument);
+                }
+                0x20 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
+                    self.cpu.and(self.machine_state, argument);
+                }
                 0x21 => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
+                    self.cpu.and(self.machine_state, argument);
+                }
+                0x22 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.and(self.machine_state, argument);
+                }
+                0x23 => {
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.and(self.machine_state, argument);
                 }
                 0x24 => {
-                    let rip = self.machine_state.rip as u64;
-                    let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
-                    self.inc_rip(1);
-                    self.cpu.and(self.machine_state, InstructionArgumentsBuilder::new(
-                                InstructionArgument::Immediate {
-                                    immediate: immediate,
-                                }).second_argument(InstructionArgument::Register {
-                                    register: Register::AL,
-                                }).finalize());
+                    let argument = self.decode_al_immediate();
+                    self.cpu.and(self.machine_state, argument);
+                }
+                0x25 => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                    self.cpu.and(self.machine_state, argument);
                 }
                 0x28 => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
                     self.cpu.sub(self.machine_state, argument);
                 }
                 0x29 => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
+                    self.cpu.sub(self.machine_state, argument);
+                }
+                0x2A => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.sub(self.machine_state, argument);
                 }
                 0x2B => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags | REVERSED_REGISTER_DIRECTION);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.sub(self.machine_state, argument);
                 }
+                0x2C => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.sub(self.machine_state, argument);
+                }
+                0x2D => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                    self.cpu.sub(self.machine_state, argument);
+                }
+                0x30 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
+                    self.cpu.xor(self.machine_state, argument);
+                }
                 0x31 => {
-                    // xor
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
+                    self.cpu.xor(self.machine_state, argument);
+                }
+                0x32 => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.xor(self.machine_state, argument);
+                }
+                0x33 => {
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.xor(self.machine_state, argument);
+                }
+                0x34 => {
+                    let argument = self.decode_al_immediate();
                     self.cpu.xor(self.machine_state, argument);
                 }
                 0x35 => {
@@ -203,27 +251,27 @@ impl<'a> Decoder<'a> {
                     self.cpu.xor(self.machine_state, argument);
                 }
                 0x38 => {
-                    let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
                     self.cpu.cmp(self.machine_state, argument);
                 }
                 0x39 => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags);
+                    self.cpu.cmp(self.machine_state, argument);
+                }
+                0x3A => {
+                    let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.cpu.cmp(self.machine_state, argument);
                 }
                 0x3B => {
-                    let (argument, ip_offset) = self.get_argument(register_size,
-                                                                    RegOrOpcode::Register,
-                                                                    ImmediateSize::None,
-                                                                    decoder_flags | REVERSED_REGISTER_DIRECTION);
-                    self.inc_rip(ip_offset);
+                    let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
+                    self.cpu.cmp(self.machine_state, argument);
+                }
+                0x3C => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.cmp(self.machine_state, argument);
+                }
+                0x3D => {
+                    let argument = self.decode_ax_immediate(register_size, decoder_flags);
                     self.cpu.cmp(self.machine_state, argument);
                 }
                 opcode @ 0x50...0x57 => {
