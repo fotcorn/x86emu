@@ -1,2 +1,2 @@
 language: rust
-script: ./run_tests.sh
+script: ./run_tests.py
