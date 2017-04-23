@@ -37,6 +37,13 @@ _start:
     jnz     fail
     
 
+    mov     $5, %eax
+    movslq  %eax, %rbx
+    mov     $5, %rcx
+    cmp     %rcx, %rbx
+    jnz     fail
+    
+
     mov     $5, %r8b
     movzbw  %r8b, %bx
     mov     $5, %cx

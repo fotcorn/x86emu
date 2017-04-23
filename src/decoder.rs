@@ -307,7 +307,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                     self.inc_rip(ip_offset);
-                    self.cpu.movsxd(self.machine_state, argument);
+                    self.cpu.movsx(self.machine_state, argument);
                 }
                 0x6A => {
                     let (arg, ip_offset) = self.read_immediate_8bit();

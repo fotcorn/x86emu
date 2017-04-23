@@ -17,10 +17,6 @@ impl CPU for PrintCPU {
         println!("{:<6} {}", "mov", arg);
     }
 
-    fn movsxd(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "movsxd", arg);
-    }
-
     fn movsx(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "movsx", arg);
     }

@@ -8,8 +8,6 @@ pub trait CPU {
 
     fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn movsxd(&self, machine_state: &mut MachineState, arg: InstructionArguments);
-
     fn movsx(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn movzx(&self, machine_state: &mut MachineState, arg: InstructionArguments);
