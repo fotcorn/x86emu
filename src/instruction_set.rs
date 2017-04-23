@@ -169,7 +169,7 @@ pub struct InstructionArguments {
     pub first_argument: InstructionArgument,
     pub second_argument: Option<InstructionArgument>,
     pub opcode: Option<u8>,
-    explicit_size: Option<ArgumentSize>,
+    pub explicit_size: Option<ArgumentSize>,
 }
 
 impl InstructionArguments {

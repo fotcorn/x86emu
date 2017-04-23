@@ -109,18 +109,28 @@ impl CPU for EmulationCPU {
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
 
-        let value = match arg.first_argument {
+        let first_argument_size = match arg.first_argument {
             InstructionArgument::Register {ref register} => {
-                match get_register_size(register) {
-                    ArgumentSize::Bit8 => value as u8 as u64,
-                    ArgumentSize::Bit16 => value as u16 as u64,
-                    ArgumentSize::Bit32 => value as u32 as u64,
-                    ArgumentSize::Bit64 => value as u64 as u64,
-                }
+                get_register_size(register)
             },
+            InstructionArgument::EffectiveAddress {..} => {
+                match arg.explicit_size {
+                    Some(explicit_size) => explicit_size,
+                    None => panic!("movzx instruction needs explicit size when using an effective address"),
+                }
+            }
             _ => panic!("Invalid parameter for mov")
         };
-        machine_state.set_value(value as i64, &arg.second_argument.unwrap(), argument_size);
+
+        let value = match first_argument_size {
+            ArgumentSize::Bit8 => value as u8 as u64,
+            ArgumentSize::Bit16 => value as u16 as u64,
+            ArgumentSize::Bit32 => value as u32 as u64,
+            ArgumentSize::Bit64 => value as u64 as u64,
+        };
+
+        // ArgumentSize::Bit64 is not used because target is always a register
+        machine_state.set_value(value as i64, &arg.second_argument.unwrap(), ArgumentSize::Bit64);
     }
 
     fn add(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
