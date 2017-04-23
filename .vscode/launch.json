@@ -1,13 +1,14 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "gdb",
             "request": "launch",
             "name": "Test out",
             "target": "target/debug/x86emu",
             "cwd": "${workspaceRoot}",
-            "arguments": "--loader elf --cpu emu --symbol _start temp/out"
+            "arguments": "--loader elf --cpu emu --symbol _start tmp/out"
         },
         {
             "type": "gdb",
