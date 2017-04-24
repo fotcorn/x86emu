@@ -20,53 +20,49 @@ impl<'a> Decoder<'a> {
 
     pub fn execute(&mut self, debug: bool) {
         loop {
-            let rip = self.machine_state.rip as u64;
-            let mut first_byte = self.machine_state.mem_read_byte(rip);
+            let mut first_byte;
 
             let mut decoder_flags = DecoderFlags { bits: 0 };
 
-            match first_byte {
-                0xF0 | 0xF2 => panic!("Lock prefixes/Bound prefix not supported"),
-                0xF3 => {
-                    decoder_flags |= REPEAT;
-                    self.machine_state.rip += 1;
-                }
-                0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
-                    panic!("Segment override prefixes/branch hints not supported")
-                }
-                0x66 => {
-                    decoder_flags |= OPERAND_16_BIT;
-                    self.machine_state.rip += 1;
-                }
-                0x67 => {
-                    decoder_flags |= ADDRESS_SIZE_OVERRIDE;
-                    self.machine_state.rip += 1;
-                }
-                _ => (),
-            }
-
-            let rip = self.machine_state.rip as u64;
-            first_byte = self.machine_state.mem_read_byte(rip);
-            match first_byte {
-                0x40...0x4F => {
-                    // 64bit REX prefix
-                    let temp_rex = REX { bits: first_byte };
-                    if temp_rex.contains(B) {
-                        decoder_flags |= NEW_64BIT_REGISTER;
+            loop {
+                let rip = self.machine_state.rip as u64;
+                first_byte = self.machine_state.mem_read_byte(rip);
+                match first_byte {
+                    0xF0 | 0xF2 => {
+                        panic!("Lock prefixes/Bound prefix not supported")
                     }
-                    if temp_rex.contains(R) {
-                        decoder_flags |= MOD_R_M_EXTENSION;
+                    0xF3 => {
+                        decoder_flags |= REPEAT;
                     }
-                    if temp_rex.contains(X) {
-                        decoder_flags |= SIB_EXTENSION;
+                    0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
+                        panic!("Segment override prefixes/branch hints not supported")
                     }
-                    if temp_rex.contains(W) {
-                        decoder_flags |= OPERAND_64_BIT;
+                    0x66 => {
+                        decoder_flags |= OPERAND_16_BIT;
                     }
-                    decoder_flags |= NEW_8BIT_REGISTER;
-                    self.machine_state.rip += 1;
+                    0x67 => {
+                        decoder_flags |= ADDRESS_SIZE_OVERRIDE;
+                    }
+                    0x40...0x4F => {
+                        // 64bit REX prefix
+                        let temp_rex = REX { bits: first_byte };
+                        if temp_rex.contains(B) {
+                            decoder_flags |= NEW_64BIT_REGISTER;
+                        }
+                        if temp_rex.contains(R) {
+                            decoder_flags |= MOD_R_M_EXTENSION;
+                        }
+                        if temp_rex.contains(X) {
+                            decoder_flags |= SIB_EXTENSION;
+                        }
+                        if temp_rex.contains(W) {
+                            decoder_flags |= OPERAND_64_BIT;
+                        }
+                        decoder_flags |= NEW_8BIT_REGISTER;
+                    }
+                    _ => break,
                 }
-                _ => (),
+                self.machine_state.rip += 1;
             }
 
             let register_size = if decoder_flags.contains(OPERAND_64_BIT) {
@@ -853,7 +849,7 @@ impl<'a> Decoder<'a> {
                             let (argument, ip_offset) = self.get_argument(register_size,
                                                                         RegOrOpcode::Register,
                                                                         ImmediateSize::None,
-                                                                        decoder_flags);
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.cpu.imul(self.machine_state, argument);
                             self.inc_rip(ip_offset);
                         }
