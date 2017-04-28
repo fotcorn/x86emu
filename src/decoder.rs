@@ -589,7 +589,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::Bit8,
                                                                     decoder_flags);
                     self.inc_rip(ip_offset);
-                    self.cpu.sar(self.machine_state, argument);
+                    self.cpu.shift_rotate(self.machine_state, argument);
                 }
                 0xC3 => {
                     self.inc_rip(0);
