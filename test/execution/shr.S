@@ -29,7 +29,6 @@ _start:
     mov $0xe1d2760000000000, %rax
     mov $0x3c, %rcx
     shr %cl,%rax
-    and $0xf,%eax
     mov $0xe, %rbx
     cmp %rax, %rbx
     jnz fail

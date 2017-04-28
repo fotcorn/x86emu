@@ -308,9 +308,9 @@ impl CPU for EmulationCPU {
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
-        let value2 = machine_state.get_value(&second_argument, argument_size);
-        let result = value2 >> value1;
+        let value1 = machine_state.get_value(&arg.first_argument, argument_size) as u64;
+        let value2 = machine_state.get_value(&second_argument, argument_size) as u64;
+        let result = (value2 >> value1) as i64;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
         println!("WARNING: shr does not set carry/overflow flag");
