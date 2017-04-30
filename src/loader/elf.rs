@@ -27,19 +27,12 @@ pub fn elf(filename: &str, symbol: &str, cpu: &CPU, debug: bool) {
     let code_offset = text_section.offset();
 
     // get the virtual address of the main function
-    let (main_symbol_address, main_size) = get_main_symbol_address(&elf_file, &symbol);
-    // get the offset of the main function
+    let main_symbol_address = get_main_symbol_address(&elf_file, &symbol);
     let offset = main_symbol_address - code_offset - load_address;
 
-    let mut end = (offset + main_size) as usize;
-    if end >= code.len() {
-        end = code.len() - 1
-    }
-    let main_code = &code[offset as usize..end];
-
     let mut machine_state = MachineState::new();
-    machine_state.mem_write(0x10000, main_code);
-    machine_state.rip = 0x10000;
+    machine_state.mem_write(0x10000, code);
+    machine_state.rip = 0x10000 + offset as i64;
     machine_state.rsp = 0x1000;
 
     let mut decoder = Decoder::new(cpu, &mut machine_state);
@@ -59,7 +52,7 @@ fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
     return None;
 }
 
-fn get_main_symbol_address(elf_file: &ElfFile, symbol_name: &str) -> (u64, u64) {
+fn get_main_symbol_address(elf_file: &ElfFile, symbol_name: &str) -> u64 {
     let symbol_string_table = elf_file.find_section_by_name(".strtab")
         .expect("strtab (String table) section not found, is this a stripped binary?");
     let symbol_string_table = symbol_string_table.raw_data(&elf_file);
@@ -73,12 +66,8 @@ fn get_main_symbol_address(elf_file: &ElfFile, symbol_name: &str) -> (u64, u64) 
                     read_str(&symbol_string_table[symbol.name() as usize..]) == symbol_name
                 })
                 .expect("symbol not found");
-        if symbol.size() == 0 {
-            return (symbol.value(), u64::max_value());
-        } else {
-            return (symbol.value(), symbol.size());
-        }
+        symbol.value()
     } else {
         unreachable!();
-    };
+    }
 }
