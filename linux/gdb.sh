@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 gdb-multiarch \
 	-ex "target remote localhost:1234" \
-	-ex "break *0x10026b" \
+	-ex "break *0x2476298" \
 	-ex "set step-mode on" \
 	-ex "c" \
 	-ex "disconnect" \
@@ -35,3 +35,9 @@ gdb-multiarch \
 # 0x247fed0  zlib_inflateInit2
 # 0x247ff30  zlib_inflate
 # 0x2480115  zlib_inflate after movzx  -0x1(%r12,%rsp,1),%eax
+
+# notebook
+# 0x2476200  putstr
+# 0x24763a0  puthex
+# 0x24763d6  puthex call to putstr
+# 0x2476298  putstr: read from array
