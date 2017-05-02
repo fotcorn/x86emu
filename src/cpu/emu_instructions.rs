@@ -58,6 +58,18 @@ impl EmulationCPU {
             machine_state.set_value(result, &second_argument, argument_size);
         }
     }
+
+    fn jmp_iml(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        arg.assert_one_argument();
+        let value = machine_state.get_value(&arg.first_argument, arg.size());
+        match arg.first_argument {
+            InstructionArgument::Register { .. } => machine_state.rip = value,
+            InstructionArgument::Immediate { .. } => machine_state.rip += value,
+            InstructionArgument::EffectiveAddress { .. } => {
+                panic!("Unsupported argument for jump");
+            }
+        }
+    }
 }
 
 impl CPU for EmulationCPU {
@@ -228,7 +240,7 @@ impl CPU for EmulationCPU {
         let rip = convert_i64_to_u8vec(machine_state.rip);
         machine_state.stack_push(&rip);
 
-        self.jmp(machine_state, arg);
+        self.jmp_iml(machine_state, arg);
     }
 
     fn lea(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -469,56 +481,48 @@ impl CPU for EmulationCPU {
 
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jmp", arg);
-        arg.assert_one_argument();
-        let value = machine_state.get_value(&arg.first_argument, arg.size());
-        match arg.first_argument {
-            InstructionArgument::Register { .. } => machine_state.rip = value,
-            InstructionArgument::Immediate { .. } => machine_state.rip += value,
-            InstructionArgument::EffectiveAddress { .. } => {
-                panic!("Unsupported argument for jmp");
-            }
-        }
+        self.jmp_iml(machine_state, arg);
     }
 
     fn jo(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jo", arg);
         if machine_state.get_flag(Flags::Overflow) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jno(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jno", arg);
         if !machine_state.get_flag(Flags::Overflow) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jc", arg);
         if machine_state.get_flag(Flags::Carry) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jnc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jnc", arg);
         if !machine_state.get_flag(Flags::Carry) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jz", arg);
         if machine_state.get_flag(Flags::Zero) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jnz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jnz", arg);
         if !machine_state.get_flag(Flags::Zero) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
@@ -526,7 +530,7 @@ impl CPU for EmulationCPU {
         println!("{:<6} {}", "jbe", arg);
         // CF=1 OR ZF=1
         if machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
@@ -534,35 +538,35 @@ impl CPU for EmulationCPU {
         println!("{:<6} {}", "ja", arg);
         // CF=0 AND ZF=0
         if !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn js(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "js", arg);
         if machine_state.get_flag(Flags::Sign) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jns(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jns", arg);
         if !machine_state.get_flag(Flags::Sign) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jp", arg);
         if machine_state.get_flag(Flags::Parity) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jnp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "jnp", arg);
         if !machine_state.get_flag(Flags::Parity) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
@@ -570,7 +574,7 @@ impl CPU for EmulationCPU {
         // SF!=OF
         println!("{:<6} {}", "jl", arg);
         if machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow){
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
@@ -578,7 +582,7 @@ impl CPU for EmulationCPU {
         // SF=OF
         println!("{:<6} {}", "jge", arg);
         if machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow){
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
@@ -586,7 +590,7 @@ impl CPU for EmulationCPU {
         // (ZF=1) OR (SF!=OF)
         if machine_state.get_flag(Flags::Zero) ||
                 (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow)) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
@@ -595,7 +599,7 @@ impl CPU for EmulationCPU {
         println!("{:<6} {}", "jg", arg);
         if !machine_state.get_flag(Flags::Zero) &&
                 (machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow)) {
-            self.jmp(machine_state, arg);
+            self.jmp_iml(machine_state, arg);
         }
     }
 
