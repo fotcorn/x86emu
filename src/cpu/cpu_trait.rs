@@ -118,7 +118,7 @@ pub trait CPU {
 
     fn jg(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn setz(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn sete(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn arithmetic(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         let opcode = match arg.opcode {

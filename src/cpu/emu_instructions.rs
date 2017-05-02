@@ -603,8 +603,8 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn setz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "setz", arg);
+    fn sete(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "sete", arg);
         if machine_state.get_flag(Flags::Zero) {
             machine_state.set_value(1, &arg.first_argument, ArgumentSize::Bit8);
         }
