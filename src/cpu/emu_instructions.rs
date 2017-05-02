@@ -303,7 +303,6 @@ impl CPU for EmulationCPU {
 
     fn shl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "shl", arg);
-        println!("{:<6} {}", "shr", arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -605,7 +604,7 @@ impl CPU for EmulationCPU {
     }
 
     fn setz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6}", "setz");
+        println!("{:<6} {}", "setz", arg);
         if machine_state.get_flag(Flags::Zero) {
             machine_state.set_value(1, &arg.first_argument, ArgumentSize::Bit8);
         }
