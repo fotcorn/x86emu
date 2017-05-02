@@ -7,7 +7,10 @@ sed -e 's/jnc.*/jnc/g' | \
 sed -e 's/jz.*/jz/g' | \
 sed -e 's/jbe.*/jbe/g' | \
 sed -e 's/jnz.*/jnz/g' | \
+sed -e 's/jle.*/jle/g' | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/0x0(/(/g' | \
+sed -e '/^$/d' | \
+sed -e 's/[ \t]*$//' | \
 sed -e 's/jmp.*/jmp/g' \
 > emu.txt

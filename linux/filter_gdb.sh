@@ -15,8 +15,11 @@ sed -e 's/jae.*/jnc/g' | \
 sed -e 's/ja.*/ja/g' | \
 sed -e 's/jne.*/jnz/g' | \
 sed -e 's/jbe.*/jbe/g' | \
+sed -e 's/jle.*/jle/g' | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/jmp.*/jmp/g' | \
 sed -e 's/0x0(/(/g' | \
+sed -e '/^$/d' | \
+sed -e 's/[ \t]*$//' | \
 sed -e 's/\s*#.*$//' \
 > gdb2.txt
