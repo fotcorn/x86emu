@@ -245,7 +245,7 @@ impl CPU for PrintCPU {
         println!("{:<6} {}", "jg", arg);
     }
 
-    fn setz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "setz", arg);
+    fn sete(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        println!("{:<6} {}", "sete", arg);
     }
 }
