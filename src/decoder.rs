@@ -867,7 +867,8 @@ impl<'a> Decoder<'a> {
                                     let modrm = self.machine_state.mem_read_byte(rip + 1);
                                     let register = modrm & 0b00000111;
                                     let register = get_register(register, RegisterSize::Bit8,
-                                                                decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                                                                decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                                decoder_flags.contains(NEW_8BIT_REGISTER));
                                     argument.first_argument = InstructionArgument::Register{
                                         register: register,
                                     };
@@ -891,7 +892,8 @@ impl<'a> Decoder<'a> {
                                     let modrm = self.machine_state.mem_read_byte(rip + 1);
                                     let register = modrm & 0b00000111;
                                     let register = get_register(register, RegisterSize::Bit16,
-                                                                decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                                                                decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                                decoder_flags.contains(NEW_8BIT_REGISTER));
                                     argument.first_argument = InstructionArgument::Register{
                                         register: register,
                                     };
@@ -912,7 +914,8 @@ impl<'a> Decoder<'a> {
                             let modrm = self.machine_state.mem_read_byte(rip + 1);
                             let register = modrm & 0b00000111;
                             let register = get_register(register, RegisterSize::Bit8,
-                                                        decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                                                        decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                        decoder_flags.contains(NEW_8BIT_REGISTER));
                             argument.first_argument = InstructionArgument::Register{
                                 register: register,
                             };
@@ -927,7 +930,8 @@ impl<'a> Decoder<'a> {
                             let modrm = self.machine_state.mem_read_byte(rip + 1);
                             let register = modrm & 0b00000111;
                             let register = get_register(register, RegisterSize::Bit16,
-                                                        decoder_flags.contains(NEW_64BIT_REGISTER), false);
+                                                        decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                        decoder_flags.contains(NEW_8BIT_REGISTER));
                             argument.first_argument = InstructionArgument::Register{
                                 register: register,
                             };
