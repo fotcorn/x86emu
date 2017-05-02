@@ -588,6 +588,7 @@ impl CPU for EmulationCPU {
 
     fn jle(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         // (ZF=1) OR (SF!=OF)
+        println!("{:<6} {}", "jle", arg);
         if machine_state.get_flag(Flags::Zero) ||
                 (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow)) {
             self.jmp_iml(machine_state, arg);
