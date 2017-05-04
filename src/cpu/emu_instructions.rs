@@ -437,7 +437,7 @@ impl CPU for EmulationCPU {
         machine_state.set_flag(Flags::Direction, false);
     }
 
-    fn stos(&self, _machine_state: &mut MachineState, repeat: bool) {
+    fn stos(&self, machine_state: &mut MachineState, repeat: bool) {
         if repeat {
             println!("{:<6}", "rep stos %ds:(%rsi),%es:(%rdi)");
             machine_state.set_register_value(&Register::RCX, 0);
@@ -461,6 +461,7 @@ impl CPU for EmulationCPU {
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
+            println!("{:x} {:x}", length, length * 8);
             length *= 8; // 8 bytes per mov
             if machine_state.get_flag(Flags::Direction) {
                 println!("WARNING: address calculation could be incorrect");
@@ -468,14 +469,15 @@ impl CPU for EmulationCPU {
                 to -= length;
                 let data = machine_state.mem_read(from as u64, length as u64);
                 machine_state.mem_write(to as u64, &data);
+                machine_state.set_register_value(&Register::RSI, from);
+                machine_state.set_register_value(&Register::RDI, to);
             } else {
                 let data = machine_state.mem_read(from as u64, length as u64);
                 machine_state.mem_write(to as u64, &data);
+                println!("WARNING: rsi and rdi not set");
+                // TODO: set rsi, rdi registers
             }
-
             machine_state.set_register_value(&Register::RCX, 0);
-
-            // TODO: set rsi, rdi, rcx registers
         } else {
             println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
             panic!("Not implemented");
