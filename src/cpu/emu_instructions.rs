@@ -438,9 +438,21 @@ impl CPU for EmulationCPU {
     }
 
     fn stos(&self, machine_state: &mut MachineState, repeat: bool) {
+        let to =
+            machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
+                                    ArgumentSize::Bit64);
         if repeat {
+            let length =
+                machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
+                                        ArgumentSize::Bit64);
             println!("{:<6}", "rep stos %ds:(%rsi),%es:(%rdi)");
-            machine_state.set_register_value(&Register::RCX, 0);
+            if machine_state.get_flag(Flags::Direction) {
+                panic!("stos NOOP");
+            } else {
+                // TODO: actually do something
+                machine_state.set_register_value(&Register::RDI, to + 8);
+                machine_state.set_register_value(&Register::RCX, length - 1);
+            }
         } else {
             println!("{:<6}", "stos %ds:(%rsi),%es:(%rdi)");
         }
