@@ -137,7 +137,7 @@ impl MachineState {
         }
     }
 
-    fn set_register_value(&mut self, register: &Register, value: i64) {
+    pub fn set_register_value(&mut self, register: &Register, value: i64) {
         match *register {
             // 64 Bit
             Register::RAX => self.rax = value,

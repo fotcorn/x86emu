@@ -440,6 +440,7 @@ impl CPU for EmulationCPU {
     fn stos(&self, _machine_state: &mut MachineState, repeat: bool) {
         if repeat {
             println!("{:<6}", "rep stos %ds:(%rsi),%es:(%rdi)");
+            machine_state.set_register_value(&Register::RCX, 0);
         } else {
             println!("{:<6}", "stos %ds:(%rsi),%es:(%rdi)");
         }
@@ -471,6 +472,9 @@ impl CPU for EmulationCPU {
                 let data = machine_state.mem_read(from as u64, length as u64);
                 machine_state.mem_write(to as u64, &data);
             }
+
+            machine_state.set_register_value(&Register::RCX, 0);
+
             // TODO: set rsi, rdi, rcx registers
         } else {
             println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
