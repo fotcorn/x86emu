@@ -4,7 +4,12 @@ with open('gdb.txt') as f:
 
 stos = False
 
-for line in lines:
+i = -1
+while True:
+    i += 1
+    if i == len(lines):
+        break
+    line = lines[i]
     if re.match('.* in ?? ()', line):
         continue
 
@@ -12,10 +17,15 @@ for line in lines:
     if match:  # instruction
         line = match.group(1)
         if line == 'rep stos %rax,%es:(%rdi)':
-            if stos:
-                continue
-            else:
-                stos = True
+            while True:
+                i += 1
+                line = lines[i]
+                match = re.match('=> 0x[a-z0-9]+:\t(.*)\n', line)
+                if match and match.group(1) != 'rep stos %rax,%es:(%rdi)':
+                    print('rep stos %rax,%es:(%rdi)')
+                    line = match.group(1)
+                    break
+
     else:  # register value
         b = False
         # skip some uninteresting registers
