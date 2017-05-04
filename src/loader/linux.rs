@@ -34,6 +34,8 @@ pub fn linux(filename: &str, cpu: &CPU, debug: bool) {
     machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x228, &convert_i32_to_u8vec(COMMAND_LINE_ADDRESS as i32));
 
     // set video mode
+    machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x01, &vec![9]); // screeninfo.y
+    machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x06, &vec![6]); // screeninfo.orig_video_mode
     machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x07, &vec![80]); // screeninfo.orig_video_cols
     machine_state.mem_write(ZERO_PAGE_ADDRESS + 0x0e, &vec![25]); // screeninfo.orig_video_lines
 
