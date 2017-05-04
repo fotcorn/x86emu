@@ -442,16 +442,17 @@ impl CPU for EmulationCPU {
             machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
                                     ArgumentSize::Bit64);
         if repeat {
-            let length =
+            let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
+            length *= 8; // 8 bytes per repeat
             println!("{:<6}", "rep stos %rax,%es:(%rdi)");
             if machine_state.get_flag(Flags::Direction) {
                 panic!("stos NOOP");
             } else {
                 // TODO: actually do something
-                machine_state.set_register_value(&Register::RDI, to + 8);
-                machine_state.set_register_value(&Register::RCX, length - 1);
+                machine_state.set_register_value(&Register::RDI, to + length);
+                machine_state.set_register_value(&Register::RCX, 0);
             }
         } else {
             println!("{:<6}", "stos %ds:(%rsi),%es:(%rdi)");
@@ -473,7 +474,6 @@ impl CPU for EmulationCPU {
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
-            println!("{:x} {:x}", length, length * 8);
             length *= 8; // 8 bytes per mov
             if machine_state.get_flag(Flags::Direction) {
                 println!("WARNING: address calculation could be incorrect");
