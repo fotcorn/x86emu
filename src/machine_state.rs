@@ -166,21 +166,31 @@ impl MachineState {
 impl fmt::Display for MachineState {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f,
-               "rax: {:20x} rbx: {:20x} rcx: {:20x}\n\
-                rdx: {:20x} rsp: {:20x} rbp: {:20x}\n\
-                rsi: {:20x} rdi: {:20x} rip: {:20x}\n\
-                r8:  {:20x} r9:  {:20x} r10: {:20x}\n\
-                r11: {:20x} r12: {:20x} r13: {:20x}\n\
-                r14: {:20x} r15: {:20x}\n",
+               "rax            {:#x}\n\
+                rbx            {:#x}\n\
+                rcx            {:#x}\n\
+                rdx            {:#x}\n\
+                rsi            {:#x}\n\
+                rdi            {:#x}\n\
+                rbp            {:#x}\n\
+                rsp            {:#x}\n\
+                r8             {:#x}\n\
+                r9             {:#x}\n\
+                r10            {:#x}\n\
+                r11            {:#x}\n\
+                r12            {:#x}\n\
+                r13            {:#x}\n\
+                r14            {:#x}\n\
+                r15            {:#x}\n\
+                rip            {:#x}",
                self.rax,
                self.rbx,
                self.rcx,
                self.rdx,
-               self.rsp,
-               self.rbp,
                self.rsi,
                self.rdi,
-               self.rip,
+               self.rbp,
+               self.rsp,
                self.r8,
                self.r9,
                self.r10,
@@ -189,6 +199,7 @@ impl fmt::Display for MachineState {
                self.r13,
                self.r14,
                self.r15,
+               self.rip,
                )
     }
 }
