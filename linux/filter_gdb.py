@@ -2,6 +2,8 @@ import re
 with open('gdb.txt') as f:
     lines = f.readlines()
 
+stos = False
+
 for line in lines:
     if re.match('.* in ?? ()', line):
         continue
@@ -25,6 +27,9 @@ for line in lines:
     
     line = match.group(1)
     if line == 'rep stos %rax,%es:(%rdi)':
-        continue
+        if stos:
+            continue
+        else:
+            stos = True
 
     print(line.strip())

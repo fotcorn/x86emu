@@ -445,7 +445,7 @@ impl CPU for EmulationCPU {
             let length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
-            println!("{:<6}", "rep stos %ds:(%rsi),%es:(%rdi)");
+            println!("{:<6}", "rep stos %rax,%es:(%rdi)");
             if machine_state.get_flag(Flags::Direction) {
                 panic!("stos NOOP");
             } else {
