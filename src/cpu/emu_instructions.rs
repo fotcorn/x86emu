@@ -629,4 +629,9 @@ impl CPU for EmulationCPU {
             machine_state.set_value(0, &arg.first_argument, ArgumentSize::Bit8);
         }
     }
+
+    fn out(&self, _machine_state: &mut MachineState) {
+        println!("{:<6} %al,(%dx)", "out");
+        println!("WARNING: out not implemented");
+    }
 }

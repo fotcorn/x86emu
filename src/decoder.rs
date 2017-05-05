@@ -648,8 +648,8 @@ impl<'a> Decoder<'a> {
                                 }).finalize());
                 }
                 0xEE => {
-                    println!("WARNING: OUT not implemented");
                     self.inc_rip(1);
+                    self.cpu.out(self.machine_state);
                 }
                 0xF6 => {
                     let rip = self.machine_state.rip as u64;

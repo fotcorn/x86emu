@@ -120,6 +120,8 @@ pub trait CPU {
 
     fn sete(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
+    fn out(&self, machine_state: &mut MachineState);
+
     fn arithmetic(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         let opcode = match arg.opcode {
             Some(opcode) => opcode,
