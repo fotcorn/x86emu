@@ -461,6 +461,10 @@ impl<'a> Decoder<'a> {
                     self.inc_rip(ip_offset);
                     self.cpu.mov(self.machine_state, argument);
                 }
+                0x90 => {
+                    println!("nop");
+                    self.inc_rip(1);
+                }
                 0x8B => {
                     let (argument, ip_offset) = self.get_argument(register_size,
                                                                     RegOrOpcode::Register,
