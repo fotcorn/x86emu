@@ -32,6 +32,8 @@ def main():
     movsz('movswl', 'ax', 'ebx', 'ecx', -5, -5)
     movsz('movswq', 'ax', 'rbx', 'rcx', -5, -5)
 
+    movsz('movslq', 'eax', 'rbx', 'rcx', -5, -5)
+
     # zero extend
     movsz('movzbw', 'r8b', 'bx', 'cx', -5, 2**8 - 5)
     movsz('movzbl', 'r8b', 'ebx', 'ecx', -5, 2**8 - 5)
