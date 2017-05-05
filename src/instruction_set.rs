@@ -164,6 +164,22 @@ pub enum InstructionArgument {
     },
 }
 
+impl InstructionArgument {
+    pub fn format(&self, size: ArgumentSize) -> String {
+        match *self {
+            InstructionArgument::Register {..} | InstructionArgument::EffectiveAddress {..} => format!("{}", self),
+            InstructionArgument::Immediate { immediate } => {
+                format!("$0x{:x}", match size {
+                    ArgumentSize::Bit8 => immediate as u8 as u64,
+                    ArgumentSize::Bit16 => immediate as u16 as u64,
+                    ArgumentSize::Bit32 => immediate as u32 as u64,
+                    ArgumentSize::Bit64 => immediate as u64,
+                })
+            }
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct InstructionArguments {
     pub first_argument: InstructionArgument,
@@ -272,8 +288,10 @@ impl InstructionArgumentsBuilder {
 impl fmt::Display for InstructionArguments {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.second_argument {
-            Some(ref second_argument) => write!(f, "{},{}", self.first_argument, second_argument),
-            None => write!(f, "{}", self.first_argument),
+            Some(ref second_argument) => write!(f, "{},{}",
+                self.first_argument.format(self.size()),
+                second_argument.format(self.size())),
+            None => write!(f, "{}", self.first_argument.format(self.size())),
         }
     }
 }

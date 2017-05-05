@@ -2,7 +2,7 @@
 .global  _start
 _start:
 
-//mov    $0xffffffffffffffff,%eax
+mov    $0xffffffffffffffff,%eax
 movzx  %dil,%ebp
 movzx  %dil,%edi
 setz   %dil
