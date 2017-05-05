@@ -1100,7 +1100,13 @@ impl<'a> Decoder<'a> {
                     }
                     ImmediateSize::Bit32 => {
                         assert!(reg_or_opcode == RegOrOpcode::Opcode);
-                        let immediate = self.get_i32_value(ip_offset);
+                        let immediate = if decoder_flags.contains(OPERAND_16_BIT) {
+                            ip_offset += 2;
+                            self.get_i16_value(ip_offset - 2) as i64
+                        } else {
+                            ip_offset += 4;
+                            self.get_i32_value(ip_offset - 4) as i64
+                        };
 
                         let argument_size = match register_size {
                             RegisterSize::Bit8 => ArgumentSize::Bit8,
@@ -1123,13 +1129,13 @@ impl<'a> Decoder<'a> {
                         };
 
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
-                                 immediate: immediate as i64,
+                                 immediate: immediate,
                              })
                              .second_argument(self.effective_address(sib, register, displacement, decoder_flags))
                              .opcode(register_or_opcode)
                              .explicit_size(argument_size)
                              .finalize(),
-                         ip_offset + 4)
+                         ip_offset)
                     }
                     ImmediateSize::None => {
                         assert!(reg_or_opcode == RegOrOpcode::Register);
