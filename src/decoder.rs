@@ -726,6 +726,7 @@ impl<'a> Decoder<'a> {
                     match second_byte {
                         0x1F => {
                             // NOP with hint
+                            println!("nopl   (%rax)");
                             self.inc_rip(3);
                         }
                         0x44 => {
