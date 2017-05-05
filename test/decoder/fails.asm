@@ -9,6 +9,4 @@ setz   %dil
 movslq %ebp,%rdi
 movslq %ebp,%r8
 
-/*cmp    $0x2c,0x10(%rsp,%rdi,1)
-*/
 int     $0x80

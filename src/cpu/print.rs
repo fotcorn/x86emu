@@ -1,4 +1,4 @@
-use instruction_set::{InstructionArgument, InstructionArguments};
+use instruction_set::{InstructionArgument, InstructionArguments, print_instruction};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
@@ -6,135 +6,135 @@ pub struct PrintCPU {}
 
 impl CPU for PrintCPU {
     fn push(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "push", arg);
+        print_instruction("push", &arg);
     }
 
     fn pop(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "pop", arg);
+        print_instruction("pop", &arg);
     }
 
     fn mov(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "mov", arg);
+        print_instruction("mov", &arg);
     }
 
     fn movsx(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "movsx", arg);
+        print_instruction("movsx", &arg);
     }
 
     fn movzx(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "movzx", arg);
+        print_instruction("movzx", &arg);
     }
 
     fn add(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "add", arg);
+        print_instruction("add", &arg);
     }
 
     fn or(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "or", arg);
+        print_instruction("or", &arg);
     }
 
     fn adc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "adc", arg);
+        print_instruction("adc", &arg);
     }
 
     fn sbb(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "sbb", arg);
+        print_instruction("sbb", &arg);
     }
 
     fn and(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "and", arg);
+        print_instruction("and", &arg);
     }
 
     fn sub(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "sub", arg);
+        print_instruction("sub", &arg);
     }
 
     fn xor(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "xor", arg);
+        print_instruction("xor", &arg);
     }
 
     fn cmp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "cmp", arg);
+        print_instruction("cmp", &arg);
     }
 
     fn call(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "call", arg);
+        print_instruction("call", &arg);
     }
 
     fn lea(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "lea", arg);
+        print_instruction("lea", &arg);
     }
 
     fn test(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "test", arg);
+        print_instruction("test", &arg);
     }
 
     fn cmovs(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "cmovs", arg);
+        print_instruction("cmovs", &arg);
     }
 
     fn cmovz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "cmovz", arg);
+        print_instruction("cmovz", &arg);
     }
 
     fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "rol", arg);
+        print_instruction("rol", &arg);
     }
 
     fn ror(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "ror", arg);
+        print_instruction("ror", &arg);
     }
 
     fn rcl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "rcl", arg);
+        print_instruction("rcl", &arg);
     }
 
     fn rcr(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "rcr", arg);
+        print_instruction("rcr", &arg);
     }
 
     fn shl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "shl", arg);
+        print_instruction("shl", &arg);
     }
 
     fn shr(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "shr", arg);
+        print_instruction("shr", &arg);
     }
 
     fn sar(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "sar", arg);
+        print_instruction("sar", &arg);
     }
 
     fn inc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "inc", arg);
+        print_instruction("inc", &arg);
     }
 
     fn dec(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "dec", arg);
+        print_instruction("dec", &arg);
     }
 
     fn div(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "div", arg);
+        print_instruction("div", &arg);
     }
 
     fn idiv(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "idiv", arg);
+        print_instruction("idiv", &arg);
     }
 
     fn mul(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "mul", arg);
+        print_instruction("mul", &arg);
     }
 
     fn imul(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "imul", arg);
+        print_instruction("imul", &arg);
     }
 
     fn not(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "not", arg);
+        print_instruction("not", &arg);
     }
 
     fn neg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "neg", arg);
+        print_instruction("neg", &arg);
     }
 
     fn ret(&self, _machine_state: &mut MachineState) {
@@ -173,7 +173,7 @@ impl CPU for PrintCPU {
     }
 
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jmp", arg);
+        print_instruction("jmp", &arg);
         arg.assert_one_argument();
         match arg.first_argument {
             InstructionArgument::Immediate { immediate } => machine_state.rip += immediate,
@@ -182,71 +182,71 @@ impl CPU for PrintCPU {
     }
 
     fn jo(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jo", arg);
+        print_instruction("jo", &arg);
     }
 
     fn jno(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jno", arg);
+        print_instruction("jno", &arg);
     }
 
     fn jc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jc", arg);
+        print_instruction("jc", &arg);
     }
 
     fn jnc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jnc", arg);
+        print_instruction("jnc", &arg);
     }
 
     fn jz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jz", arg);
+        print_instruction("jz", &arg);
     }
 
     fn jnz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jnz", arg);
+        print_instruction("jnz", &arg);
     }
 
     fn jbe(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jbe", arg);
+        print_instruction("jbe", &arg);
     }
 
     fn ja(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "ja", arg);
+        print_instruction("ja", &arg);
     }
 
     fn js(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "js", arg);
+        print_instruction("js", &arg);
     }
 
     fn jns(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jns", arg);
+        print_instruction("jns", &arg);
     }
 
     fn jp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jp", arg);
+        print_instruction("jp", &arg);
     }
 
     fn jnp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jnp", arg);
+        print_instruction("jnp", &arg);
     }
 
     fn jl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jl", arg);
+        print_instruction("jl", &arg);
     }
 
     fn jge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jge", arg);
+        print_instruction("jge", &arg);
     }
 
     fn jle(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jle", arg);
+        print_instruction("jle", &arg);
     }
 
     fn jg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "jg", arg);
+        print_instruction("jg", &arg);
     }
 
     fn sete(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "sete", arg);
+        print_instruction("sete", &arg);
     }
 
     fn out(&self, _machine_state: &mut MachineState) {
