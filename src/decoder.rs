@@ -1092,12 +1092,7 @@ impl<'a> Decoder<'a> {
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
                              })
-                             .second_argument(InstructionArgument::EffectiveAddress {
-                                 base: register,
-                                 displacement: displacement,
-                                 index: None,
-                                 scale: None,
-                             })
+                             .second_argument(self.effective_address(sib, register, displacement, decoder_flags))
                              .opcode(register_or_opcode)
                              .explicit_size(argument_size)
                              .finalize(),
@@ -1130,12 +1125,7 @@ impl<'a> Decoder<'a> {
                         (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
                              })
-                             .second_argument(InstructionArgument::EffectiveAddress {
-                                 base: register,
-                                 displacement: displacement,
-                                 index: None,
-                                 scale: None,
-                             })
+                             .second_argument(self.effective_address(sib, register, displacement, decoder_flags))
                              .opcode(register_or_opcode)
                              .explicit_size(argument_size)
                              .finalize(),
@@ -1284,22 +1274,22 @@ impl<'a> Decoder<'a> {
                 let base = get_register(base, register_size,
                                        decoder_flags.contains(NEW_64BIT_REGISTER), false);
                 match base {
-                    Register::RSP => {
-                        InstructionArgument::EffectiveAddress {
-                            base: Register::RSP,
-                            index: None,
-                            scale: None,
-                            displacement: displacement,
-                        }
-                    },
                     Register::RBP | Register::R13 => panic!("SIB special case RBP/R13 not implemented"),
                     _ => {
-                        InstructionArgument::EffectiveAddress {
-                            base: base,
-                            displacement: displacement,
-                            scale: Some(scale),
-                            index: Some(get_register(index, register_size,
-                                                decoder_flags.contains(SIB_EXTENSION), false)),
+                        match index {
+                            0x4 => InstructionArgument::EffectiveAddress {
+                                     base: base,
+                                     displacement: displacement,
+                                     scale: None,
+                                     index: None,
+                            },
+                            _ => InstructionArgument::EffectiveAddress {
+                                     base: base,
+                                     displacement: displacement,
+                                     scale: Some(scale),
+                                     index: Some(get_register(index, register_size,
+                                                              decoder_flags.contains(SIB_EXTENSION), false))
+                            },
                         }
                     }
                 }
