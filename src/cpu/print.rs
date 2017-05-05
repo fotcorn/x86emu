@@ -18,11 +18,11 @@ impl CPU for PrintCPU {
     }
 
     fn movsx(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("movsx", &arg);
+        println!("{:<6} {}", "movsx", arg);
     }
 
     fn movzx(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("movzx", &arg);
+        println!("{:<6} {}", "movzx", arg);
     }
 
     fn add(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

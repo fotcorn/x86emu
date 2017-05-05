@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 python filter_gdb.py | \
-sed -e 's/mov[lqbw]/mov /g' | \
 sed -e 's/movs[bwl][wlq]/movsx /g' | \
 sed -e 's/movz[bwl][wlq]/movzx /g' | \
 sed -e 's/movabs/mov   /g' | \
-sed -e 's/andb/and /g' | \
-sed -e 's/cmpb/cmp /g' | \
-sed -e 's/addl/add /g' | \
 sed -e 's/leaveq/leave/g' | \
 sed -e 's/retq/ret/g' | \
 sed -e 's/repz ret/ret/g' | \

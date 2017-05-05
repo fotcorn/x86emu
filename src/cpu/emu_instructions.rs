@@ -107,7 +107,7 @@ impl CPU for EmulationCPU {
     }
 
     fn movsx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("movsx", &arg);
+        println!("{:<6} {}", "movsx", arg);
         arg.assert_two_arguments();
         // get_value already does the sign extension
         let value = machine_state.get_value(&arg.first_argument, arg.size());
@@ -116,7 +116,7 @@ impl CPU for EmulationCPU {
     }
 
     fn movzx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("movzx", &arg);
+        println!("{:<6} {}", "movzx", arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);

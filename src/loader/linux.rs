@@ -8,7 +8,7 @@ use utils::convert_i32_to_u8vec;
 
 const SETUP_HEADER_OFFSET: u64 = 0x1F1;
 const BIT64_OFFSET: u64 = 0x200;
-const ZERO_PAGE_ADDRESS: u64 = 0x140e0;
+const ZERO_PAGE_ADDRESS: u64 = 0x140a0;
 const COMMAND_LINE_ADDRESS: u64 = 0x20000;
 const LOAD_ADDRESS: u64 = 0x100000;
 
