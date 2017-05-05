@@ -9,6 +9,7 @@ sed -e 's/cmpb/cmp /g' | \
 sed -e 's/addl/add /g' | \
 sed -e 's/leaveq/leave/g' | \
 sed -e 's/retq/ret/g' | \
+sed -e 's/repz ret/ret/g' | \
 sed -e 's/je.*/jz/g' | \
 sed -e 's/jae.*/jnc/g' | \
 sed -e 's/ja.*/ja/g' | \
