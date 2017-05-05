@@ -6,8 +6,8 @@ as tmp/out.asm -o tmp/out.o
 ld tmp/out.o -o tmp/out
 objdump -d tmp/out | tail -n +8 | cut -d$'\t' -f3 | head -n -1 | \
 sed -e 's/movl/mov /g' | \
-sed -e 's/movs[bw][wlq]/movsx /g' | \
-sed -e 's/movz[bw][wlq]/movzx /g' | \
+sed -e 's/movs[bwl][wlq]/movsx /g' | \
+sed -e 's/movz[bwl][wlq]/movzx /g' | \
 sed -e 's/movq/mov /g' | \
 sed -e 's/movabs/mov   /g' | \
 sed -e 's/andb/and /g' | \
