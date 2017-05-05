@@ -853,8 +853,8 @@ impl<'a> Decoder<'a> {
                                                                         RegOrOpcode::Register,
                                                                         ImmediateSize::None,
                                                                         decoder_flags | REVERSED_REGISTER_DIRECTION);
-                            self.cpu.imul(self.machine_state, argument);
                             self.inc_rip(ip_offset);
+                            self.cpu.imul(self.machine_state, argument);
                         }
                         0xB6 => {
                             let (mut argument, ip_offset) = self.get_argument(register_size,
