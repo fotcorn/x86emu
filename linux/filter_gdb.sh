@@ -18,7 +18,7 @@ sed -e 's/jg.*/jg/g' | \
 sed -e 's/js.*/js/g' | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/jmp.*/jmp/g' | \
-sed -e 's/nopl.*/nopl/g' | \
+sed -e 's/nop.*/nop/g' | \
 sed -e 's/0x0(/(/g' | \
 sed -e '/^$/d' | \
 sed -e 's/[ \t]*$//' | \
