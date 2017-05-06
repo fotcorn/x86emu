@@ -69,12 +69,68 @@ impl CPU for PrintCPU {
         print_instruction("test", &arg);
     }
 
-    fn cmovs(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovs", &arg);
+    fn cmovo(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovo", &arg);
+    }
+
+    fn cmovno(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovno", &arg);
+    }
+
+    fn cmovb(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovb", &arg);
+    }
+
+    fn cmovae(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovae", &arg);
     }
 
     fn cmove(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instruction("cmove", &arg);
+    }
+
+    fn cmovne(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovne", &arg);
+    }
+
+    fn cmovbe(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovbe", &arg);
+    }
+
+    fn cmova(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmova", &arg);
+    }
+
+    fn cmovs(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovs", &arg);
+    }
+
+    fn cmovns(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovns", &arg);
+    }
+
+    fn cmovp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovp", &arg);
+    }
+
+    fn cmovnp(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovnp", &arg);
+    }
+
+    fn cmovl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovl", &arg);
+    }
+
+    fn cmovge(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovge", &arg);
+    }
+
+    fn cmovle(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovle", &arg);
+    }
+
+    fn cmovg(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovg", &arg);
     }
 
     fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

@@ -269,9 +269,30 @@ impl CPU for EmulationCPU {
         self.and_impl(machine_state, arg, false);
     }
 
-    fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovs", &arg);
-        if machine_state.get_flag(Flags::Sign) {
+    fn cmovo(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovo", &arg);
+        if machine_state.get_flag(Flags::Overflow) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovno(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovno", &arg);
+        if !machine_state.get_flag(Flags::Overflow) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovb", &arg);
+        if machine_state.get_flag(Flags::Carry) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovae(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovae", &arg);
+        if !machine_state.get_flag(Flags::Carry) {
             self.mov_impl(machine_state, arg);
         }
     }
@@ -279,6 +300,85 @@ impl CPU for EmulationCPU {
     fn cmove(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instruction("cmove", &arg);
         if machine_state.get_flag(Flags::Zero) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovne(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovne", &arg);
+        if !machine_state.get_flag(Flags::Zero) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovbe(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovbe", &arg);
+        if machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmova(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmova", &arg);
+        if !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovs", &arg);
+        if machine_state.get_flag(Flags::Sign) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovns(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovns", &arg);
+        if !machine_state.get_flag(Flags::Sign) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovp", &arg);
+        if machine_state.get_flag(Flags::Parity) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovnp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovnp", &arg);
+        if !machine_state.get_flag(Flags::Parity) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovl", &arg);
+        if machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow){
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovge(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovge", &arg);
+        if machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow){
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovle(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovle", &arg);
+        if machine_state.get_flag(Flags::Zero) ||
+                (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow)) {
+            self.mov_impl(machine_state, arg);
+        }
+    }
+
+    fn cmovg(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmovg", &arg);
+        if !machine_state.get_flag(Flags::Zero) &&
+                (machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow)) {
             self.mov_impl(machine_state, arg);
         }
     }

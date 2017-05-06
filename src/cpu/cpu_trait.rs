@@ -34,9 +34,38 @@ pub trait CPU {
 
     fn test(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn cmovo(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovno(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovb(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovae(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn cmove(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovne(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovbe(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmova(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovns(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovp(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovnp(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovl(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovge(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovle(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
+    fn cmovg(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+
 
     // rotate
     fn rol(&self, machine_state: &mut MachineState, arg: InstructionArguments);

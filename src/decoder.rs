@@ -738,21 +738,133 @@ impl<'a> Decoder<'a> {
                             self.inc_rip(ip_offset);
                             println!("nopl   (%rax)");
                         }
+                        0x40 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovo(self.machine_state, argument);
+                        },
+                        0x41 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovno(self.machine_state, argument);
+                        },
+                        0x42 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovb(self.machine_state, argument);
+                        },
+                        0x43 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovae(self.machine_state, argument);
+                        },
                         0x44 => {
                             let (argument, ip_offset) = self.get_argument(register_size,
-                                                RegOrOpcode::Register,
-                                                ImmediateSize::None,
-                                                decoder_flags | REVERSED_REGISTER_DIRECTION);
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.inc_rip(ip_offset);
                             self.cpu.cmove(self.machine_state, argument);
                         },
+                        0x45 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovne(self.machine_state, argument);
+                        },
+                        0x46 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovbe(self.machine_state, argument);
+                        },
+                        0x47 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmova(self.machine_state, argument);
+                        },
                         0x48 => {
                             let (argument, ip_offset) = self.get_argument(register_size,
-                                                RegOrOpcode::Register,
-                                                ImmediateSize::None,
-                                                decoder_flags | REVERSED_REGISTER_DIRECTION);
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.inc_rip(ip_offset);
                             self.cpu.cmovs(self.machine_state, argument);
+                        },
+                        0x49 => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovns(self.machine_state, argument);
+                        },
+                        0x4a => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovp(self.machine_state, argument);
+                        },
+                        0x4b => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovnp(self.machine_state, argument);
+                        },
+                        0x4c => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovl(self.machine_state, argument);
+                        },
+                        0x4d => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovge(self.machine_state, argument);
+                        },
+                        0x4e => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovle(self.machine_state, argument);
+                        },
+                        0x4f => {
+                            let (argument, ip_offset) = self.get_argument(register_size,
+                                                                        RegOrOpcode::Register,
+                                                                        ImmediateSize::None,
+                                                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
+                            self.cpu.cmovg(self.machine_state, argument);
                         },
                         0x80 => {
                             // TODO: could also be 16bit value
