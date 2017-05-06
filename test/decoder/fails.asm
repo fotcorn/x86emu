@@ -9,4 +9,6 @@ setz   %dil
 movslq %ebp,%rdi
 movslq %ebp,%r8
 
+movslq  (%rdx,%rax,4),%rax
+
 int     $0x80
