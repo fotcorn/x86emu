@@ -70,6 +70,13 @@ impl EmulationCPU {
             }
         }
     }
+
+    fn mov_impl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        arg.assert_two_arguments();
+        let value = machine_state.get_value(&arg.first_argument, arg.size());
+        let argument_size = arg.size();
+        machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
+    }
 }
 
 impl CPU for EmulationCPU {
@@ -100,19 +107,13 @@ impl CPU for EmulationCPU {
 
     fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instruction("mov", &arg);
-        arg.assert_two_arguments();
-        let value = machine_state.get_value(&arg.first_argument, arg.size());
-        let argument_size = arg.size();
-        machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
+        self.mov_impl(machine_state, arg);
     }
 
     fn movsx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         println!("{:<6} {}", "movsx", arg);
-        arg.assert_two_arguments();
-        // get_value already does the sign extension
-        let value = machine_state.get_value(&arg.first_argument, arg.size());
-        let argument_size = arg.size();
-        machine_state.set_value(value, &arg.second_argument.unwrap(), argument_size);
+        // normal mov already does the sign extension
+        self.mov_impl(machine_state, arg);
     }
 
     fn movzx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -271,14 +272,14 @@ impl CPU for EmulationCPU {
     fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instruction("cmovs", &arg);
         if machine_state.get_flag(Flags::Sign) {
-            self.mov(machine_state, arg);
+            self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmove(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instruction("cmove", &arg);
         if machine_state.get_flag(Flags::Zero) {
-            self.mov(machine_state, arg);
+            self.mov_impl(machine_state, arg);
         }
     }
 
