@@ -749,7 +749,7 @@ impl<'a> Decoder<'a> {
                                                 ImmediateSize::None,
                                                 decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.inc_rip(ip_offset);
-                            self.cpu.cmovz(self.machine_state, argument);
+                            self.cpu.cmove(self.machine_state, argument);
                         },
                         0x48 => {
                             let (argument, ip_offset) = self.get_argument(register_size,

@@ -73,8 +73,8 @@ impl CPU for PrintCPU {
         print_instruction("cmovs", &arg);
     }
 
-    fn cmovz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovz", &arg);
+    fn cmove(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmove", &arg);
     }
 
     fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

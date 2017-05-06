@@ -36,7 +36,7 @@ pub trait CPU {
 
     fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn cmovz(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn cmove(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     // rotate
     fn rol(&self, machine_state: &mut MachineState, arg: InstructionArguments);

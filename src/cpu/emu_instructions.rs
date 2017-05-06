@@ -275,8 +275,8 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn cmovz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovz", &arg);
+    fn cmove(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("cmove", &arg);
         if machine_state.get_flag(Flags::Zero) {
             self.mov(machine_state, arg);
         }
