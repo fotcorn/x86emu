@@ -963,10 +963,13 @@ impl<'a> Decoder<'a> {
                             self.cpu.jg(self.machine_state, argument);
                         },
                         0x94 => {
-                            let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
-                                                                            RegOrOpcode::Opcode,
+                            let (mut argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                            RegOrOpcode::Register,
                                                                             ImmediateSize::None,
                                                                             decoder_flags);
+                            // TODO: change this hack to something sane
+                            argument.first_argument = argument.second_argument.unwrap();
+                            argument.second_argument = None;
                             self.inc_rip(ip_offset);
                             self.cpu.sete(self.machine_state, argument);
                         },
