@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-echo "cld" > emu2.txt
 cat emu.txt |
 grep -v WARNING | \
-sed -e '1,/cld/d' | \
+sed -e '0,/lea    0x521f(%rip),%rdx/d' | \
 sed -e 's/ja.*/ja/g' | \
 sed -e 's/jae.*/jae/g' | \
 sed -e 's/jnc.*/jnc/g' | \
@@ -20,4 +19,4 @@ sed -e '/^$/d' | \
 sed -e 's/[ \t]*$//' | \
 sed -e 's/mov    %eax,%rax/cltq/g' | \
 sed -e 's/jmp.*/jmp/g' \
->> emu2.txt
+> emu2.txt
