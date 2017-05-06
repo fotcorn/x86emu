@@ -300,16 +300,7 @@ impl<'a> Decoder<'a> {
                                                                       RegOrOpcode::Register,
                                                                       ImmediateSize::None,
                                                                       decoder_flags | REVERSED_REGISTER_DIRECTION);
-
-                    let modrm = self.machine_state.mem_read_byte(rip + 1);
-                    let register = modrm & 0b00000111;
-                    let register = get_register(register, RegisterSize::Bit32,
-                                                decoder_flags.contains(NEW_64BIT_REGISTER),
-                                                decoder_flags.contains(NEW_8BIT_REGISTER));
-                    argument.first_argument = InstructionArgument::Register{
-                        register: register,
-                    };
-
+                    self.override_argument_size(&mut argument, ArgumentSize::Bit32, rip, &decoder_flags);
                     self.inc_rip(ip_offset);
                     self.cpu.movsx(self.machine_state, argument);
                 }
@@ -1362,6 +1353,35 @@ impl<'a> Decoder<'a> {
                 .finalize();
         self.inc_rip(ip_offset);
         argument
+    }
+
+    fn override_argument_size(&mut self,
+                              argument: &mut InstructionArguments,
+                              size: ArgumentSize,
+                              rip: u64,
+                              decoder_flags: &DecoderFlags) {
+        match argument.first_argument {
+            InstructionArgument::Register {..}=> {
+                let register_size = match size {
+                    ArgumentSize::Bit8 => RegisterSize::Bit8,
+                    ArgumentSize::Bit16 => RegisterSize::Bit16,
+                    ArgumentSize::Bit32 => RegisterSize::Bit32,
+                    ArgumentSize::Bit64 => RegisterSize::Bit64,
+                };
+                let modrm = self.machine_state.mem_read_byte(rip + 1);
+                let register = modrm & 0b00000111;
+                let register = get_register(register, register_size,
+                                            decoder_flags.contains(NEW_64BIT_REGISTER),
+                                            decoder_flags.contains(NEW_8BIT_REGISTER));
+                argument.first_argument = InstructionArgument::Register{
+                    register: register,
+                };
+            },
+            InstructionArgument::EffectiveAddress {..} => {
+                argument.explicit_size = Some(size)
+            },
+            _ => panic!("Invalid argument")
+        }
     }
 
 }
