@@ -868,23 +868,7 @@ impl<'a> Decoder<'a> {
                                                                                 ImmediateSize::None,
                                                                                 decoder_flags | REVERSED_REGISTER_DIRECTION);
 
-                            match argument.first_argument {
-                                InstructionArgument::Register {..}=> {
-                                    let modrm = self.machine_state.mem_read_byte(rip + 1);
-                                    let register = modrm & 0b00000111;
-                                    let register = get_register(register, RegisterSize::Bit8,
-                                                                decoder_flags.contains(NEW_64BIT_REGISTER),
-                                                                decoder_flags.contains(NEW_8BIT_REGISTER));
-                                    argument.first_argument = InstructionArgument::Register{
-                                        register: register,
-                                    };
-                                },
-                                InstructionArgument::EffectiveAddress {..} => {
-                                    argument.explicit_size = Some(ArgumentSize::Bit8)
-                                },
-                                _ => panic!("Invalid argument for movzx")
-                            }
-
+                            self.override_argument_size(&mut argument, ArgumentSize::Bit8, rip, &decoder_flags);
                             self.inc_rip(ip_offset);
                             self.cpu.movzx(self.machine_state, argument);
                         }
@@ -893,22 +877,7 @@ impl<'a> Decoder<'a> {
                                                                                 RegOrOpcode::Register,
                                                                                 ImmediateSize::None,
                                                                                 decoder_flags | REVERSED_REGISTER_DIRECTION);
-                            match argument.first_argument {
-                                InstructionArgument::Register {..}=> {
-                                    let modrm = self.machine_state.mem_read_byte(rip + 1);
-                                    let register = modrm & 0b00000111;
-                                    let register = get_register(register, RegisterSize::Bit16,
-                                                                decoder_flags.contains(NEW_64BIT_REGISTER),
-                                                                decoder_flags.contains(NEW_8BIT_REGISTER));
-                                    argument.first_argument = InstructionArgument::Register{
-                                        register: register,
-                                    };
-                                },
-                                InstructionArgument::EffectiveAddress {..} => {
-                                    argument.explicit_size = Some(ArgumentSize::Bit16)
-                                },
-                                _ => panic!("Invalid argument for movzx")
-                            }
+                            self.override_argument_size(&mut argument, ArgumentSize::Bit16, rip, &decoder_flags);
                             self.inc_rip(ip_offset);
                             self.cpu.movzx(self.machine_state, argument);
                         }
@@ -917,14 +886,7 @@ impl<'a> Decoder<'a> {
                                                                                 RegOrOpcode::Register,
                                                                                 ImmediateSize::None,
                                                                                 decoder_flags | REVERSED_REGISTER_DIRECTION);
-                            let modrm = self.machine_state.mem_read_byte(rip + 1);
-                            let register = modrm & 0b00000111;
-                            let register = get_register(register, RegisterSize::Bit8,
-                                                        decoder_flags.contains(NEW_64BIT_REGISTER),
-                                                        decoder_flags.contains(NEW_8BIT_REGISTER));
-                            argument.first_argument = InstructionArgument::Register{
-                                register: register,
-                            };
+                            self.override_argument_size(&mut argument, ArgumentSize::Bit8, rip, &decoder_flags);
                             self.inc_rip(ip_offset);
                             self.cpu.movsx(self.machine_state, argument);
                         }
@@ -933,15 +895,7 @@ impl<'a> Decoder<'a> {
                                                                                 RegOrOpcode::Register,
                                                                                 ImmediateSize::None,
                                                                                 decoder_flags | REVERSED_REGISTER_DIRECTION);
-                            let modrm = self.machine_state.mem_read_byte(rip + 1);
-                            let register = modrm & 0b00000111;
-                            let register = get_register(register, RegisterSize::Bit16,
-                                                        decoder_flags.contains(NEW_64BIT_REGISTER),
-                                                        decoder_flags.contains(NEW_8BIT_REGISTER));
-                            argument.first_argument = InstructionArgument::Register{
-                                register: register,
-                            };
-
+                            self.override_argument_size(&mut argument, ArgumentSize::Bit16, rip, &decoder_flags);
                             self.cpu.movsx(self.machine_state, argument);
                             self.inc_rip(ip_offset);
                         }

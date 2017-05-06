@@ -14,12 +14,12 @@ sed -e 's/call.*/call/g' | \
 sed -e 's/retq/ret/g' | \
 sed -e 's/\s*#.*$//' | \
 sed -e 's/0x0(/(/g' | \
-sed -e '/^$/d' | \
+sed -e '/^$/d' \
 > tmp/dis_objdump.asm
 
 cargo run -- --loader elf --cpu print --symbol _start tmp/out | \
 sed -e 's/call.*/call/g' | \
-sed -e 's/0x0(/(/g' | \
+sed -e 's/0x0(/(/g' \
 > tmp/dis_emu.asm
 
 diff -u tmp/dis_objdump.asm tmp/dis_emu.asm
