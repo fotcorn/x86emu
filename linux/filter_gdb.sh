@@ -7,6 +7,7 @@ sed -e 's/movabs/mov   /g' | \
 sed -e 's/leaveq/leave/g' | \
 sed -e 's/retq/ret/g' | \
 sed -e 's/repz ret/ret/g' | \
+sed -e 's/xchg   %ax,%ax/nop/g' | \
 sed -e 's/je.*/jz/g' | \
 sed -e 's/jae.*/jnc/g' | \
 sed -e 's/ja.*/ja/g' | \
