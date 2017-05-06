@@ -13,6 +13,7 @@ sed -e 's/jne.*/jnz/g' | \
 sed -e 's/jbe.*/jbe/g' | \
 sed -e 's/jle.*/jle/g' | \
 sed -e 's/jg.*/jg/g' | \
+sed -e 's/js.*/js/g' | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/jmp.*/jmp/g' | \
 sed -e 's/0x0(/(/g' | \

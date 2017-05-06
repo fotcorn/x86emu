@@ -8,6 +8,7 @@ sed -e 's/jae.*/jae/g' | \
 sed -e 's/jnc.*/jnc/g' | \
 sed -e 's/jz.*/jz/g' | \
 sed -e 's/jg.*/jg/g' | \
+sed -e 's/js.*/js/g' | \
 sed -e 's/jbe.*/jbe/g' | \
 sed -e 's/jnz.*/jnz/g' | \
 sed -e 's/jle.*/jle/g' | \
