@@ -12,6 +12,7 @@ sed -e 's/jbe.*/jbe/g' | \
 sed -e 's/jnz.*/jnz/g' | \
 sed -e 's/jle.*/jle/g' | \
 sed -e 's/call.*/call/g' | \
+sed -e 's/nopl.*/nopl/g' | \
 sed -e 's/sar    $0x1,%eax/sar    %eax/g' | \
 sed -e 's/shr    $0x1,%rdx/shr    %rdx/g' | \
 sed -e 's/VIDEO.*//g' | \

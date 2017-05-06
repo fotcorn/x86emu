@@ -731,8 +731,12 @@ impl<'a> Decoder<'a> {
                     match second_byte {
                         0x1F => {
                             // NOP with hint
+                            let (_, ip_offset) = self.get_argument(register_size,
+                                                                          RegOrOpcode::Register,
+                                                                          ImmediateSize::None,
+                                                                          decoder_flags | REVERSED_REGISTER_DIRECTION);
+                            self.inc_rip(ip_offset);
                             println!("nopl   (%rax)");
-                            self.inc_rip(3);
                         }
                         0x44 => {
                             let (argument, ip_offset) = self.get_argument(register_size,
