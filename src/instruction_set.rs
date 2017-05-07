@@ -157,7 +157,7 @@ pub enum InstructionArgument {
     Immediate { immediate: i64 },
     Register { register: Register },
     EffectiveAddress {
-        base: Register,
+        base: Option<Register>,
         index: Option<Register>,
         scale: Option<u8>,
         displacement: i32,
@@ -303,11 +303,11 @@ impl fmt::Display for InstructionArgument {
             InstructionArgument::Immediate { immediate } => write!(f, "$0x{:x}", immediate),
             InstructionArgument::EffectiveAddress { displacement, .. } => {
                 if displacement < 0 {
-                    write!(f, "-{:#x}({})", displacement.abs(), format_effective_address(self))
+                    write!(f, "-{:#x}{}", displacement.abs(), format_effective_address(self))
                 } else if displacement > 0 {
-                    write!(f, "{:#x}({})", displacement, format_effective_address(self))
+                    write!(f, "{:#x}{}", displacement, format_effective_address(self))
                 } else {
-                    write!(f, "0x0({})", format_effective_address(self))
+                    write!(f, "0x0{}", format_effective_address(self))
                 }
             }
         }
@@ -318,8 +318,18 @@ fn format_effective_address(arg: &InstructionArgument) -> String {
     match *arg {
         InstructionArgument::EffectiveAddress { ref base, ref index, scale, .. } => {
             match *index {
-                None => format!("{}", base),
-                Some(ref index) => format!("{},{},{}", base, index, scale.unwrap()),
+                None => {
+                    match *base {
+                        Some(ref base) => format!("({})", base),
+                        None => format!(""),
+                    }
+                }
+                Some(ref index) => {
+                    match *base {
+                        Some(ref base) => format!("({},{},{})", base, index, scale.unwrap()),
+                        None => format!("(,{},{})", index, scale.unwrap()),
+                    }
+                }
             }
         },
         _ => unreachable!()

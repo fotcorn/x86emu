@@ -275,7 +275,10 @@ impl MachineState {
     pub fn calculate_effective_address(&self, arg: &InstructionArgument) -> u64 {
         match *arg {
             InstructionArgument::EffectiveAddress { ref base, ref index, scale, displacement} => {
-                let mut address = self.get_register_value(base);
+                let mut address = match *base {
+                    Some(ref base) => self.get_register_value(&base),
+                    None => 0,
+                };
                 address += match *index {
                     None => 0,
                     Some(ref index) => self.get_register_value(index) * scale.unwrap() as i64,

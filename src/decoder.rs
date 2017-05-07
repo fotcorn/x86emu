@@ -1086,7 +1086,7 @@ impl<'a> Decoder<'a> {
                     register_size: RegisterSize,
                     reg_or_opcode: RegOrOpcode,
                     immediate_size: ImmediateSize,
-                    decoder_flags: DecoderFlags)
+                    mut decoder_flags: DecoderFlags)
                     -> (InstructionArguments, i64) {
         let rip = (self.machine_state.rip + 1) as u64;
         let modrm = self.machine_state.mem_read_byte(rip);
@@ -1112,7 +1112,21 @@ impl<'a> Decoder<'a> {
                 };
 
                 let (displacement, mut ip_offset) = match address_mod {
-                    0b00 => (0, 0),
+                    0b00 => {
+                        match sib {
+                            Some(sib) => {
+                                let base = sib & 0b00000111;
+                                if base == 0x5 {
+                                    let displacement = self.get_i32_value(offset);
+                                    decoder_flags |= SIB_DISPLACEMENT_ONLY;
+                                    (displacement, 4)
+                                } else {
+                                    (0, 0)
+                                }
+                            },
+                            None => (0, 0)
+                        }
+                    }
                     0b01 => {
                         let rip = (self.machine_state.rip + offset) as u64;
                         (self.machine_state.mem_read_byte(rip) as i8 as i32, 1)
@@ -1327,14 +1341,14 @@ impl<'a> Decoder<'a> {
         match sib {
             None => {
                 InstructionArgument::EffectiveAddress {
-                    base: register,
+                    base: Some(register),
                     index: None,
                     scale: None,
                     displacement: displacement,
                 }
             }
             Some(sib) => {
-                let base = sib & 0b00000111;
+                let base_num = sib & 0b00000111;
                 let index = (sib & 0b00111000) >> 3;
                 let scale = (sib & 0b11000000) >> 6;
                 let scale = 2u8.pow(scale as u32) as u8;
@@ -1345,25 +1359,41 @@ impl<'a> Decoder<'a> {
                     RegisterSize::Bit64
                 };
 
-                let base = get_register(base, register_size,
+                let base = get_register(base_num, register_size,
                                        decoder_flags.contains(NEW_64BIT_REGISTER), false);
-                match base {
-                    Register::RBP | Register::R13 => panic!("SIB special case RBP/R13 not implemented"),
-                    _ => {
-                        match index {
-                            0x4 => InstructionArgument::EffectiveAddress {
-                                     base: base,
-                                     displacement: displacement,
-                                     scale: None,
-                                     index: None,
-                            },
-                            _ => InstructionArgument::EffectiveAddress {
-                                     base: base,
-                                     displacement: displacement,
-                                     scale: Some(scale),
-                                     index: Some(get_register(index, register_size,
-                                                              decoder_flags.contains(SIB_EXTENSION), false))
-                            },
+
+                if index == 0x4 {
+                    if base_num == 0x5 && decoder_flags.contains(SIB_DISPLACEMENT_ONLY) {
+                        InstructionArgument::EffectiveAddress {
+                            base: None,
+                            displacement: displacement,
+                            scale: None,
+                            index: None,
+                        }
+                    } else {
+                        InstructionArgument::EffectiveAddress {
+                            base: Some(base),
+                            displacement: displacement,
+                            scale: None,
+                            index: None,
+                        }
+                    }
+                } else {
+                    if base_num == 0x5 && decoder_flags.contains(SIB_DISPLACEMENT_ONLY) {
+                        InstructionArgument::EffectiveAddress {
+                            base: None,
+                            displacement: displacement,
+                            scale: Some(scale),
+                            index: Some(get_register(index, register_size,
+                                                    decoder_flags.contains(SIB_EXTENSION), false))
+                        }
+                    } else {
+                        InstructionArgument::EffectiveAddress {
+                            base: Some(base),
+                            displacement: displacement,
+                            scale: Some(scale),
+                            index: Some(get_register(index, register_size,
+                                                    decoder_flags.contains(SIB_EXTENSION), false))
                         }
                     }
                 }
@@ -1492,6 +1522,7 @@ bitflags! {
         const SIB_EXTENSION = 1 << 7,
         const OPERAND_16_BIT = 1 << 8,
         const OPERAND_64_BIT = 1 << 9,
+        const SIB_DISPLACEMENT_ONLY = 1 << 10,
     }
 }
 
