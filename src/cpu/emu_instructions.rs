@@ -231,7 +231,6 @@ impl CPU for EmulationCPU {
     fn cmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instr_arg("cmp", &arg);
         self.sub_impl(machine_state, arg, false);
-        println!("WARNING: cmp not fully implemented");
     }
 
     fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
