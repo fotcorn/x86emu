@@ -1,5 +1,8 @@
-use std::collections::hash_map::{HashMap, Entry};
+use std::collections::hash_map::{Entry};
 use std::fmt;
+
+use fnv::FnvHashMap;
+
 use instruction_set::{Flags, ArgumentSize};
 
 const PAGE_SIZE: u64 = 4096;

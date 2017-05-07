@@ -11,3 +11,4 @@ extern crate bitflags;
 extern crate zero;
 extern crate xmas_elf;
 extern crate time;
+extern crate fnv;
