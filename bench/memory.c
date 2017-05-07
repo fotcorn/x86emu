@@ -1,4 +1,4 @@
-#define ITERATIONS 1
+#define ITERATIONS 10
 
 int main(void) {
     int array[1000];
