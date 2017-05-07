@@ -1,3 +1,4 @@
+use std::io::Write;
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
@@ -1047,7 +1048,8 @@ impl<'a> Decoder<'a> {
             }
         }
         if benchmark {
-            println!("duration: {}", start.to(PreciseTime::now()));
+            let r = writeln!(&mut ::std::io::stderr(), "duration: {}", start.to(PreciseTime::now()));
+            r.expect("failed printing to stderr");
         }
     }
 
