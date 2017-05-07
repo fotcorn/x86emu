@@ -1,5 +1,8 @@
-use std::collections::hash_map::{HashMap, Entry};
+use std::collections::hash_map::{Entry};
 use std::fmt;
+
+use fnv::FnvHashMap;
+
 use instruction_set::{Flags, ArgumentSize};
 
 const PAGE_SIZE: u64 = 4096;
@@ -27,7 +30,7 @@ pub struct MachineState {
 
     pub rflags: i64,
 
-    memory: HashMap<u64, Vec<u8>>,
+    memory: FnvHashMap<u64, Vec<u8>>,
 }
 
 impl MachineState {
@@ -53,7 +56,7 @@ impl MachineState {
             r15: 0,
 
             rflags: 0,
-            memory: HashMap::new(),
+            memory: FnvHashMap::default(),
         }
     }
 

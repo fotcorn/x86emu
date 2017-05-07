@@ -9,7 +9,7 @@ zero = "0.1.2"
 bitflags = "0.7.0"
 clap = "2.21.1"
 time = "0.1"
-
+fnv = "1.0.5"
 
 [features]
 print_instructions = []
