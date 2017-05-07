@@ -2,7 +2,7 @@ use std::io::Write;
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
-                      InstructionArgument, ArgumentSize};
+                      InstructionArgument, ArgumentSize, print_instr};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
@@ -458,7 +458,7 @@ impl<'a> Decoder<'a> {
                     self.cpu.mov(self.machine_state, argument);
                 }
                 0x90 => {
-                    println!("nop");
+                    print_instr("nop");
                     self.inc_rip(1);
                 }
                 0x8B => {
@@ -745,7 +745,7 @@ impl<'a> Decoder<'a> {
                                                                           ImmediateSize::None,
                                                                           decoder_flags | REVERSED_REGISTER_DIRECTION);
                             self.inc_rip(ip_offset);
-                            println!("nopl   (%rax)");
+                            print_instr("nopl   (%rax)");
                         }
                         0x40 => {
                             let (argument, ip_offset) = self.get_argument(register_size,
