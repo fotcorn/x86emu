@@ -203,7 +203,7 @@ impl CPU for EmulationCPU {
     fn sbb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instr_arg("sbb", &arg);
         self.sub_impl(machine_state, arg, true);
-        println!("WARNING: SBB implemented without carry")
+        // TODO: SBB implemented without carry
     }
 
     fn and(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -264,7 +264,7 @@ impl CPU for EmulationCPU {
 
     fn test(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         print_instr_arg("test", &arg);
-        println!("WARNING: test not fully implemented");
+        // TODO:  test not fully implemented
         self.and_impl(machine_state, arg, false);
     }
 
@@ -411,7 +411,7 @@ impl CPU for EmulationCPU {
         let result = value2 << value1;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
-        println!("WARNING: shl does not set carry/overflow flag");
+        // TODO:  shl does not set carry/overflow flag
     }
 
     fn shr(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -424,7 +424,7 @@ impl CPU for EmulationCPU {
         let result = (value2 >> value1) as i64;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
-        println!("WARNING: shr does not set carry/overflow flag");
+        // TODO:  shr does not set carry/overflow flag
     }
 
     fn sar(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -437,7 +437,7 @@ impl CPU for EmulationCPU {
         let result = value2 >> value1;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
-        println!("WARNING: sar does not preserve highest byte; sets O/C flags");
+        // TODO:  sar does not preserve highest byte; sets O/C flags
     }
 
     fn inc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -486,8 +486,8 @@ impl CPU for EmulationCPU {
         let result = value2 * value1;
         machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &second_argument, argument_size);
-        println!("WARNING: instruction argument decoding is invalid");
-        println!("WARNING: imul does not set carry/overflow flag");
+        // TODO:  instruction argument decoding is invalid
+        // TODO:  imul does not set carry/overflow flag
     }
 
     fn not(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
@@ -560,7 +560,7 @@ impl CPU for EmulationCPU {
         } else {
             print_instr("stos %ds:(%rsi),%es:(%rdi)");
         }
-        println!("WARNING: stos: NOOP");
+        // TODO:  stos: NOOP
     }
 
 
@@ -579,7 +579,7 @@ impl CPU for EmulationCPU {
                                         ArgumentSize::Bit64);
             length *= 8; // 8 bytes per mov
             if machine_state.get_flag(Flags::Direction) {
-                println!("WARNING: address calculation could be incorrect");
+                // TODO:  address calculation could be incorrect
                 from -= length;
                 to -= length;
                 let data = machine_state.mem_read(from as u64, length as u64);
@@ -589,7 +589,7 @@ impl CPU for EmulationCPU {
             } else {
                 let data = machine_state.mem_read(from as u64, length as u64);
                 machine_state.mem_write(to as u64, &data);
-                println!("WARNING: rsi and rdi not set");
+                // TODO:  rsi and rdi not set
                 // TODO: set rsi, rdi registers
             }
             machine_state.set_register_value(&Register::RCX, 0);
@@ -734,7 +734,7 @@ impl CPU for EmulationCPU {
     }
 
     fn out(&self, _machine_state: &mut MachineState) {
-        println!("{:<6} %al,(%dx)", "out");
-        println!("WARNING: out not implemented");
+        print_instr!("{:<6} %al,(%dx)", "out");
+        // TODO:  out not implemented
     }
 }
