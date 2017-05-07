@@ -27,7 +27,7 @@ pub struct MachineState {
 
     pub rflags: i64,
 
-    memory: HashMap<u64, Vec<u8>>,
+    memory: Vec<u8>,
 }
 
 impl MachineState {
@@ -53,11 +53,12 @@ impl MachineState {
             r15: 0,
 
             rflags: 0,
-            memory: HashMap::new(),
+            memory: vec![0; 1000000000],
+            //memory: HashMap::new(),
         }
     }
 
-    fn get_page(&mut self, cell: u64) -> &mut Vec<u8> {
+    /*fn get_page(&mut self, cell: u64) -> &mut Vec<u8> {
         match self.memory.entry(cell) {
             Entry::Occupied(entry) => &mut *entry.into_mut(),
             Entry::Vacant(entry) => {
@@ -65,17 +66,18 @@ impl MachineState {
                 &mut *entry.insert(page)
             }
         }
-    }
+    }*/
 
-    pub fn mem_read_byte(&mut self, address: u64) -> u8 {
-        let page_number = address / PAGE_SIZE;
+    pub fn mem_read_byte(&self, address: u64) -> u8 {
+        /*let page_number = address / PAGE_SIZE;
         let page = self.get_page(page_number);
         let page_offset = address % PAGE_SIZE;
-        page[page_offset as usize]
+        page[page_offset as usize]*/
+        self.memory[address as usize]
     }
 
-    pub fn mem_read(&mut self, address: u64, length: u64) -> Vec<u8> {
-        let mut page_number = address / PAGE_SIZE;
+    pub fn mem_read(&self, address: u64, length: u64) -> Vec<u8> {
+        /*let mut page_number = address / PAGE_SIZE;
         let mut page_offset = address % PAGE_SIZE;
         let mut data_offset = 0;
         let mut data = Vec::new();
@@ -97,15 +99,18 @@ impl MachineState {
                 data_offset += 1;
                 page_offset += 1;
             }
-        }
+        }*/
+        self.memory[address as usize..address as usize + length as usize].to_vec()
     }
 
     pub fn mem_write(&mut self, address: u64, data: &[u8]) {
         const MEMORY_OFFSET: u64 = 0xB8000;
         if address >= MEMORY_OFFSET && address <= (MEMORY_OFFSET + 80 * 25 * 2) && address % 2 == 0{
             println!("VIDEO: {}", data[0] as char);
+            return;
         }
 
+        /*
         let mut page_number = address / PAGE_SIZE;
         let mut page_offset = address % PAGE_SIZE;
         let mut data_offset = 0;
@@ -127,6 +132,10 @@ impl MachineState {
                 data_offset += 1;
                 page_offset += 1;
             }
+        }*/
+        let len = data.len();
+        for i in 0..len {
+            self.memory[address as usize + i] = data[i];
         }
     }
 
