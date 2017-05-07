@@ -322,22 +322,22 @@ impl<'a> Decoder<'a> {
                 0x72 => {
                     let (arg, ip_offset) = self.read_immediate_8bit();
                     self.inc_rip(ip_offset);
-                    self.cpu.jc(self.machine_state, arg);
+                    self.cpu.jb(self.machine_state, arg);
                 }
                 0x73 => {
                     let (arg, ip_offset) = self.read_immediate_8bit();
                     self.inc_rip(ip_offset);
-                    self.cpu.jnc(self.machine_state, arg);
+                    self.cpu.jae(self.machine_state, arg);
                 }
                 0x74 => {
                     let (arg, ip_offset) = self.read_immediate_8bit();
                     self.inc_rip(ip_offset);
-                    self.cpu.jz(self.machine_state, arg);
+                    self.cpu.je(self.machine_state, arg);
                 }
                 0x75 => {
                     let (arg, ip_offset) = self.read_immediate_8bit();
                     self.inc_rip(ip_offset);
-                    self.cpu.jnz(self.machine_state, arg);
+                    self.cpu.jne(self.machine_state, arg);
                 }
                 0x76 => {
                     let (arg, ip_offset) = self.read_immediate_8bit();
@@ -882,25 +882,25 @@ impl<'a> Decoder<'a> {
                             // TODO: could also be 16bit value
                             let argument = self.read_immediate_32bit();
                             self.inc_rip(5);
-                            self.cpu.jc(self.machine_state, argument);
+                            self.cpu.jb(self.machine_state, argument);
                         },
                         0x83 => {
                             // TODO: could also be 16bit value
                             let argument = self.read_immediate_32bit();
                             self.inc_rip(5);
-                            self.cpu.jnc(self.machine_state, argument);
+                            self.cpu.jae(self.machine_state, argument);
                         },
                         0x84 => {
                             // TODO: could also be 16bit value
                             let argument = self.read_immediate_32bit();
                             self.inc_rip(5);
-                            self.cpu.jz(self.machine_state, argument);
+                            self.cpu.je(self.machine_state, argument);
                         },
                         0x85 => {
                             // TODO: could also be 16bit value
                             let argument = self.read_immediate_32bit();
                             self.inc_rip(5);
-                            self.cpu.jnz(self.machine_state, argument);
+                            self.cpu.jne(self.machine_state, argument);
                         },
                         0x86 => {
                             // TODO: could also be 16bit value

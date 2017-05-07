@@ -616,29 +616,29 @@ impl CPU for EmulationCPU {
         }
     }
 
-    fn jc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jc", &arg);
+    fn jb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("jb", &arg);
         if machine_state.get_flag(Flags::Carry) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
-    fn jnc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jnc", &arg);
+    fn jae(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("jae", &arg);
         if !machine_state.get_flag(Flags::Carry) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
-    fn jz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jz", &arg);
+    fn je(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("je", &arg);
         if machine_state.get_flag(Flags::Zero) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
-    fn jnz(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jnz", &arg);
+    fn jne(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("jne", &arg);
         if !machine_state.get_flag(Flags::Zero) {
             self.jmp_iml(machine_state, arg);
         }

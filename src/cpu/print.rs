@@ -245,20 +245,20 @@ impl CPU for PrintCPU {
         print_instruction("jno", &arg);
     }
 
-    fn jc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jc", &arg);
+    fn jb(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("jb", &arg);
     }
 
-    fn jnc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jnc", &arg);
+    fn jae(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("jae", &arg);
     }
 
-    fn jz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jz", &arg);
+    fn je(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("je", &arg);
     }
 
-    fn jnz(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jnz", &arg);
+    fn jne(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
+        print_instruction("jne", &arg);
     }
 
     fn jbe(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {

@@ -119,13 +119,13 @@ pub trait CPU {
 
     fn jno(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn jc(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn jb(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn jnc(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn jae(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn jz(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn je(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
-    fn jnz(&self, machine_state: &mut MachineState, arg: InstructionArguments);
+    fn jne(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
     fn jbe(&self, machine_state: &mut MachineState, arg: InstructionArguments);
 
