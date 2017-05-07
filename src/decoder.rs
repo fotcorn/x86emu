@@ -1,3 +1,5 @@
+use time::PreciseTime;
+
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
                       InstructionArgument, ArgumentSize};
 use cpu::cpu_trait::CPU;
@@ -18,7 +20,9 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    pub fn execute(&mut self, debug: bool) {
+    pub fn execute(&mut self, debug: bool, benchmark: bool) {
+        let start = PreciseTime::now();
+
         loop {
             let mut first_byte;
 
@@ -1033,7 +1037,7 @@ impl<'a> Decoder<'a> {
                 0xCD => {
                     // abuse int X instruction to signal passed test program
                     println!("int    $0x80");
-                    return;
+                    break;
                 }
                 _ => panic!("Unknown instruction: {:x}", first_byte),
             };
@@ -1041,6 +1045,9 @@ impl<'a> Decoder<'a> {
             if debug {
                 println!("{}", self.machine_state);
             }
+        }
+        if benchmark {
+            println!("duration: {}", start.to(PreciseTime::now()));
         }
     }
 

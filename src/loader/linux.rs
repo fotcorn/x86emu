@@ -49,5 +49,5 @@ pub fn linux(filename: &str, cpu: &CPU, debug: bool) {
 
     // start execution
     let mut decoder = Decoder::new(cpu, &mut machine_state);
-    decoder.execute(debug);
+    decoder.execute(debug, false);
 }

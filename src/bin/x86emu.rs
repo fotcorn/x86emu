@@ -31,6 +31,10 @@ fn main() {
             .help("run in debug mode (single step, print all registers after every instruction)")
             .long("debug")
             .short("d"))
+        .arg(Arg::with_name("benchmark")
+            .help("print how long it took to execute the main loop")
+            .long("benchmark")
+            .short("b"))
         .get_matches();
 
     let symbol = matches.value_of("symbol").unwrap_or("main");
@@ -38,6 +42,7 @@ fn main() {
     let loader = matches.value_of("loader").unwrap_or("elf");
     let filename = matches.value_of("file").unwrap();
     let debug = matches.is_present("debug");
+    let benchmark = matches.is_present("benchmark");
 
     match loader {
         "linux" => {
@@ -49,8 +54,8 @@ fn main() {
         }
         "elf" => {
             match cpu {
-                "print" => elf(filename, symbol, &PrintCPU {}, debug),
-                "emu" => elf(filename, symbol, &EmulationCPU {}, debug),
+                "print" => elf(filename, symbol, &PrintCPU {}, debug, benchmark),
+                "emu" => elf(filename, symbol, &EmulationCPU {}, debug, benchmark),
                 _ => unreachable!("Values already validated by clap"),
             };
         }
