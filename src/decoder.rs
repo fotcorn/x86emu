@@ -528,6 +528,10 @@ impl<'a> Decoder<'a> {
                     self.inc_rip(1);
                     self.cpu.movs(self.machine_state, repeat);
                 }
+                0xA8 => {
+                    let argument = self.decode_al_immediate();
+                    self.cpu.test(self.machine_state, argument);
+                }
                 0xAB => {
                     let repeat = decoder_flags.contains(REPEAT);
                     self.inc_rip(1);
