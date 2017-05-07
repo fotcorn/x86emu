@@ -336,7 +336,18 @@ fn format_effective_address(arg: &InstructionArgument) -> String {
     }
 }
 
-pub fn print_instruction(instruction: &str, arg: &InstructionArguments) {
+#[cfg(feature  = "print_instructions")]
+pub fn print_instr(instruction: &str) {
+    println!("{:<6}", instruction);
+}
+
+#[cfg(feature  = "print_instructions")]
+pub fn print_instr_arg_no_size(instruction: &str, arg: &InstructionArguments) {
+    println!("{:<6} {}", instruction, arg);
+}
+
+#[cfg(feature  = "print_instructions")]
+pub fn print_instr_arg(instruction: &str, arg: &InstructionArguments) {
     match arg.explicit_size {
         Some(size) => {
             match size {
@@ -349,3 +360,12 @@ pub fn print_instruction(instruction: &str, arg: &InstructionArguments) {
         None => println!("{:<6} {}", instruction, arg),
     }
 }
+
+#[cfg(not(feature  = "print_instructions"))]
+pub fn print_instr(_instruction: &str) {}
+
+#[cfg(not(feature  = "print_instructions"))]
+pub fn print_instr_arg(_instruction: &str, _arg: &InstructionArguments) {}
+
+#[cfg(not(feature  = "print_instructions"))]
+pub fn print_instr_arg_no_size(_instruction: &str, _arg: &InstructionArguments) {}

@@ -1,7 +1,7 @@
 use instruction_set::{InstructionArgument, InstructionArguments, Register, Flags};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
-use instruction_set::{ArgumentSize, get_register_size, print_instruction};
+use instruction_set::{ArgumentSize, get_register_size, print_instr, print_instr_arg, print_instr_arg_no_size};
 use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
 pub struct EmulationCPU {}
@@ -81,7 +81,7 @@ impl EmulationCPU {
 
 impl CPU for EmulationCPU {
     fn push(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("push", &arg);
+        print_instr_arg("push", &arg);
 
         arg.assert_one_argument();
         let vector = match arg.size() {
@@ -99,25 +99,25 @@ impl CPU for EmulationCPU {
     }
 
     fn pop(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("pop", &arg);
+        print_instr_arg("pop", &arg);
         arg.assert_one_argument();
         let value = machine_state.stack_pop();
         machine_state.set_value(value, &arg.first_argument, arg.size());
     }
 
     fn mov(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("mov", &arg);
+        print_instr_arg("mov", &arg);
         self.mov_impl(machine_state, arg);
     }
 
     fn movsx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "movsx", arg);
+        print_instr_arg_no_size("movsx", &arg);
         // normal mov already does the sign extension
         self.mov_impl(machine_state, arg);
     }
 
     fn movzx(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        println!("{:<6} {}", "movzx", arg);
+        print_instr_arg_no_size("movzx", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
@@ -147,7 +147,7 @@ impl CPU for EmulationCPU {
     }
 
     fn add(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("add", &arg);
+        print_instr_arg("add", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -184,7 +184,7 @@ impl CPU for EmulationCPU {
     }
 
     fn or(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("or", &arg);
+        print_instr_arg("or", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -196,28 +196,28 @@ impl CPU for EmulationCPU {
     }
 
     fn adc(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("adc", &arg);
+        print_instr_arg("adc", &arg);
         panic!("Not implemented");
     }
 
     fn sbb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("sbb", &arg);
+        print_instr_arg("sbb", &arg);
         self.sub_impl(machine_state, arg, true);
         println!("WARNING: SBB implemented without carry")
     }
 
     fn and(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("and", &arg);
+        print_instr_arg("and", &arg);
         self.and_impl(machine_state, arg, true);
     }
 
     fn sub(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("sub", &arg);
+        print_instr_arg("sub", &arg);
         self.sub_impl(machine_state, arg, true);
     }
 
     fn xor(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("xor", &arg);
+        print_instr_arg("xor", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -229,13 +229,13 @@ impl CPU for EmulationCPU {
     }
 
     fn cmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmp", &arg);
+        print_instr_arg("cmp", &arg);
         self.sub_impl(machine_state, arg, false);
         println!("WARNING: cmp not fully implemented");
     }
 
     fn call(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("call", &arg);
+        print_instr_arg("call", &arg);
         arg.assert_one_argument();
 
         let rip = convert_i64_to_u8vec(machine_state.rip);
@@ -245,7 +245,7 @@ impl CPU for EmulationCPU {
     }
 
     fn lea(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("lea", &arg);
+        print_instr_arg("lea", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         match arg.first_argument {
@@ -264,111 +264,111 @@ impl CPU for EmulationCPU {
     }
 
     fn test(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("test", &arg);
+        print_instr_arg("test", &arg);
         println!("WARNING: test not fully implemented");
         self.and_impl(machine_state, arg, false);
     }
 
     fn cmovo(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovo", &arg);
+        print_instr_arg("cmovo", &arg);
         if machine_state.get_flag(Flags::Overflow) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovno(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovno", &arg);
+        print_instr_arg("cmovno", &arg);
         if !machine_state.get_flag(Flags::Overflow) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovb", &arg);
+        print_instr_arg("cmovb", &arg);
         if machine_state.get_flag(Flags::Carry) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovae(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovae", &arg);
+        print_instr_arg("cmovae", &arg);
         if !machine_state.get_flag(Flags::Carry) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmove(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmove", &arg);
+        print_instr_arg("cmove", &arg);
         if machine_state.get_flag(Flags::Zero) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovne(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovne", &arg);
+        print_instr_arg("cmovne", &arg);
         if !machine_state.get_flag(Flags::Zero) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovbe(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovbe", &arg);
+        print_instr_arg("cmovbe", &arg);
         if machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmova(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmova", &arg);
+        print_instr_arg("cmova", &arg);
         if !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovs(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovs", &arg);
+        print_instr_arg("cmovs", &arg);
         if machine_state.get_flag(Flags::Sign) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovns(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovns", &arg);
+        print_instr_arg("cmovns", &arg);
         if !machine_state.get_flag(Flags::Sign) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovp", &arg);
+        print_instr_arg("cmovp", &arg);
         if machine_state.get_flag(Flags::Parity) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovnp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovnp", &arg);
+        print_instr_arg("cmovnp", &arg);
         if !machine_state.get_flag(Flags::Parity) {
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovl", &arg);
+        print_instr_arg("cmovl", &arg);
         if machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow){
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovge(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovge", &arg);
+        print_instr_arg("cmovge", &arg);
         if machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow){
             self.mov_impl(machine_state, arg);
         }
     }
 
     fn cmovle(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovle", &arg);
+        print_instr_arg("cmovle", &arg);
         if machine_state.get_flag(Flags::Zero) ||
                 (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow)) {
             self.mov_impl(machine_state, arg);
@@ -376,7 +376,7 @@ impl CPU for EmulationCPU {
     }
 
     fn cmovg(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("cmovg", &arg);
+        print_instr_arg("cmovg", &arg);
         if !machine_state.get_flag(Flags::Zero) &&
                 (machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow)) {
             self.mov_impl(machine_state, arg);
@@ -384,26 +384,26 @@ impl CPU for EmulationCPU {
     }
 
     fn rol(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("rol", &arg);
+        print_instr_arg("rol", &arg);
     }
 
     fn ror(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("ror", &arg);
+        print_instr_arg("ror", &arg);
         panic!("Not implemented");
     }
 
     fn rcl(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("rcl", &arg);
+        print_instr_arg("rcl", &arg);
         panic!("Not implemented");
     }
 
     fn rcr(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("rcr", &arg);
+        print_instr_arg("rcr", &arg);
         panic!("Not implemented");
     }
 
     fn shl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("shl", &arg);
+        print_instr_arg("shl", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -416,7 +416,7 @@ impl CPU for EmulationCPU {
     }
 
     fn shr(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("shr", &arg);
+        print_instr_arg("shr", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -429,7 +429,7 @@ impl CPU for EmulationCPU {
     }
 
     fn sar(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("sar", &arg);
+        print_instr_arg("sar", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -442,7 +442,7 @@ impl CPU for EmulationCPU {
     }
 
     fn inc(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("inc", &arg);
+        print_instr_arg("inc", &arg);
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
@@ -452,7 +452,7 @@ impl CPU for EmulationCPU {
     }
 
     fn dec(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("dec", &arg);
+        print_instr_arg("dec", &arg);
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
@@ -463,22 +463,22 @@ impl CPU for EmulationCPU {
     }
 
     fn div(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("div", &arg);
+        print_instr_arg("div", &arg);
         panic!("Not implemented");
     }
 
     fn idiv(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("idiv", &arg);
+        print_instr_arg("idiv", &arg);
         panic!("Not implemented");
     }
 
     fn mul(&self, _machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("mul", &arg);
+        print_instr_arg("mul", &arg);
         panic!("Not implemented");
     }
 
     fn imul(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("imul", &arg);
+        print_instr_arg("imul", &arg);
         arg.assert_two_arguments();
         let argument_size = arg.size();
         let second_argument = arg.second_argument.unwrap();
@@ -492,7 +492,7 @@ impl CPU for EmulationCPU {
     }
 
     fn not(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("not", &arg);
+        print_instr_arg("not", &arg);
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
@@ -502,7 +502,7 @@ impl CPU for EmulationCPU {
     }
 
     fn neg(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("neg", &arg);
+        print_instr_arg("neg", &arg);
         arg.assert_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&arg.first_argument, argument_size);
@@ -512,13 +512,13 @@ impl CPU for EmulationCPU {
     }
 
     fn ret(&self, machine_state: &mut MachineState) {
-        println!("{:<6}", "ret");
+        print_instr("ret");
         let value = machine_state.stack_pop();
         machine_state.rip = value;
     }
 
     fn leave(&self, machine_state: &mut MachineState) {
-        println!("{:<6}", "leave");
+        print_instr("leave");
         let value = machine_state.get_register_value(&Register::RBP);
         machine_state.set_register_value(&Register::RSP, value);
         let value = machine_state.stack_pop();
@@ -526,18 +526,18 @@ impl CPU for EmulationCPU {
     }
 
     fn popf(&self, machine_state: &mut MachineState) {
-        println!("{:<6}", "popf");
+        print_instr("popf");
         let value = machine_state.stack_pop();
         machine_state.rflags = value;
     }
 
     fn std(&self, machine_state: &mut MachineState) {
-        println!("{:<6}", "std");
+        print_instr("std");
         machine_state.set_flag(Flags::Direction, true);
     }
 
     fn cld(&self, machine_state: &mut MachineState) {
-        println!("{:<6}", "cld");
+        print_instr("cld");
         machine_state.set_flag(Flags::Direction, false);
     }
 
@@ -550,7 +550,7 @@ impl CPU for EmulationCPU {
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
             length *= 8; // 8 bytes per repeat
-            println!("{:<6}", "rep stos %rax,%es:(%rdi)");
+            print_instr("rep stos %rax,%es:(%rdi)");
             if machine_state.get_flag(Flags::Direction) {
                 panic!("stos NOOP");
             } else {
@@ -559,7 +559,7 @@ impl CPU for EmulationCPU {
                 machine_state.set_register_value(&Register::RCX, 0);
             }
         } else {
-            println!("{:<6}", "stos %ds:(%rsi),%es:(%rdi)");
+            print_instr("stos %ds:(%rsi),%es:(%rdi)");
         }
         println!("WARNING: stos: NOOP");
     }
@@ -574,7 +574,7 @@ impl CPU for EmulationCPU {
                                     ArgumentSize::Bit64);
         // TODO: do not hardcode to 8byte operand
         if repeat {
-            println!("{:<6}", "rep movs %ds:(%rsi),%es:(%rdi)");
+            print_instr("rep movs %ds:(%rsi),%es:(%rdi)");
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
@@ -595,60 +595,60 @@ impl CPU for EmulationCPU {
             }
             machine_state.set_register_value(&Register::RCX, 0);
         } else {
-            println!("{:<6}", "movs %ds:(%rsi),%es:(%rdi)");
+            print_instr("movs %ds:(%rsi),%es:(%rdi)");
             panic!("Not implemented");
         }
     }
 
     fn jmp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jmp", &arg);
+        print_instr_arg("jmp", &arg);
         self.jmp_iml(machine_state, arg);
     }
 
     fn jo(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jo", &arg);
+        print_instr_arg("jo", &arg);
         if machine_state.get_flag(Flags::Overflow) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jno(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jno", &arg);
+        print_instr_arg("jno", &arg);
         if !machine_state.get_flag(Flags::Overflow) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jb(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jb", &arg);
+        print_instr_arg("jb", &arg);
         if machine_state.get_flag(Flags::Carry) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jae(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jae", &arg);
+        print_instr_arg("jae", &arg);
         if !machine_state.get_flag(Flags::Carry) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn je(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("je", &arg);
+        print_instr_arg("je", &arg);
         if machine_state.get_flag(Flags::Zero) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jne(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jne", &arg);
+        print_instr_arg("jne", &arg);
         if !machine_state.get_flag(Flags::Zero) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jbe(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jbe", &arg);
+        print_instr_arg("jbe", &arg);
         // CF=1 OR ZF=1
         if machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero) {
             self.jmp_iml(machine_state, arg);
@@ -656,7 +656,7 @@ impl CPU for EmulationCPU {
     }
 
     fn ja(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("ja", &arg);
+        print_instr_arg("ja", &arg);
         // CF=0 AND ZF=0
         if !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero) {
             self.jmp_iml(machine_state, arg);
@@ -664,28 +664,28 @@ impl CPU for EmulationCPU {
     }
 
     fn js(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("js", &arg);
+        print_instr_arg("js", &arg);
         if machine_state.get_flag(Flags::Sign) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jns(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jns", &arg);
+        print_instr_arg("jns", &arg);
         if !machine_state.get_flag(Flags::Sign) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jp", &arg);
+        print_instr_arg("jp", &arg);
         if machine_state.get_flag(Flags::Parity) {
             self.jmp_iml(machine_state, arg);
         }
     }
 
     fn jnp(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("jnp", &arg);
+        print_instr_arg("jnp", &arg);
         if !machine_state.get_flag(Flags::Parity) {
             self.jmp_iml(machine_state, arg);
         }
@@ -693,7 +693,7 @@ impl CPU for EmulationCPU {
 
     fn jl(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         // SF!=OF
-        print_instruction("jl", &arg);
+        print_instr_arg("jl", &arg);
         if machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow){
             self.jmp_iml(machine_state, arg);
         }
@@ -701,7 +701,7 @@ impl CPU for EmulationCPU {
 
     fn jge(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         // SF=OF
-        print_instruction("jge", &arg);
+        print_instr_arg("jge", &arg);
         if machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow){
             self.jmp_iml(machine_state, arg);
         }
@@ -709,7 +709,7 @@ impl CPU for EmulationCPU {
 
     fn jle(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         // (ZF=1) OR (SF!=OF)
-        print_instruction("jle", &arg);
+        print_instr_arg("jle", &arg);
         if machine_state.get_flag(Flags::Zero) ||
                 (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow)) {
             self.jmp_iml(machine_state, arg);
@@ -718,7 +718,7 @@ impl CPU for EmulationCPU {
 
     fn jg(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
         // (ZF=0) AND (SF=OF)
-        print_instruction("jg", &arg);
+        print_instr_arg("jg", &arg);
         if !machine_state.get_flag(Flags::Zero) &&
                 (machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow)) {
             self.jmp_iml(machine_state, arg);
@@ -726,7 +726,7 @@ impl CPU for EmulationCPU {
     }
 
     fn sete(&self, machine_state: &mut MachineState, arg: InstructionArguments) {
-        print_instruction("sete", &arg);
+        print_instr_arg("sete", &arg);
         if machine_state.get_flag(Flags::Zero) {
             machine_state.set_value(1, &arg.first_argument, ArgumentSize::Bit8);
         } else {

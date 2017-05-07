@@ -17,7 +17,7 @@ sed -e 's/0x0(/(/g' | \
 sed -e '/^$/d' \
 > tmp/dis_objdump.asm
 
-cargo run -- --loader elf --cpu print --symbol _start tmp/out | \
+cargo run --features print_instructions -- --loader elf --cpu print --symbol _start tmp/out | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/0x0(/(/g' \
 > tmp/dis_emu.asm
