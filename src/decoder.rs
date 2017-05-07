@@ -3,18 +3,18 @@ use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
                       InstructionArgument, ArgumentSize, print_instr};
-use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
+use cpu::emu_instructions::EmulationCPU;
 
 use zero;
 
 pub struct Decoder<'a> {
     machine_state: &'a mut MachineState,
-    cpu: &'a CPU,
+    cpu: &'a EmulationCPU,
 }
 
 impl<'a> Decoder<'a> {
-    pub fn new(cpu: &'a CPU, machine_state: &'a mut MachineState) -> Decoder<'a> {
+    pub fn new(cpu: &'a EmulationCPU, machine_state: &'a mut MachineState) -> Decoder<'a> {
         Decoder {
             cpu: cpu,
             machine_state: machine_state,
