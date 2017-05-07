@@ -10,7 +10,7 @@ mov    -0x4(%rbp),%eax
 mov    %eax,%esi
 mov    $0x400604,%edi
 mov    $0x0,%eax
-callq  0x400400
+# callq  0x400400
 mov    -0x4(%rbp),%eax
 lea    0x3(%rax),%edx
 test   %eax,%eax
@@ -21,6 +21,6 @@ mov    -0x4(%rbp),%eax
 mov    %eax,%esi
 mov    $0x400604,%edi
 mov    $0x0,%eax
-callq  0x400400
+# callq  0x400400
 mov    $0x0,%eax
 int     $0x80

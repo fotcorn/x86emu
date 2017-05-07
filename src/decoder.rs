@@ -2,7 +2,7 @@ use std::io::Write;
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
-                      InstructionArgument, ArgumentSize};
+                      InstructionArgument, ArgumentSize, print_instr};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
@@ -1037,7 +1037,7 @@ impl<'a> Decoder<'a> {
                 }
                 0xCD => {
                     // abuse int X instruction to signal passed test program
-                    println!("int    $0x80");
+                    print_instr("int    $0x80");
                     break;
                 }
                 _ => panic!("Unknown instruction: {:x}", first_byte),
