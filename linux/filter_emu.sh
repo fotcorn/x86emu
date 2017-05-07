@@ -20,9 +20,9 @@ sed -e 's/jle.*/jle/g' | \
 sed -e 's/jg.*/jg/g' | \
 sed -e 's/call.*/call/g' | \
 sed -e 's/nop.*/nop/g' | \
-sed -e 's/sar    $0x1,%eax/sar    %eax/g' | \
-sed -e 's/shr    $0x1,%rdx/shr    %rdx/g' | \
-sed -e 's/shr    $0x1,%eax/shr    %eax/g' | \
+sed -re 's/sar    \$0x1,(%[a-z0-9]+)/sar    \1/g' | \
+sed -re 's/shr    \$0x1,(%[a-z0-9]+)/shr    \1/g' | \
+sed -re 's/shl    \$0x1,(%[a-z0-9]+)/shl    \1/g' | \
 sed -e 's/VIDEO.*//g' | \
 sed -e 's/0x0(/(/g' | \
 sed -e '/^$/d' | \
