@@ -517,9 +517,12 @@ impl CPU for EmulationCPU {
         machine_state.rip = value;
     }
 
-    fn leave(&self, _machine_state: &mut MachineState) {
+    fn leave(&self, machine_state: &mut MachineState) {
         println!("{:<6}", "leave");
-        panic!("Not implemented");
+        let value = machine_state.get_register_value(&Register::RBP);
+        machine_state.set_register_value(&Register::RSP, value);
+        let value = machine_state.stack_pop();
+        machine_state.set_register_value(&Register::RBP, value);
     }
 
     fn popf(&self, machine_state: &mut MachineState) {
