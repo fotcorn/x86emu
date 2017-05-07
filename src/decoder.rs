@@ -43,7 +43,7 @@ impl<'a> Decoder<'a> {
                         panic!("Segment override prefixes/branch hints not supported")
                     }
                     0x64 => {
-                        println!("WARNING: segment prefix igored")
+                        //TODO: do not ignore segment prefix (or probably we should?)
                     }
                     0x66 => {
                         decoder_flags |= OPERAND_16_BIT;
@@ -1037,7 +1037,7 @@ impl<'a> Decoder<'a> {
                 }
                 0xCD => {
                     // abuse int X instruction to signal passed test program
-                    println!("int    $0x80");
+                    print_instr("int    $0x80");
                     break;
                 }
                 _ => panic!("Unknown instruction: {:x}", first_byte),

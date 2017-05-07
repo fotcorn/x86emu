@@ -734,7 +734,7 @@ impl CPU for EmulationCPU {
     }
 
     fn out(&self, _machine_state: &mut MachineState) {
-        print_instr!("{:<6} %al,(%dx)", "out");
+        print_instr("out   %al,(%dx)");
         // TODO:  out not implemented
     }
 }
