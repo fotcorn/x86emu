@@ -196,9 +196,9 @@ impl InstructionArguments {
         }
     }
 
-    pub fn assert_two_arguments(&self) {
+    pub fn get_second_argument(&self) -> &InstructionArgument {
         match self.second_argument {
-            Some(_) => (),
+            Some(ref second_argument) => (second_argument),
             None => panic!("Instruction requires two arguments"),
         }
     }
