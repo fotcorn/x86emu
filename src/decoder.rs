@@ -1,8 +1,9 @@
 use std::io::Write;
+use std::collections::hash_map::{Entry};
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
-                      InstructionArgument, ArgumentSize, print_instr};
+                      InstructionArgument, ArgumentSize, print_instr, Instruction};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
@@ -26,7 +27,9 @@ impl<'a> Decoder<'a> {
 
         loop {
             // let instruction_start = self.machine_state.rip as u64;
-            self.decode();
+            // TODO: implement caching here
+            let (instruction, argument) = self.decode();
+            self.execute_instruction(instruction, argument);
 
             if debug {
                 println!("{}", self.machine_state);
@@ -38,7 +41,7 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    pub fn decode(&mut self) {
+    pub fn decode(&mut self) -> (Instruction, Option<InstructionArguments>) {
         let mut first_byte;
 
         let mut decoder_flags = DecoderFlags { bits: 0 };
@@ -102,8 +105,8 @@ impl<'a> Decoder<'a> {
         match first_byte {
             0x00 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.add(self.machine_state, argument);
-            }
+                (Instruction::Add, Some(argument))
+            }/*
             0x01 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
                 self.cpu.add(self.machine_state, argument);
@@ -1052,11 +1055,15 @@ impl<'a> Decoder<'a> {
             0xCD => {
                 // abuse int X instruction to signal passed test program
                 panic!("int    $0x80");
-            }
+            }*/
             _ => panic!("Unknown instruction: {:x}", first_byte),
-        };
+        }
+    }
 
-
+    fn execute_instruction(&mut self, instruction: Instruction, argument: Option<InstructionArguments>) {
+        match instruction {
+            Instruction::Add => self.cpu.add(self.machine_state, argument.unwrap()),
+        }
     }
 
     fn inc_rip(&mut self, ip_offset: i64) {

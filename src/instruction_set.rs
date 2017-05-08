@@ -369,3 +369,8 @@ pub fn print_instr_arg(_instruction: &str, _arg: &InstructionArguments) {}
 
 #[cfg(not(feature  = "print_instructions"))]
 pub fn print_instr_arg_no_size(_instruction: &str, _arg: &InstructionArguments) {}
+
+
+pub enum Instruction {
+    Add,
+}

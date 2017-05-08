@@ -3,7 +3,7 @@ use std::fmt;
 
 use fnv::FnvHashMap;
 
-use instruction_set::{Flags, ArgumentSize};
+use instruction_set::{Flags, ArgumentSize, Instruction, InstructionArguments};
 
 const PAGE_SIZE: u64 = 4096;
 
@@ -31,6 +31,7 @@ pub struct MachineState {
     pub rflags: i64,
 
     memory: FnvHashMap<u64, Vec<u8>>,
+    pub instruction_cache: FnvHashMap<u64, (Instruction, Option<InstructionArguments>)>,
 }
 
 impl MachineState {
@@ -57,6 +58,7 @@ impl MachineState {
 
             rflags: 0,
             memory: FnvHashMap::default(),
+            instruction_cache: FnvHashMap::default(),
         }
     }
 
