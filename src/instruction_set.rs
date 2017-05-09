@@ -403,6 +403,7 @@ pub enum Instruction {
     Cmp,
     Compare_mul_operation,
     Imul,
+    Int,
     Ja,
     Jae,
     Jb,

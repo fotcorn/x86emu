@@ -48,6 +48,12 @@ impl<'a> Decoder<'a> {
             };
 
             self.execute_instruction(cache_entry);
+            match cache_entry.instruction {
+                Instruction::Int => {
+                    break;
+                },
+                _ => (),
+            }
 
             if debug {
                 println!("{}", self.machine_state);
@@ -1071,7 +1077,7 @@ impl<'a> Decoder<'a> {
             }
             0xCD => {
                 // abuse int X instruction to signal passed test program
-                panic!("int    $0x80");
+                (Instruction::Int, None)
             }
             _ => panic!("Unknown instruction: {:x}", first_byte),
         }
@@ -1104,6 +1110,7 @@ impl<'a> Decoder<'a> {
             Instruction::Cmp => self.cpu.cmp(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Compare_mul_operation => self.cpu.compare_mul_operation(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Imul => self.cpu.imul(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Int => print_instr("int    $0x80"),
             Instruction::Ja => self.cpu.ja(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Jae => self.cpu.jae(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Jb => self.cpu.jb(self.machine_state, &cache_entry.arguments.unwrap()),
