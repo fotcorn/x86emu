@@ -24,11 +24,11 @@ impl<'a> Decoder<'a> {
     }
 
     pub fn execute(&mut self, debug: bool, benchmark: bool) {
-        let mut instruction_cache = FnvHashMap::default();
+        //let mut instruction_cache = FnvHashMap::default();
 
         let start = PreciseTime::now();
         loop {
-            let instruction_start = self.machine_state.rip as u64;
+            /*let instruction_start = self.machine_state.rip as u64;
             
             let cache_entry = match instruction_cache.entry(instruction_start) {
                 Entry::Occupied(entry) =>  *entry.into_mut(),
@@ -40,6 +40,11 @@ impl<'a> Decoder<'a> {
                     };
                     *entry.insert(cache_entry)
                 }
+            };*/
+            let cache_entry = self.decode();
+            let cache_entry = InstructionCache {
+                instruction: cache_entry.0,
+                arguments: cache_entry.1,
             };
 
             self.execute_instruction(cache_entry);
