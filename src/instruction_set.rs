@@ -374,6 +374,7 @@ pub fn print_instr_arg_no_size(_instruction: &str, _arg: &InstructionArguments) 
 pub struct InstructionCache {
     pub instruction: Instruction,
     pub arguments: Option<InstructionArguments>,
+    pub size: u64
 }
 
 #[derive(Copy, Clone)]
