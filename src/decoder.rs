@@ -1,5 +1,4 @@
 use std::io::Write;
-use std::collections::hash_map::{Entry};
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
@@ -7,7 +6,6 @@ use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionA
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
-use fnv::FnvHashMap;
 use zero;
 
 pub struct Decoder<'a> {
@@ -646,7 +644,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit8,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                (Instruction::Shift_rotate, Some(argument))
+                (Instruction::ShiftRotate, Some(argument))
             }
             0xC3 => {
                 self.inc_rip(0);
@@ -666,7 +664,7 @@ impl<'a> Decoder<'a> {
                     immediate: 1,
                 };
                 self.inc_rip(ip_offset);
-                (Instruction::Shift_rotate, Some(argument))
+                (Instruction::ShiftRotate, Some(argument))
             }
             0xD3 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -678,7 +676,7 @@ impl<'a> Decoder<'a> {
                     register: Register::CL
                 };
                 self.inc_rip(ip_offset);
-                (Instruction::Shift_rotate, Some(argument))
+                (Instruction::ShiftRotate, Some(argument))
             }
             0xEB => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
@@ -720,7 +718,7 @@ impl<'a> Decoder<'a> {
                     _ => panic!("no supported"),
                 };
                 self.inc_rip(ip_offset);
-                (Instruction::Compare_mul_operation, Some(argument))
+                (Instruction::CompareMulOperation, Some(argument))
             }
             0xF7 => {
                 let rip = self.machine_state.rip as u64;
@@ -754,7 +752,7 @@ impl<'a> Decoder<'a> {
                     _ => unreachable!()
                 };
                 self.inc_rip(ip_offset);
-                (Instruction::Compare_mul_operation, Some(argument))
+                (Instruction::CompareMulOperation, Some(argument))
             }
             0xFC => {
                 self.inc_rip(1);
@@ -770,7 +768,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                (Instruction::Register_operation, Some(argument))
+                (Instruction::RegisterOperation, Some(argument))
             }
             0x0F => {
                 // two byte instructions
@@ -1108,7 +1106,7 @@ impl<'a> Decoder<'a> {
             Instruction::Cmovp => self.cpu.cmovp(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Cmovs => self.cpu.cmovs(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Cmp => self.cpu.cmp(self.machine_state, &cache_entry.arguments.unwrap()),
-            Instruction::Compare_mul_operation => self.cpu.compare_mul_operation(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::CompareMulOperation => self.cpu.compare_mul_operation(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Imul => self.cpu.imul(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Int => print_instr("int    $0x80"),
             Instruction::Ja => self.cpu.ja(self.machine_state, &cache_entry.arguments.unwrap()),
@@ -1140,11 +1138,11 @@ impl<'a> Decoder<'a> {
             Instruction::Pop => self.cpu.pop(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Popf => self.cpu.popf(self.machine_state),
             Instruction::Push => self.cpu.push(self.machine_state, &cache_entry.arguments.unwrap()),
-            Instruction::Register_operation => self.cpu.register_operation(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::RegisterOperation => self.cpu.register_operation(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Ret => self.cpu.ret(self.machine_state),
             Instruction::Sbb => self.cpu.sbb(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Sete => self.cpu.sete(self.machine_state, &cache_entry.arguments.unwrap()),
-            Instruction::Shift_rotate => self.cpu.shift_rotate(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::ShiftRotate => self.cpu.shift_rotate(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Std => self.cpu.std(self.machine_state),
             Instruction::Stos => self.cpu.stos(self.machine_state, true),
             Instruction::Sub => self.cpu.sub(self.machine_state, &cache_entry.arguments.unwrap()),

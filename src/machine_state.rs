@@ -1,10 +1,9 @@
 use std::collections::hash_map::{Entry};
 use std::fmt;
-use std::cell::RefCell;
 
 use fnv::FnvHashMap;
 
-use instruction_set::{Flags, ArgumentSize, Instruction, InstructionArguments};
+use instruction_set::{Flags, ArgumentSize};
 
 const PAGE_SIZE: u64 = 4096;
 
