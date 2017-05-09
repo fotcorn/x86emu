@@ -1074,10 +1074,9 @@ impl<'a> Decoder<'a> {
     }
 
     fn execute_instruction(&mut self, cache_entry: &InstructionCache) {
-        /*let (ref instruction, ref argument) = *cache_entry;
-        match *instruction {
-            Instruction::Add => self.cpu.add(self.machine_state, (*argument).unwrap()),
-        }*/
+        match cache_entry.instruction {
+            Instruction::Add => self.cpu.add(self.machine_state, &cache_entry.arguments.unwrap()),
+        }
     }
 
     fn inc_rip(&mut self, ip_offset: i64) {
