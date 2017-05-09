@@ -31,14 +31,14 @@ impl<'a> Decoder<'a> {
             let instruction_start = self.machine_state.rip as u64;
             
             let cache_entry = match instruction_cache.entry(instruction_start) {
-                Entry::Occupied(entry) =>  &*entry.into_mut(),
+                Entry::Occupied(entry) =>  *entry.into_mut(),
                 Entry::Vacant(entry) => {
                     let cache_entry = self.decode();
                     let cache_entry = InstructionCache {
                         instruction: cache_entry.0,
                         arguments: cache_entry.1,
                     };
-                    &*entry.insert(cache_entry)
+                    *entry.insert(cache_entry)
                 }
             };
 
@@ -1073,7 +1073,7 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn execute_instruction(&mut self, cache_entry: &InstructionCache) {
+    fn execute_instruction(&mut self, cache_entry: InstructionCache) {
         match cache_entry.instruction {
             Instruction::Add => self.cpu.add(self.machine_state, &cache_entry.arguments.unwrap()),
         }
