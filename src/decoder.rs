@@ -3,10 +3,11 @@ use std::collections::hash_map::{Entry};
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
-                      InstructionArgument, ArgumentSize, print_instr, Instruction};
+                      InstructionArgument, ArgumentSize, print_instr, Instruction, InstructionCache};
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
+use fnv::FnvHashMap;
 use zero;
 
 pub struct Decoder<'a> {
@@ -23,13 +24,25 @@ impl<'a> Decoder<'a> {
     }
 
     pub fn execute(&mut self, debug: bool, benchmark: bool) {
-        let start = PreciseTime::now();
+        let mut instruction_cache = FnvHashMap::default();
 
+        let start = PreciseTime::now();
         loop {
-            // let instruction_start = self.machine_state.rip as u64;
-            // TODO: implement caching here
-            let (instruction, argument) = self.decode();
-            self.execute_instruction(instruction, argument);
+            let instruction_start = self.machine_state.rip as u64;
+            
+            let cache_entry = match instruction_cache.entry(instruction_start) {
+                Entry::Occupied(entry) =>  &*entry.into_mut(),
+                Entry::Vacant(entry) => {
+                    let cache_entry = self.decode();
+                    let cache_entry = InstructionCache {
+                        instruction: cache_entry.0,
+                        arguments: cache_entry.1,
+                    };
+                    &*entry.insert(cache_entry)
+                }
+            };
+
+            self.execute_instruction(cache_entry);
 
             if debug {
                 println!("{}", self.machine_state);
@@ -1060,10 +1073,11 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn execute_instruction(&mut self, instruction: Instruction, argument: Option<InstructionArguments>) {
-        match instruction {
-            Instruction::Add => self.cpu.add(self.machine_state, argument.unwrap()),
-        }
+    fn execute_instruction(&mut self, cache_entry: &InstructionCache) {
+        /*let (ref instruction, ref argument) = *cache_entry;
+        match *instruction {
+            Instruction::Add => self.cpu.add(self.machine_state, (*argument).unwrap()),
+        }*/
     }
 
     fn inc_rip(&mut self, ip_offset: i64) {

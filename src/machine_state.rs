@@ -1,5 +1,6 @@
 use std::collections::hash_map::{Entry};
 use std::fmt;
+use std::cell::RefCell;
 
 use fnv::FnvHashMap;
 
@@ -31,7 +32,6 @@ pub struct MachineState {
     pub rflags: i64,
 
     memory: FnvHashMap<u64, Vec<u8>>,
-    pub instruction_cache: FnvHashMap<u64, (Instruction, Option<InstructionArguments>)>,
 }
 
 impl MachineState {
@@ -58,7 +58,6 @@ impl MachineState {
 
             rflags: 0,
             memory: FnvHashMap::default(),
-            instruction_cache: FnvHashMap::default(),
         }
     }
 
