@@ -119,203 +119,203 @@ impl<'a> Decoder<'a> {
             0x00 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
                 (Instruction::Add, Some(argument))
-            }/*
+            }
             0x01 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.add(self.machine_state, argument);
+                (Instruction::Add, Some(argument))
             }
             0x02 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.add(self.machine_state, argument);
+                (Instruction::Add, Some(argument))
             }
             0x03 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.add(self.machine_state, argument);
+                (Instruction::Add, Some(argument))
             }
             0x04 => {
                 let argument = self.decode_al_immediate();
-                self.cpu.add(self.machine_state, argument);
+                (Instruction::Add, Some(argument))
             }
             0x05 => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.add(self.machine_state, argument);
+                (Instruction::Add, Some(argument))
             }
             0x08 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.or(self.machine_state, argument);
+                (Instruction::Or, Some(argument))
             }
             0x09 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.or(self.machine_state, argument);
+                (Instruction::Or, Some(argument))
             }
             0x0A => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.or(self.machine_state, argument);
+                (Instruction::Or, Some(argument))
             }
             0x0B => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.or(self.machine_state, argument);
+                (Instruction::Or, Some(argument))
             }
             0x0C => {
                 let argument = self.decode_al_immediate();
-                self.cpu.or(self.machine_state, argument);
+                (Instruction::Or, Some(argument))
             }
             0x0D => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.or(self.machine_state, argument);
+                (Instruction::Or, Some(argument))
             }
             0x10 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.adc(self.machine_state, argument);
+                (Instruction::Adc, Some(argument))
             }
             0x11 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.adc(self.machine_state, argument);
+                (Instruction::Adc, Some(argument))
             }
             0x12 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.adc(self.machine_state, argument);
+                (Instruction::Adc, Some(argument))
             }
             0x13 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.adc(self.machine_state, argument);
+                (Instruction::Adc, Some(argument))
             }
             0x14 => {
                 let argument = self.decode_al_immediate();
-                self.cpu.adc(self.machine_state, argument);
+                (Instruction::Adc, Some(argument))
             }
             0x15 => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.adc(self.machine_state, argument);
+                (Instruction::Adc, Some(argument))
             }
             0x18 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.sbb(self.machine_state, argument);
+                (Instruction::Sbb, Some(argument))
             }
             0x19 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.sbb(self.machine_state, argument);
+                (Instruction::Sbb, Some(argument))
             }
             0x1A => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.sbb(self.machine_state, argument);
+                (Instruction::Sbb, Some(argument))
             }
             0x1B => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.sbb(self.machine_state, argument);
+                (Instruction::Sbb, Some(argument))
             }
             0x1C => {
                 let argument = self.decode_al_immediate();
-                self.cpu.sbb(self.machine_state, argument);
+                (Instruction::Sbb, Some(argument))
             }
             0x1D => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.sbb(self.machine_state, argument);
+                (Instruction::Sbb, Some(argument))
             }
             0x20 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.and(self.machine_state, argument);
+                (Instruction::And, Some(argument))
             }
             0x21 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.and(self.machine_state, argument);
+                (Instruction::And, Some(argument))
             }
             0x22 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.and(self.machine_state, argument);
+                (Instruction::And, Some(argument))
             }
             0x23 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.and(self.machine_state, argument);
+                (Instruction::And, Some(argument))
             }
             0x24 => {
                 let argument = self.decode_al_immediate();
-                self.cpu.and(self.machine_state, argument);
+                (Instruction::And, Some(argument))
             }
             0x25 => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.and(self.machine_state, argument);
+                (Instruction::And, Some(argument))
             }
             0x28 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.sub(self.machine_state, argument);
+                (Instruction::Sub, Some(argument))
             }
             0x29 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.sub(self.machine_state, argument);
+                (Instruction::Sub, Some(argument))
             }
             0x2A => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.sub(self.machine_state, argument);
+                (Instruction::Sub, Some(argument))
             }
             0x2B => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.sub(self.machine_state, argument);
+                (Instruction::Sub, Some(argument))
             }
             0x2C => {
                 let argument = self.decode_al_immediate();
-                self.cpu.sub(self.machine_state, argument);
+                (Instruction::Sub, Some(argument))
             }
             0x2D => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.sub(self.machine_state, argument);
+                (Instruction::Sub, Some(argument))
             }
             0x30 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.xor(self.machine_state, argument);
+                (Instruction::Xor, Some(argument))
             }
             0x31 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.xor(self.machine_state, argument);
+                (Instruction::Xor, Some(argument))
             }
             0x32 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.xor(self.machine_state, argument);
+                (Instruction::Xor, Some(argument))
             }
             0x33 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.xor(self.machine_state, argument);
+                (Instruction::Xor, Some(argument))
             }
             0x34 => {
                 let argument = self.decode_al_immediate();
-                self.cpu.xor(self.machine_state, argument);
+                (Instruction::Xor, Some(argument))
             }
             0x35 => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.xor(self.machine_state, argument);
+                (Instruction::Xor, Some(argument))
             }
             0x38 => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags);
-                self.cpu.cmp(self.machine_state, argument);
+                (Instruction::Cmp, Some(argument))
             }
             0x39 => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags);
-                self.cpu.cmp(self.machine_state, argument);
+                (Instruction::Cmp, Some(argument))
             }
             0x3A => {
                 let argument = self.decode_8bit_reg_8bit_immediate(decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.cmp(self.machine_state, argument);
+                (Instruction::Cmp, Some(argument))
             }
             0x3B => {
                 let argument = self.decode_reg_reg(register_size, decoder_flags | REVERSED_REGISTER_DIRECTION);
-                self.cpu.cmp(self.machine_state, argument);
+                (Instruction::Cmp, Some(argument))
             }
             0x3C => {
                 let argument = self.decode_al_immediate();
-                self.cpu.cmp(self.machine_state, argument);
+                (Instruction::Cmp, Some(argument))
             }
             0x3D => {
                 let argument = self.decode_ax_immediate(register_size, decoder_flags);
-                self.cpu.cmp(self.machine_state, argument);
+                (Instruction::Cmp, Some(argument))
             }
             opcode @ 0x50...0x57 => {
                 self.inc_rip(1);
-                self.cpu.push(self.machine_state,
+                (Instruction::Push, Some(
                             InstructionArgumentsBuilder::new(InstructionArgument::Register {
                                 register: get_register(opcode - 0x50, RegisterSize::Bit64,
                                         decoder_flags.contains(NEW_64BIT_REGISTER),
                                         decoder_flags.contains(NEW_8BIT_REGISTER)),
-                            }).finalize());
+                            }).finalize()))
             }
             opcode @ 0x58...0x5F => {
                 let argument =
@@ -328,7 +328,7 @@ impl<'a> Decoder<'a> {
                         })
                         .finalize();
                 self.inc_rip(1);
-                self.cpu.pop(self.machine_state, argument);
+                (Instruction::Pop, Some(argument))
             }
             0x63 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -337,92 +337,92 @@ impl<'a> Decoder<'a> {
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                 self.override_argument_size(&mut argument, ArgumentSize::Bit32, rip, &decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.movsx(self.machine_state, argument);
+                (Instruction::Movsx, Some(argument))
             }
             0x6A => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.push(self.machine_state, arg);
+                (Instruction::Push, Some(arg))
             }
             0x70 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jo(self.machine_state, arg);
+                (Instruction::Jo, Some(arg))
             }
             0x71 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jno(self.machine_state, arg);
+                (Instruction::Jno, Some(arg))
             }
             0x72 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jb(self.machine_state, arg);
+                (Instruction::Jb, Some(arg))
             }
             0x73 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jae(self.machine_state, arg);
+                (Instruction::Jae, Some(arg))
             }
             0x74 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.je(self.machine_state, arg);
+                (Instruction::Je, Some(arg))
             }
             0x75 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jne(self.machine_state, arg);
+                (Instruction::Jne, Some(arg))
             }
             0x76 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jbe(self.machine_state, arg);
+                (Instruction::Jbe, Some(arg))
             }
             0x77 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.ja(self.machine_state, arg);
+                (Instruction::Ja, Some(arg))
             }
             0x78 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.js(self.machine_state, arg);
+                (Instruction::Js, Some(arg))
             }
             0x79 => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jns(self.machine_state, arg);
+                (Instruction::Jns, Some(arg))
             }
             0x7A => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jp(self.machine_state, arg);
+                (Instruction::Jp, Some(arg))
             }
             0x7B => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jnp(self.machine_state, arg);
+                (Instruction::Jnp, Some(arg))
             }
             0x7C => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jl(self.machine_state, arg);
+                (Instruction::Jl, Some(arg))
             }
             0x7D => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jge(self.machine_state, arg);
+                (Instruction::Jge, Some(arg))
             }
             0x7E => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jle(self.machine_state, arg);
+                (Instruction::Jle, Some(arg))
             }
             0x7F => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jg(self.machine_state, arg);
+                (Instruction::Jg, Some(arg))
             }
             0x80 => {
                 // arithmetic operation (8bit register target, 8bit immediate)
@@ -431,7 +431,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit8,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.arithmetic(self.machine_state, argument);
+                (Instruction::Arithmetic, Some(argument))
             }
             0x81 => {
                 // arithmetic operation (32/64bit register target, 32bit immediate)
@@ -440,7 +440,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit32,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.arithmetic(self.machine_state, argument);
+                (Instruction::Arithmetic, Some(argument))
             }
             0x83 => {
                 // arithmetic operation (32/64bit register target, 8bit immediate)
@@ -449,7 +449,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit8,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.arithmetic(self.machine_state, argument);
+                (Instruction::Arithmetic, Some(argument))
             }
             0x84 => {
                 // test
@@ -458,7 +458,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.test(self.machine_state, argument);
+                (Instruction::Test, Some(argument))
             }
             0x85 => {
                 // test
@@ -467,7 +467,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.test(self.machine_state, argument);
+                (Instruction::Test, Some(argument))
             }
                 0x88 => {
                 // mov
@@ -476,7 +476,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0x89 => {
                 // mov
@@ -485,11 +485,10 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0x90 => {
-                print_instr("nop");
-                self.inc_rip(1);
+                (Instruction::Nop, None)
             }
             0x8B => {
                 let (argument, ip_offset) = self.get_argument(register_size,
@@ -498,7 +497,7 @@ impl<'a> Decoder<'a> {
                                                                 decoder_flags |
                                                                 REVERSED_REGISTER_DIRECTION);
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0x8E => {
                 // mov 16bit segment registers
@@ -509,7 +508,7 @@ impl<'a> Decoder<'a> {
                                         // TODO: REVERSED_REGISTER_DIRECTION correct?
                                         decoder_flags | REVERSED_REGISTER_DIRECTION);
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0x8D => {
                 let (argument, ip_offset) =
@@ -520,7 +519,7 @@ impl<'a> Decoder<'a> {
                                         decoder_flags | REVERSED_REGISTER_DIRECTION);
                 self.machine_state.rip += ip_offset;
                 self.inc_rip(0);
-                self.cpu.lea(self.machine_state, argument);
+                (Instruction::Lea, Some(argument))
             }
             0x98 => {
                 let (register1, register2) = if decoder_flags.contains(OPERAND_16_BIT) {
@@ -536,7 +535,7 @@ impl<'a> Decoder<'a> {
                 ).second_argument(InstructionArgument::Register{register: register2})
                 .finalize();
                 self.inc_rip(1);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0x99 => {
                 let (register1, register2) = if decoder_flags.contains(OPERAND_16_BIT) {
@@ -552,25 +551,25 @@ impl<'a> Decoder<'a> {
                 ).second_argument(InstructionArgument::Register{register: register2})
                 .finalize();
                 self.inc_rip(1);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0x9D => {
                 self.inc_rip(1);
-                self.cpu.popf(self.machine_state);
+                (Instruction::Popf, None)
             }
             0xA5 => {
                 let repeat = decoder_flags.contains(REPEAT);
                 self.inc_rip(1);
-                self.cpu.movs(self.machine_state, repeat);
+                (Instruction::Movs, None)
             }
             0xA8 => {
                 let argument = self.decode_al_immediate();
-                self.cpu.test(self.machine_state, argument);
+                (Instruction::Test, Some(argument))
             }
             0xAB => {
                 let repeat = decoder_flags.contains(REPEAT);
                 self.inc_rip(1);
-                self.cpu.stos(self.machine_state, repeat);
+                (Instruction::Stos, None)
             }
             opcode @ 0xB0...0xB7 => {
                 let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
@@ -587,7 +586,7 @@ impl<'a> Decoder<'a> {
                         })
                         .finalize();
                 self.inc_rip(2);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             opcode @ 0xB8...0xBF => {
                 let (immediate, ip_offset) = if decoder_flags.contains(OPERAND_64_BIT) {
@@ -612,7 +611,7 @@ impl<'a> Decoder<'a> {
                         })
                         .finalize();
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0xC6 => {
                 let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
@@ -620,7 +619,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit8,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0xC7 => {
                 let (argument, ip_offset) = self.get_argument(register_size,
@@ -628,7 +627,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit32,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.mov(self.machine_state, argument);
+                (Instruction::Mov, Some(argument))
             }
             0xC1 => {
                 let (argument, ip_offset) = self.get_argument(register_size,
@@ -636,15 +635,15 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::Bit8,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.shift_rotate(self.machine_state, argument);
+                (Instruction::Shift_rotate, Some(argument))
             }
             0xC3 => {
                 self.inc_rip(0);
-                self.cpu.ret(self.machine_state);
+                (Instruction::Ret, None)
             }
             0xC9 => {
                 self.inc_rip(1);
-                self.cpu.leave(self.machine_state);
+                (Instruction::Leave, None)
             }
             0xD1 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -656,7 +655,7 @@ impl<'a> Decoder<'a> {
                     immediate: 1,
                 };
                 self.inc_rip(ip_offset);
-                self.cpu.shift_rotate(self.machine_state, argument);
+                (Instruction::Shift_rotate, Some(argument))
             }
             0xD3 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -668,32 +667,32 @@ impl<'a> Decoder<'a> {
                     register: Register::CL
                 };
                 self.inc_rip(ip_offset);
-                self.cpu.shift_rotate(self.machine_state, argument);
+                (Instruction::Shift_rotate, Some(argument))
             }
             0xEB => {
                 let (arg, ip_offset) = self.read_immediate_8bit();
                 self.inc_rip(ip_offset);
-                self.cpu.jmp(self.machine_state, arg);
+                (Instruction::Jmp, Some(arg))
             }
             0xE8 => {
                 let immediate = self.get_i32_value(1);
                 self.inc_rip(5);
-                self.cpu.call(self.machine_state,
+                (Instruction::Call, Some(
                             InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                 immediate: immediate as i64,
-                            }).finalize());
+                            }).finalize()))
             }
             0xE9 => {
                 let immediate = self.get_i32_value(1);
                 self.inc_rip(5);
-                self.cpu.jmp(self.machine_state,
+                (Instruction::Jmp, Some(
                             InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
                                 immediate: immediate as i64,
-                            }).finalize());
+                            }).finalize()))
             }
             0xEE => {
                 self.inc_rip(1);
-                self.cpu.out(self.machine_state);
+                (Instruction::Out, None)
             }
             0xF6 => {
                 let rip = self.machine_state.rip as u64;
@@ -710,7 +709,7 @@ impl<'a> Decoder<'a> {
                     _ => panic!("no supported"),
                 };
                 self.inc_rip(ip_offset);
-                self.cpu.compare_mul_operation(self.machine_state, argument);
+                (Instruction::Compare_mul_operation, Some(argument))
             }
             0xF7 => {
                 let rip = self.machine_state.rip as u64;
@@ -744,15 +743,15 @@ impl<'a> Decoder<'a> {
                     _ => unreachable!()
                 };
                 self.inc_rip(ip_offset);
-                self.cpu.compare_mul_operation(self.machine_state, argument);
+                (Instruction::Compare_mul_operation, Some(argument))
             }
             0xFC => {
                 self.inc_rip(1);
-                self.cpu.cld(self.machine_state);
+                (Instruction::Cld, None)
             }
             0xFD => {
                 self.inc_rip(1);
-                self.cpu.std(self.machine_state);
+                (Instruction::Std, None)
             }
             0xFF => {
                 let (argument, ip_offset) = self.get_argument(register_size,
@@ -760,7 +759,7 @@ impl<'a> Decoder<'a> {
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
                 self.inc_rip(ip_offset);
-                self.cpu.register_operation(self.machine_state, argument);
+                (Instruction::Register_operation, Some(argument))
             }
             0x0F => {
                 // two byte instructions
@@ -775,7 +774,7 @@ impl<'a> Decoder<'a> {
                                                                         ImmediateSize::None,
                                                                         decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        print_instr("nopl   (%rax)");
+                        (Instruction::Nop, None)
                     }
                     0x40 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -783,7 +782,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovo(self.machine_state, argument);
+                        (Instruction::Cmovo, Some(argument))
                     },
                     0x41 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -791,7 +790,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovno(self.machine_state, argument);
+                        (Instruction::Cmovno, Some(argument))
                     },
                     0x42 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -799,7 +798,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovb(self.machine_state, argument);
+                        (Instruction::Cmovb, Some(argument))
                     },
                     0x43 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -807,7 +806,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovae(self.machine_state, argument);
+                        (Instruction::Cmovae, Some(argument))
                     },
                     0x44 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -815,7 +814,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmove(self.machine_state, argument);
+                        (Instruction::Cmove, Some(argument))
                     },
                     0x45 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -823,7 +822,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovne(self.machine_state, argument);
+                        (Instruction::Cmovne, Some(argument))
                     },
                     0x46 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -831,7 +830,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovbe(self.machine_state, argument);
+                        (Instruction::Cmovbe, Some(argument))
                     },
                     0x47 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -839,7 +838,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmova(self.machine_state, argument);
+                        (Instruction::Cmova, Some(argument))
                     },
                     0x48 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -847,7 +846,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovs(self.machine_state, argument);
+                        (Instruction::Cmovs, Some(argument))
                     },
                     0x49 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -855,7 +854,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovns(self.machine_state, argument);
+                        (Instruction::Cmovns, Some(argument))
                     },
                     0x4a => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -863,7 +862,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovp(self.machine_state, argument);
+                        (Instruction::Cmovp, Some(argument))
                     },
                     0x4b => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -871,7 +870,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovnp(self.machine_state, argument);
+                        (Instruction::Cmovnp, Some(argument))
                     },
                     0x4c => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -879,7 +878,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovl(self.machine_state, argument);
+                        (Instruction::Cmovl, Some(argument))
                     },
                     0x4d => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -887,7 +886,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovge(self.machine_state, argument);
+                        (Instruction::Cmovge, Some(argument))
                     },
                     0x4e => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -895,7 +894,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovle(self.machine_state, argument);
+                        (Instruction::Cmovle, Some(argument))
                     },
                     0x4f => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -903,114 +902,114 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.cmovg(self.machine_state, argument);
+                        (Instruction::Cmovg, Some(argument))
                     },
                     0x80 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jo(self.machine_state, argument);
+                        (Instruction::Jo, Some(argument))
                     },
                     0x81 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jno(self.machine_state, argument);
+                        (Instruction::Jno, Some(argument))
                     },
                     0x82 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jb(self.machine_state, argument);
+                        (Instruction::Jb, Some(argument))
                     },
                     0x83 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jae(self.machine_state, argument);
+                        (Instruction::Jae, Some(argument))
                     },
                     0x84 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.je(self.machine_state, argument);
+                        (Instruction::Je, Some(argument))
                     },
                     0x85 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jne(self.machine_state, argument);
+                        (Instruction::Jne, Some(argument))
                     },
                     0x86 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jbe(self.machine_state, argument);
+                        (Instruction::Jbe, Some(argument))
                     },
                     0x87 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.ja(self.machine_state, argument);
+                        (Instruction::Ja, Some(argument))
                     },
                     0x88 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.js(self.machine_state, argument);
+                        (Instruction::Js, Some(argument))
                     },
                     0x89 => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jns(self.machine_state, argument);
+                        (Instruction::Jns, Some(argument))
                     },
                     0x8A => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jp(self.machine_state, argument);
+                        (Instruction::Jp, Some(argument))
                     },
                     0x8B => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jnp(self.machine_state, argument);
+                        (Instruction::Jnp, Some(argument))
                     },
                     0x8C => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jl(self.machine_state, argument);
+                        (Instruction::Jl, Some(argument))
                     },
                     0x8D => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jge(self.machine_state, argument);
+                        (Instruction::Jge, Some(argument))
                     },
                     0x8E => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jle(self.machine_state, argument);
+                        (Instruction::Jle, Some(argument))
                     },
                     0x8F => {
                         // TODO: could also be 16bit value
                         let argument = self.read_immediate_32bit();
                         self.inc_rip(5);
-                        self.cpu.jg(self.machine_state, argument);
+                        (Instruction::Jg, Some(argument))
                     },
                     0x94 => {
                         let (mut argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
                                                                         RegOrOpcode::Register,
                                                                         ImmediateSize::None,
                                                                         decoder_flags);
-                        // TODO: change this hack to something sane
+                        // TODO: change this hack to Something sane
                         argument.first_argument = argument.second_argument.unwrap();
                         argument.second_argument = None;
                         self.inc_rip(ip_offset);
-                        self.cpu.sete(self.machine_state, argument);
+                        (Instruction::Sete, Some(argument))
                     },
                     0xAF => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -1018,7 +1017,7 @@ impl<'a> Decoder<'a> {
                                                                     ImmediateSize::None,
                                                                     decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.inc_rip(ip_offset);
-                        self.cpu.imul(self.machine_state, argument);
+                        (Instruction::Imul, Some(argument))
                     }
                     0xB6 => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1028,7 +1027,7 @@ impl<'a> Decoder<'a> {
 
                         self.override_argument_size(&mut argument, ArgumentSize::Bit8, rip, &decoder_flags);
                         self.inc_rip(ip_offset);
-                        self.cpu.movzx(self.machine_state, argument);
+                        (Instruction::Movzx, Some(argument))
                     }
                     0xB7 => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1037,7 +1036,7 @@ impl<'a> Decoder<'a> {
                                                                             decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.override_argument_size(&mut argument, ArgumentSize::Bit16, rip, &decoder_flags);
                         self.inc_rip(ip_offset);
-                        self.cpu.movzx(self.machine_state, argument);
+                        (Instruction::Movzx, Some(argument))
                     }
                     0xBE => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1046,7 +1045,7 @@ impl<'a> Decoder<'a> {
                                                                             decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.override_argument_size(&mut argument, ArgumentSize::Bit8, rip, &decoder_flags);
                         self.inc_rip(ip_offset);
-                        self.cpu.movsx(self.machine_state, argument);
+                        (Instruction::Movsx, Some(argument))
                     }
                     0xBF => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1054,8 +1053,8 @@ impl<'a> Decoder<'a> {
                                                                             ImmediateSize::None,
                                                                             decoder_flags | REVERSED_REGISTER_DIRECTION);
                         self.override_argument_size(&mut argument, ArgumentSize::Bit16, rip, &decoder_flags);
-                        self.cpu.movsx(self.machine_state, argument);
                         self.inc_rip(ip_offset);
+                        (Instruction::Movsx, Some(argument))
                     }
                     _ => panic!("Unknown instruction: 0F {:X}", second_byte),
                 }
@@ -1068,14 +1067,77 @@ impl<'a> Decoder<'a> {
             0xCD => {
                 // abuse int X instruction to signal passed test program
                 panic!("int    $0x80");
-            }*/
+            }
             _ => panic!("Unknown instruction: {:x}", first_byte),
         }
     }
 
     fn execute_instruction(&mut self, cache_entry: InstructionCache) {
         match cache_entry.instruction {
+            Instruction::Adc => self.cpu.adc(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Add => self.cpu.add(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::And => self.cpu.and(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Arithmetic => self.cpu.arithmetic(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Call => self.cpu.call(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cld => self.cpu.cld(self.machine_state),
+            Instruction::Cmova => self.cpu.cmova(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovae => self.cpu.cmovae(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovb => self.cpu.cmovb(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovbe => self.cpu.cmovbe(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmove => self.cpu.cmove(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovg => self.cpu.cmovg(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovge => self.cpu.cmovge(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovl => self.cpu.cmovl(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovle => self.cpu.cmovle(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovne => self.cpu.cmovne(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovno => self.cpu.cmovno(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovnp => self.cpu.cmovnp(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovns => self.cpu.cmovns(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovo => self.cpu.cmovo(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovp => self.cpu.cmovp(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmovs => self.cpu.cmovs(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Cmp => self.cpu.cmp(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Compare_mul_operation => self.cpu.compare_mul_operation(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Imul => self.cpu.imul(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Ja => self.cpu.ja(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jae => self.cpu.jae(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jb => self.cpu.jb(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jbe => self.cpu.jbe(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Je => self.cpu.je(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jg => self.cpu.jg(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jge => self.cpu.jge(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jl => self.cpu.jl(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jle => self.cpu.jle(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jmp => self.cpu.jmp(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jne => self.cpu.jne(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jno => self.cpu.jno(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jnp => self.cpu.jnp(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jns => self.cpu.jns(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jo => self.cpu.jo(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Jp => self.cpu.jp(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Js => self.cpu.js(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Lea => self.cpu.lea(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Leave => self.cpu.leave(self.machine_state),
+            Instruction::Mov => self.cpu.mov(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Movs => self.cpu.movs(self.machine_state, true),
+            Instruction::Movsx => self.cpu.movsx(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Movzx => self.cpu.movzx(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Nop => (),
+            Instruction::Or => self.cpu.or(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Out => self.cpu.out(self.machine_state),
+            Instruction::Pop => self.cpu.pop(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Popf => self.cpu.popf(self.machine_state),
+            Instruction::Push => self.cpu.push(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Register_operation => self.cpu.register_operation(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Ret => self.cpu.ret(self.machine_state),
+            Instruction::Sbb => self.cpu.sbb(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Sete => self.cpu.sete(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Shift_rotate => self.cpu.shift_rotate(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Std => self.cpu.std(self.machine_state),
+            Instruction::Stos => self.cpu.stos(self.machine_state, true),
+            Instruction::Sub => self.cpu.sub(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Test => self.cpu.test(self.machine_state, &cache_entry.arguments.unwrap()),
+            Instruction::Xor => self.cpu.xor(self.machine_state, &cache_entry.arguments.unwrap()),
         }
     }
 
