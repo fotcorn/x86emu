@@ -536,14 +536,21 @@ impl EmulationCPU {
 
     pub fn imul(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("imul", &arg);
+        // TODO: implement one argument version
         let argument_size = arg.size();
         let (first_argument, second_argument) = arg.get_two_arguments();
         let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value2 * value1;
         machine_state.compute_flags(result, argument_size);
-        machine_state.set_value(result, &second_argument, argument_size);
-        // TODO:  instruction argument decoding is invalid
+        match arg.third_argument {
+            Some(ref third_argument) => {
+                machine_state.set_value(result, third_argument, argument_size);
+            },
+            None => {
+                machine_state.set_value(result, &second_argument, argument_size);
+            }
+        }
         // TODO:  imul does not set carry/overflow flag
     }
 
