@@ -300,11 +300,8 @@ impl EmulationCPU {
 
     pub fn call(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("call", &arg);
-        let first_argument = arg.get_one_argument();
-
         let rip = convert_i64_to_u8vec(machine_state.rip);
         machine_state.stack_push(&rip);
-
         self.jmp_iml(machine_state, arg);
     }
 
