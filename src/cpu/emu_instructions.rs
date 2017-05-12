@@ -813,4 +813,12 @@ impl EmulationCPU {
         print_instr("out   %al,(%dx)");
         // TODO:  out not implemented
     }
+
+    pub fn cpuid(&self, machine_state: &mut MachineState) {
+        print_instr("cpuid");
+        let value = machine_state.get_register_value(&Register::RAX);
+        match value {
+            _ => panic!("CPUID: unsupported input: {}", value),
+        }
+    }
 }

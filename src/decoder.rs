@@ -13,6 +13,7 @@ use zero;
 pub struct Decoder<'a> {
     machine_state: &'a mut MachineState,
     cpu: &'a EmulationCPU,
+    counter: u64,
 }
 
 impl<'a> Decoder<'a> {
@@ -20,6 +21,7 @@ impl<'a> Decoder<'a> {
         Decoder {
             cpu: cpu,
             machine_state: machine_state,
+            counter: 0,
         }
     }
 
@@ -28,6 +30,7 @@ impl<'a> Decoder<'a> {
 
         let start = PreciseTime::now();
         loop {
+            self.counter += 1;
             let instruction_start = self.machine_state.rip as u64;
             
             let cache_entry = match instruction_cache.entry(instruction_start) {
@@ -1082,6 +1085,10 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(ip_offset);
                         (Instruction::Sete, Some(argument))
                     },
+                    0xA2 => {
+                        self.inc_rip(1);
+                        (Instruction::Cpuid, None)
+                    }
                     0xAF => {
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                     RegOrOpcode::Register,
@@ -1127,7 +1134,7 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(ip_offset);
                         (Instruction::Movsx, Some(argument))
                     }
-                    _ => panic!("Unknown instruction: 0F {:X}", second_byte),
+                    _ => panic!("Unknown instruction: 0F {:X}, executed instructions: {}", second_byte, self.counter),
                 }
             }
             0xCC => {
@@ -1138,7 +1145,7 @@ impl<'a> Decoder<'a> {
                 // abuse int X instruction to signal passed test program
                 (Instruction::Int, None)
             }
-            _ => panic!("Unknown instruction: {:x}", first_byte),
+            _ => panic!("Unknown instruction: {:x}, executed instructions: {}", first_byte, self.counter),
         }
     }
 
@@ -1174,6 +1181,7 @@ impl<'a> Decoder<'a> {
             Instruction::Cmovp => self.cpu.cmovp(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Cmovs => self.cpu.cmovs(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Cmp => self.cpu.cmp(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Cpuid => self.cpu.cpuid(self.machine_state),
             Instruction::CompareMulOperation => self.cpu.compare_mul_operation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Imul => self.cpu.imul(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Int => print_instr("int    $0x80"),

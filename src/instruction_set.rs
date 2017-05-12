@@ -443,6 +443,7 @@ pub enum Instruction {
     Cmovs,
     Cmp,
     CompareMulOperation,
+    Cpuid,
     Imul,
     Int,
     Ja,
