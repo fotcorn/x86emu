@@ -152,7 +152,6 @@ impl fmt::Display for Register {
 }
 
 
-#[derive(Debug, Copy, Clone)]
 pub enum InstructionArgument {
     Immediate { immediate: i64 },
     Register { register: Register },
@@ -180,7 +179,6 @@ impl InstructionArgument {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
 pub struct InstructionArguments {
     pub first_argument: InstructionArgument,
     pub second_argument: Option<InstructionArgument>,
