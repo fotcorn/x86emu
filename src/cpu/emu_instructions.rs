@@ -588,6 +588,11 @@ impl EmulationCPU {
         machine_state.set_register_value(&Register::RBP, value);
     }
 
+    pub fn pushf(&self, machine_state: &mut MachineState) {
+        let vector = convert_i64_to_u8vec(machine_state.rflags);
+        machine_state.stack_push(&vector);
+    }
+
     pub fn popf(&self, machine_state: &mut MachineState) {
         print_instr("popf");
         let value = machine_state.stack_pop();

@@ -474,6 +474,7 @@ pub enum Instruction {
     Pop,
     Popf,
     Push,
+    Pushf,
     RegisterOperation,
     Ret,
     Sbb,

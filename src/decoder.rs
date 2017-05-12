@@ -602,6 +602,10 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(1);
                 (Instruction::Mov, Some(argument))
             }
+            0x9C => {
+                self.inc_rip(1);
+                (Instruction::Pushf, None)
+            }
             0x9D => {
                 self.inc_rip(1);
                 (Instruction::Popf, None)
@@ -1202,6 +1206,7 @@ impl<'a> Decoder<'a> {
             Instruction::Pop => self.cpu.pop(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Popf => self.cpu.popf(self.machine_state),
             Instruction::Push => self.cpu.push(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Pushf => self.cpu.pushf(self.machine_state),
             Instruction::RegisterOperation => self.cpu.register_operation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Ret => self.cpu.ret(self.machine_state),
             Instruction::Sbb => self.cpu.sbb(self.machine_state, Decoder::fetch_argument(cache_entry)),
