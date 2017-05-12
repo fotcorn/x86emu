@@ -1,5 +1,6 @@
 use std::io::Write;
-use std::collections::hash_map::{Entry};
+// use fnv::FnvHashMap;
+// use std::collections::hash_map::{Entry};
 use time::PreciseTime;
 
 use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionArgumentsBuilder,
@@ -7,7 +8,6 @@ use instruction_set::{Register, RegisterSize, InstructionArguments, InstructionA
 use cpu::cpu_trait::CPU;
 use machine_state::MachineState;
 
-use fnv::FnvHashMap;
 use zero;
 
 pub struct Decoder<'a> {
@@ -24,19 +24,19 @@ impl<'a> Decoder<'a> {
     }
 
     pub fn execute(&mut self, debug: bool, benchmark: bool) {
-        let mut instruction_cache = FnvHashMap::default();
+        // let mut instruction_cache = FnvHashMap::default();
 
         let start = PreciseTime::now();
         loop {
             let instruction_start = self.machine_state.rip as u64;
             
-            let cache_entry = match instruction_cache.entry(instruction_start) {
+            /*let cache_entry = match instruction_cache.entry(instruction_start) {
                 Entry::Occupied(entry) => {
                     let ref entry: InstructionCache = *entry.into_mut();
                     self.machine_state.rip += entry.size as i64;
                     entry
                 },
-                Entry::Vacant(entry) => {
+                Entry::Vacant(entry) => { */
                     let cache_entry = self.decode();
 
                     let instruction_end = self.machine_state.rip as u64;
@@ -46,11 +46,11 @@ impl<'a> Decoder<'a> {
                         arguments: cache_entry.1,
                         size: instruction_end - instruction_start,
                     };
-                    entry.insert(cache_entry)
+                    /* entry.insert(cache_entry)
                 }
-            };
+            };*/
 
-            self.execute_instruction(cache_entry);
+            self.execute_instruction(&cache_entry);
             match cache_entry.instruction {
                 Instruction::Int => {
                     break;
