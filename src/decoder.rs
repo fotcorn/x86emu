@@ -1587,7 +1587,7 @@ impl<'a> Decoder<'a> {
                               rip: u64,
                               decoder_flags: &DecoderFlags) {
         
-        /*let x = match argument.first_argument {
+        let new_first_argument = match argument.first_argument {
             Some(ref first_argument) => {
                 match *first_argument {
                     InstructionArgument::Register {..}=> {
@@ -1608,13 +1608,17 @@ impl<'a> Decoder<'a> {
                     },
                     InstructionArgument::EffectiveAddress {..} => {
                         argument.explicit_size = Some(size);
-                        argument.first_argument
+                        None
                     },
                     _ => panic!("Invalid argument")
                 }
             },
             None => panic!("Needs first_argument to override argument size"),
-        };*/
+        };
+        match new_first_argument {
+            Some(nfa) => argument.first_argument = Some(nfa),
+            None => (),
+        }
     }
 }
 
