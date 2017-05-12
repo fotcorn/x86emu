@@ -572,10 +572,26 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(1);
                 (Instruction::Popf, None)
             }
-            0xA5 => {
+            0xA4 => {
+                println!("{:?}", decoder_flags);
                 self.inc_rip(1);
                 (Instruction::Movs, Some(InstructionArgumentsBuilder::new()
                     .repeat(decoder_flags.contains(REPEAT))
+                    .explicit_size(ArgumentSize::Bit8)
+                    .finalize()))
+            }
+            0xA5 => {
+                let argument_size = if decoder_flags.contains(OPERAND_16_BIT) {
+                    ArgumentSize::Bit16
+                } else if decoder_flags.contains(OPERAND_64_BIT) {
+                    ArgumentSize::Bit64
+                } else {
+                    ArgumentSize::Bit32
+                };
+                self.inc_rip(1);
+                (Instruction::Movs, Some(InstructionArgumentsBuilder::new()
+                    .repeat(decoder_flags.contains(REPEAT))
+                    .explicit_size(argument_size)
                     .finalize()))
             }
             0xA8 => {

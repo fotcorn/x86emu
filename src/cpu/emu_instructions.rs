@@ -628,13 +628,18 @@ impl EmulationCPU {
         let mut to =
             machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
                                     ArgumentSize::Bit64);
-        // TODO: do not hardcode to 8byte operand
+        let bytes_per_mov = match arg.explicit_size.expect("movs need an explicit_size") {
+            ArgumentSize::Bit64 => 8,
+            ArgumentSize::Bit32 => 4,
+            ArgumentSize::Bit16 => 2,
+            ArgumentSize::Bit8 => 1,
+        };
         if arg.repeat {
             print_instr("rep movs %ds:(%rsi),%es:(%rdi)");
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
-            length *= 8; // 8 bytes per mov
+            length *= bytes_per_mov;
             if machine_state.get_flag(Flags::Direction) {
                 // TODO:  address calculation could be incorrect
                 from -= length;
@@ -652,7 +657,8 @@ impl EmulationCPU {
             machine_state.set_register_value(&Register::RCX, 0);
         } else {
             print_instr("movs %ds:(%rsi),%es:(%rdi)");
-            panic!("Not implemented");
+            let data = machine_state.mem_read(from as u64, bytes_per_mov as u64);
+            machine_state.mem_write(to as u64, &data);
         }
     }
 
