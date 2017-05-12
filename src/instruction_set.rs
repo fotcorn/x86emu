@@ -182,6 +182,7 @@ impl InstructionArgument {
 pub struct InstructionArguments {
     pub first_argument: Option<InstructionArgument>,
     pub second_argument: Option<InstructionArgument>,
+    pub third_argument: Option<InstructionArgument>,
     pub opcode: Option<u8>,
     pub explicit_size: Option<ArgumentSize>,
     pub repeat: bool,
@@ -305,6 +306,7 @@ impl InstructionArgumentsBuilder {
         InstructionArguments {
             first_argument: self.first_argument,
             second_argument: self.second_argument,
+            third_argument: None,
             opcode: self.opcode,
             explicit_size: self.explicit_size,
             repeat: self.repeat,
