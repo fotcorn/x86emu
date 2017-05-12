@@ -502,6 +502,7 @@ impl<'a> Decoder<'a> {
                 (Instruction::Mov, Some(argument))
             }
             0x90 => {
+                self.inc_rip(1);
                 (Instruction::Nop, None)
             }
             0x8B => {
