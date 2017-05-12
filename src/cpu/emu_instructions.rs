@@ -597,11 +597,11 @@ impl EmulationCPU {
         machine_state.set_flag(Flags::Direction, false);
     }
 
-    pub fn stos(&self, machine_state: &mut MachineState, repeat: bool) {
+    pub fn stos(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         let to =
             machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
                                     ArgumentSize::Bit64);
-        if repeat {
+        if arg.repeat {
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
@@ -621,7 +621,7 @@ impl EmulationCPU {
     }
 
 
-    pub fn movs(&self, machine_state: &mut MachineState, repeat: bool) {
+    pub fn movs(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         let mut from =
             machine_state.get_value(&InstructionArgument::Register { register: Register::RSI },
                                     ArgumentSize::Bit64);
@@ -629,7 +629,7 @@ impl EmulationCPU {
             machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
                                     ArgumentSize::Bit64);
         // TODO: do not hardcode to 8byte operand
-        if repeat {
+        if arg.repeat {
             print_instr("rep movs %ds:(%rsi),%es:(%rdi)");
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },

@@ -573,18 +573,20 @@ impl<'a> Decoder<'a> {
                 (Instruction::Popf, None)
             }
             0xA5 => {
-                let repeat = decoder_flags.contains(REPEAT);
                 self.inc_rip(1);
-                (Instruction::Movs, None)
+                (Instruction::Movs, Some(InstructionArgumentsBuilder::new()
+                    .repeat(decoder_flags.contains(REPEAT))
+                    .finalize()))
             }
             0xA8 => {
                 let argument = self.decode_al_immediate();
                 (Instruction::Test, Some(argument))
             }
             0xAB => {
-                let repeat = decoder_flags.contains(REPEAT);
                 self.inc_rip(1);
-                (Instruction::Stos, None)
+                (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
+                    .repeat(decoder_flags.contains(REPEAT))
+                    .finalize()))
             }
             opcode @ 0xB0...0xB7 => {
                 let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
@@ -1141,7 +1143,7 @@ impl<'a> Decoder<'a> {
             Instruction::Lea => self.cpu.lea(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Leave => self.cpu.leave(self.machine_state),
             Instruction::Mov => self.cpu.mov(self.machine_state, Decoder::fetch_argument(cache_entry)),
-            Instruction::Movs => self.cpu.movs(self.machine_state, true),
+            Instruction::Movs => self.cpu.movs(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movsx => self.cpu.movsx(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movzx => self.cpu.movzx(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Nop => (),
@@ -1156,7 +1158,7 @@ impl<'a> Decoder<'a> {
             Instruction::Sete => self.cpu.sete(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::ShiftRotate => self.cpu.shift_rotate(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Std => self.cpu.std(self.machine_state),
-            Instruction::Stos => self.cpu.stos(self.machine_state, true),
+            Instruction::Stos => self.cpu.stos(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Sub => self.cpu.sub(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Test => self.cpu.test(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Xor => self.cpu.xor(self.machine_state, Decoder::fetch_argument(cache_entry)),
