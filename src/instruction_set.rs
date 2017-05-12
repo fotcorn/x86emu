@@ -9,7 +9,7 @@ pub enum RegisterSize {
     Segment,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum Register {
     // 64 Bit
     RAX,
@@ -152,7 +152,6 @@ impl fmt::Display for Register {
 }
 
 
-#[derive(Debug)]
 pub enum InstructionArgument {
     Immediate { immediate: i64 },
     Register { register: Register },
@@ -180,7 +179,6 @@ impl InstructionArgument {
     }
 }
 
-#[derive(Debug)]
 pub struct InstructionArguments {
     pub first_argument: InstructionArgument,
     pub second_argument: Option<InstructionArgument>,
@@ -196,9 +194,9 @@ impl InstructionArguments {
         }
     }
 
-    pub fn assert_two_arguments(&self) {
+    pub fn get_second_argument(&self) -> &InstructionArgument {
         match self.second_argument {
-            Some(_) => (),
+            Some(ref second_argument) => (second_argument),
             None => panic!("Instruction requires two arguments"),
         }
     }
@@ -369,3 +367,77 @@ pub fn print_instr_arg(_instruction: &str, _arg: &InstructionArguments) {}
 
 #[cfg(not(feature  = "print_instructions"))]
 pub fn print_instr_arg_no_size(_instruction: &str, _arg: &InstructionArguments) {}
+
+pub struct InstructionCache {
+    pub instruction: Instruction,
+    pub arguments: Option<InstructionArguments>,
+    pub size: u64
+}
+
+pub enum Instruction {
+    Adc,
+    Add,
+    And,
+    Arithmetic,
+    Call,
+    Cld,
+    Cmova,
+    Cmovae,
+    Cmovb,
+    Cmovbe,
+    Cmove,
+    Cmovg,
+    Cmovge,
+    Cmovl,
+    Cmovle,
+    Cmovne,
+    Cmovno,
+    Cmovnp,
+    Cmovns,
+    Cmovo,
+    Cmovp,
+    Cmovs,
+    Cmp,
+    CompareMulOperation,
+    Imul,
+    Int,
+    Ja,
+    Jae,
+    Jb,
+    Jbe,
+    Je,
+    Jg,
+    Jge,
+    Jl,
+    Jle,
+    Jmp,
+    Jne,
+    Jno,
+    Jnp,
+    Jns,
+    Jo,
+    Jp,
+    Js,
+    Lea,
+    Leave,
+    Mov,
+    Movs,
+    Movsx,
+    Movzx,
+    Nop,
+    Or,
+    Out,
+    Pop,
+    Popf,
+    Push,
+    RegisterOperation,
+    Ret,
+    Sbb,
+    Sete,
+    ShiftRotate,
+    Std,
+    Stos,
+    Sub,
+    Test,
+    Xor,
+}
