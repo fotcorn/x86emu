@@ -9,8 +9,8 @@ impl EmulationCPU {
     // implementations used by multiple instructions
     fn sub_impl(&self, machine_state: &mut MachineState, arg: &InstructionArguments, set: bool) {
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
 
         let (result, carry, overflow) = match argument_size {
@@ -46,8 +46,8 @@ impl EmulationCPU {
     fn and_impl(&self, machine_state: &mut MachineState, arg: &InstructionArguments, set: bool) {
 
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 & value2;
         machine_state.compute_flags(result, argument_size);
@@ -59,9 +59,9 @@ impl EmulationCPU {
     }
 
     fn jmp_iml(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
-        arg.assert_one_argument();
-        let value = machine_state.get_value(&arg.first_argument, arg.size());
-        match arg.first_argument {
+        let first_argument = arg.get_one_argument();
+        let value = machine_state.get_value(&first_argument, arg.size());
+        match *first_argument {
             InstructionArgument::Register { .. } => machine_state.rip = value,
             InstructionArgument::Immediate { .. } => machine_state.rip += value,
             InstructionArgument::EffectiveAddress { .. } => {
@@ -72,8 +72,9 @@ impl EmulationCPU {
 
     fn mov_impl(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         let argument_size = arg.size();
-        let value = machine_state.get_value(&arg.first_argument, argument_size);
-        machine_state.set_value(value, arg.get_second_argument(), argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value = machine_state.get_value(&first_argument, argument_size);
+        machine_state.set_value(value, second_argument, argument_size);
     }
 
     // different instructions with same opcode
@@ -151,15 +152,14 @@ impl EmulationCPU {
     // all other instructions
     pub fn push(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("push", &arg);
-
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
         let vector = match arg.size() {
             ArgumentSize::Bit32 => {
-                convert_i32_to_u8vec(machine_state.get_value(&arg.first_argument,
+                convert_i32_to_u8vec(machine_state.get_value(&first_argument,
                                                              ArgumentSize::Bit32) as i32)
             }
             ArgumentSize::Bit64 => {
-                convert_i64_to_u8vec(machine_state.get_value(&arg.first_argument,
+                convert_i64_to_u8vec(machine_state.get_value(&first_argument,
                                                              ArgumentSize::Bit64))
             }
             _ => panic!("Unsupported push value size"),
@@ -169,9 +169,9 @@ impl EmulationCPU {
 
     pub fn pop(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("pop", &arg);
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
         let value = machine_state.stack_pop();
-        machine_state.set_value(value, &arg.first_argument, arg.size());
+        machine_state.set_value(value, &first_argument, arg.size());
     }
 
     pub fn mov(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
@@ -187,11 +187,10 @@ impl EmulationCPU {
 
     pub fn movzx(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg_no_size("movzx", &arg);
-
         let argument_size = arg.size();
-        let value = machine_state.get_value(&arg.first_argument, argument_size);
-
-        let first_argument_size = match arg.first_argument {
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value = machine_state.get_value(&first_argument, argument_size);
+        let first_argument_size = match *first_argument {
             InstructionArgument::Register {ref register} => {
                 get_register_size(register)
             },
@@ -212,14 +211,14 @@ impl EmulationCPU {
         };
 
         // ArgumentSize::Bit64 is not used because target is always a register
-        machine_state.set_value(value as i64, arg.get_second_argument(), ArgumentSize::Bit64);
+        machine_state.set_value(value as i64, second_argument, ArgumentSize::Bit64);
     }
 
     pub fn add(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("add", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
 
         let (result, carry, overflow) = match argument_size {
@@ -254,8 +253,8 @@ impl EmulationCPU {
     pub fn or(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("or", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 | value2;
         machine_state.compute_flags(result, argument_size);
@@ -286,8 +285,8 @@ impl EmulationCPU {
     pub fn xor(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("xor", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value1 ^ value2;
         machine_state.compute_flags(result, argument_size);
@@ -301,7 +300,7 @@ impl EmulationCPU {
 
     pub fn call(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("call", &arg);
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
 
         let rip = convert_i64_to_u8vec(machine_state.rip);
         machine_state.stack_push(&rip);
@@ -311,11 +310,11 @@ impl EmulationCPU {
 
     pub fn lea(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("lea", &arg);
+        let (first_argument, second_argument) = arg.get_two_arguments();
         let argument_size = arg.size();
-        match arg.first_argument {
+        match *first_argument {
             InstructionArgument::EffectiveAddress { .. } => {
-                let value = machine_state.calculate_effective_address(&arg.first_argument) as i64;
-                let second_argument = arg.get_second_argument();
+                let value = machine_state.calculate_effective_address(&first_argument) as i64;
                 match *second_argument {
                     InstructionArgument::Register { .. } => {
                         machine_state.set_value(value, &second_argument, argument_size)
@@ -470,8 +469,8 @@ impl EmulationCPU {
     pub fn shl(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("shl", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value2 << value1;
         machine_state.compute_flags(result, argument_size);
@@ -482,8 +481,8 @@ impl EmulationCPU {
     pub fn shr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("shr", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size) as u64;
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size) as u64;
         let value2 = machine_state.get_value(&second_argument, argument_size) as u64;
         let result = (value2 >> value1) as i64;
         machine_state.compute_flags(result, argument_size);
@@ -494,8 +493,8 @@ impl EmulationCPU {
     pub fn sar(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("sar", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value2 >> value1;
         machine_state.compute_flags(result, argument_size);
@@ -505,22 +504,22 @@ impl EmulationCPU {
 
     pub fn inc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("inc", &arg);
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
-        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        let value = machine_state.get_value(&first_argument, argument_size);
         let result = value + 1;
         machine_state.compute_flags(result, argument_size);
-        machine_state.set_value(result, &arg.first_argument, argument_size);
+        machine_state.set_value(result, &first_argument, argument_size);
     }
 
     pub fn dec(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("dec", &arg);
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
-        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        let value = machine_state.get_value(&first_argument, argument_size);
         let result = value - 1;
         machine_state.compute_flags(result, argument_size);
-        machine_state.set_value(result, &arg.first_argument, argument_size);
+        machine_state.set_value(result, &first_argument, argument_size);
     }
 
     pub fn div(&self, _machine_state: &mut MachineState, arg: &InstructionArguments) {
@@ -541,8 +540,8 @@ impl EmulationCPU {
     pub fn imul(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("imul", &arg);
         let argument_size = arg.size();
-        let second_argument = arg.get_second_argument();
-        let value1 = machine_state.get_value(&arg.first_argument, argument_size);
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
         let result = value2 * value1;
         machine_state.compute_flags(result, argument_size);
@@ -553,22 +552,22 @@ impl EmulationCPU {
 
     pub fn not(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("not", &arg);
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
-        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        let value = machine_state.get_value(&first_argument, argument_size);
         let result = !value;
         machine_state.compute_flags(result, argument_size);
-        machine_state.set_value(result, &arg.first_argument, argument_size);
+        machine_state.set_value(result, &first_argument, argument_size);
     }
 
     pub fn neg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("neg", &arg);
-        arg.assert_one_argument();
+        let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
-        let value = machine_state.get_value(&arg.first_argument, argument_size);
+        let value = machine_state.get_value(&first_argument, argument_size);
         let result = -value;
         machine_state.compute_flags(result, argument_size);
-        machine_state.set_value(result, &arg.first_argument, argument_size);
+        machine_state.set_value(result, &first_argument, argument_size);
     }
 
     pub fn ret(&self, machine_state: &mut MachineState) {
@@ -787,10 +786,11 @@ impl EmulationCPU {
 
     pub fn sete(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         print_instr_arg("sete", &arg);
+        let first_argument = arg.get_one_argument();
         if machine_state.get_flag(Flags::Zero) {
-            machine_state.set_value(1, &arg.first_argument, ArgumentSize::Bit8);
+            machine_state.set_value(1, &first_argument, ArgumentSize::Bit8);
         } else {
-            machine_state.set_value(0, &arg.first_argument, ArgumentSize::Bit8);
+            machine_state.set_value(0, &first_argument, ArgumentSize::Bit8);
         }
     }
 

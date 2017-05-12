@@ -325,7 +325,7 @@ impl<'a> Decoder<'a> {
             opcode @ 0x50...0x57 => {
                 self.inc_rip(1);
                 (Instruction::Push, Some(
-                            InstructionArgumentsBuilder::new(InstructionArgument::Register {
+                            InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
                                 register: get_register(opcode - 0x50, RegisterSize::Bit64,
                                         decoder_flags.contains(NEW_64BIT_REGISTER),
                                         decoder_flags.contains(NEW_8BIT_REGISTER)),
@@ -333,7 +333,7 @@ impl<'a> Decoder<'a> {
             }
             opcode @ 0x58...0x5F => {
                 let argument =
-                    InstructionArgumentsBuilder::new(InstructionArgument::Register {
+                    InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
                             register:
                                 get_register(opcode - 0x58,
                                                 RegisterSize::Bit64,
@@ -545,7 +545,7 @@ impl<'a> Decoder<'a> {
                     (Register::AX, Register::EAX)
                 };
 
-                let argument = InstructionArgumentsBuilder::new(
+                let argument = InstructionArgumentsBuilder::new().first_argument(
                     InstructionArgument::Register{register: register1}
                 ).second_argument(InstructionArgument::Register{register: register2})
                 .finalize();
@@ -561,7 +561,7 @@ impl<'a> Decoder<'a> {
                     (Register::EAX, Register::EDX)
                 };
 
-                let argument = InstructionArgumentsBuilder::new(
+                let argument = InstructionArgumentsBuilder::new().first_argument(
                     InstructionArgument::Register{register: register1}
                 ).second_argument(InstructionArgument::Register{register: register2})
                 .finalize();
@@ -589,7 +589,7 @@ impl<'a> Decoder<'a> {
             opcode @ 0xB0...0xB7 => {
                 let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
                 let argument =
-                    InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                    InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                             immediate: immediate as i64,
                         })
                         .second_argument(InstructionArgument::Register {
@@ -614,7 +614,7 @@ impl<'a> Decoder<'a> {
                     }
                 };
                 let argument =
-                    InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                    InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                             immediate: immediate,
                         })
                         .second_argument(InstructionArgument::Register {
@@ -665,10 +665,10 @@ impl<'a> Decoder<'a> {
                                                                 RegOrOpcode::Opcode,
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
-                argument.second_argument = Some(argument.first_argument);
-                argument.first_argument = InstructionArgument::Immediate{
+                argument.second_argument = Some(argument.first_argument.unwrap());
+                argument.first_argument = Some(InstructionArgument::Immediate{
                     immediate: 1,
-                };
+                });
                 self.inc_rip(ip_offset);
                 (Instruction::ShiftRotate, Some(argument))
             }
@@ -677,10 +677,10 @@ impl<'a> Decoder<'a> {
                                                                 RegOrOpcode::Opcode,
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
-                argument.second_argument = Some(argument.first_argument);
-                argument.first_argument = InstructionArgument::Register{
+                argument.second_argument = Some(argument.first_argument.unwrap());
+                argument.first_argument = Some(InstructionArgument::Register{
                     register: Register::CL
-                };
+                });
                 self.inc_rip(ip_offset);
                 (Instruction::ShiftRotate, Some(argument))
             }
@@ -693,7 +693,7 @@ impl<'a> Decoder<'a> {
                 let immediate = self.get_i32_value(1);
                 self.inc_rip(5);
                 (Instruction::Call, Some(
-                            InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                            InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                                 immediate: immediate as i64,
                             }).finalize()))
             }
@@ -701,7 +701,7 @@ impl<'a> Decoder<'a> {
                 let immediate = self.get_i32_value(1);
                 self.inc_rip(5);
                 (Instruction::Jmp, Some(
-                            InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                            InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                                 immediate: immediate as i64,
                             }).finalize()))
             }
@@ -749,7 +749,7 @@ impl<'a> Decoder<'a> {
                         let register = get_register(
                             0, register_size,decoder_flags.contains(NEW_64BIT_REGISTER), false);
 
-                        (InstructionArgumentsBuilder::new(
+                        (InstructionArgumentsBuilder::new().first_argument(
                             InstructionArgument::Register{register: register})
                             .opcode(opcode)
                             .finalize(),
@@ -1021,7 +1021,7 @@ impl<'a> Decoder<'a> {
                                                                         ImmediateSize::None,
                                                                         decoder_flags);
                         // TODO: change this hack to Something sane
-                        argument.first_argument = argument.second_argument.unwrap();
+                        argument.first_argument = Some(argument.second_argument.unwrap());
                         argument.second_argument = None;
                         self.inc_rip(ip_offset);
                         (Instruction::Sete, Some(argument))
@@ -1194,14 +1194,14 @@ impl<'a> Decoder<'a> {
         let rip = self.machine_state.rip as u64;
         let immediate = self.machine_state.mem_read_byte(rip + 1) as i8 as i64;
 
-        (InstructionArgumentsBuilder::new(InstructionArgument::Immediate { immediate: immediate })
+        (InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate { immediate: immediate })
              .finalize(),
          2)
     }
 
     fn read_immediate_32bit(&mut self) -> InstructionArguments {
         let immediate = self.get_i32_value(1) as i64;
-        InstructionArgumentsBuilder::new(InstructionArgument::Immediate { immediate: immediate })
+        InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate { immediate: immediate })
              .finalize()
     }
 
@@ -1294,7 +1294,7 @@ impl<'a> Decoder<'a> {
                                          decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
 
-                        (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                        (InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                                  immediate: immediate as i64,
                              })
                              .second_argument(self.effective_address(sib, register, displacement, decoder_flags))
@@ -1333,7 +1333,7 @@ impl<'a> Decoder<'a> {
                                          decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
 
-                        (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                        (InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                                  immediate: immediate,
                              })
                              .second_argument(self.effective_address(sib, register, displacement, decoder_flags))
@@ -1366,13 +1366,13 @@ impl<'a> Decoder<'a> {
                                                      decoder_flags.contains(NEW_8BIT_REGISTER));
 
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                             InstructionArgumentsBuilder::new(self.effective_address(sib, register1, displacement, decoder_flags))
+                             InstructionArgumentsBuilder::new().first_argument(self.effective_address(sib, register1, displacement, decoder_flags))
                              .second_argument(
                                 InstructionArgument::Register {
                                     register: register2,
                                 }).finalize()
                          } else {
-                             InstructionArgumentsBuilder::new(InstructionArgument::Register {
+                             InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
                                      register: register2,
                                  })
                                  .second_argument(self.effective_address(sib, register1, displacement, decoder_flags))
@@ -1392,7 +1392,7 @@ impl<'a> Decoder<'a> {
                 match reg_or_opcode {
                     RegOrOpcode::Register => {
                         (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                             InstructionArgumentsBuilder::new(InstructionArgument::Register {
+                             InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
                                      register: register1,
                                  })
                                  .second_argument(InstructionArgument::Register {
@@ -1403,7 +1403,7 @@ impl<'a> Decoder<'a> {
                                  })
                                  .finalize()
                          } else {
-                             InstructionArgumentsBuilder::new(InstructionArgument::Register {
+                             InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
                                      register:
                                          get_register(value2,
                                                       register_size,
@@ -1421,7 +1421,7 @@ impl<'a> Decoder<'a> {
                             ImmediateSize::Bit8 => {
                                 let rip = (self.machine_state.rip + 2) as u64;
                                 let immediate = self.machine_state.mem_read_byte(rip);
-                                (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                                (InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                                          immediate: immediate as i8 as i64,
                                      })
                                      .second_argument(InstructionArgument::Register {
@@ -1433,7 +1433,7 @@ impl<'a> Decoder<'a> {
                             }
                             ImmediateSize::Bit32 => {
                                 let immediate = self.get_i32_value(2);
-                                (InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+                                (InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                                          immediate: immediate as i64,
                                      })
                                      .second_argument(InstructionArgument::Register {
@@ -1444,7 +1444,7 @@ impl<'a> Decoder<'a> {
                                  6)
                             }
                             ImmediateSize::None => {
-                                (InstructionArgumentsBuilder::new(InstructionArgument::Register {
+                                (InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
                                          register: register1,
                                      })
                                      .opcode(value2)
@@ -1547,7 +1547,7 @@ impl<'a> Decoder<'a> {
     fn decode_al_immediate(&mut self) -> InstructionArguments {
         let immediate = self.get_i8_value(1);
         let argument =
-            InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+            InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                     immediate: immediate as i64,
                 })
                 .second_argument(InstructionArgument::Register {
@@ -1570,7 +1570,7 @@ impl<'a> Decoder<'a> {
             false);
 
         let argument =
-            InstructionArgumentsBuilder::new(InstructionArgument::Immediate {
+            InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Immediate {
                     immediate: immediate,
                 })
                 .second_argument(InstructionArgument::Register {
@@ -1586,30 +1586,36 @@ impl<'a> Decoder<'a> {
                               size: ArgumentSize,
                               rip: u64,
                               decoder_flags: &DecoderFlags) {
-        match argument.first_argument {
-            InstructionArgument::Register {..}=> {
-                let register_size = match size {
-                    ArgumentSize::Bit8 => RegisterSize::Bit8,
-                    ArgumentSize::Bit16 => RegisterSize::Bit16,
-                    ArgumentSize::Bit32 => RegisterSize::Bit32,
-                    ArgumentSize::Bit64 => RegisterSize::Bit64,
-                };
-                let modrm = self.machine_state.mem_read_byte(rip + 1);
-                let register = modrm & 0b00000111;
-                let register = get_register(register, register_size,
-                                            decoder_flags.contains(NEW_64BIT_REGISTER),
-                                            decoder_flags.contains(NEW_8BIT_REGISTER));
-                argument.first_argument = InstructionArgument::Register{
-                    register: register,
-                };
+        
+        /*let x = match argument.first_argument {
+            Some(ref first_argument) => {
+                match *first_argument {
+                    InstructionArgument::Register {..}=> {
+                        let register_size = match size {
+                            ArgumentSize::Bit8 => RegisterSize::Bit8,
+                            ArgumentSize::Bit16 => RegisterSize::Bit16,
+                            ArgumentSize::Bit32 => RegisterSize::Bit32,
+                            ArgumentSize::Bit64 => RegisterSize::Bit64,
+                        };
+                        let modrm = self.machine_state.mem_read_byte(rip + 1);
+                        let register = modrm & 0b00000111;
+                        let register = get_register(register, register_size,
+                                                    decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                    decoder_flags.contains(NEW_8BIT_REGISTER));
+                        Some(InstructionArgument::Register {
+                            register: register,
+                        })
+                    },
+                    InstructionArgument::EffectiveAddress {..} => {
+                        argument.explicit_size = Some(size);
+                        argument.first_argument
+                    },
+                    _ => panic!("Invalid argument")
+                }
             },
-            InstructionArgument::EffectiveAddress {..} => {
-                argument.explicit_size = Some(size)
-            },
-            _ => panic!("Invalid argument")
-        }
+            None => panic!("Needs first_argument to override argument size"),
+        };*/
     }
-
 }
 
 #[derive(PartialEq)]

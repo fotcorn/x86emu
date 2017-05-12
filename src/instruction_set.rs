@@ -180,28 +180,36 @@ impl InstructionArgument {
 }
 
 pub struct InstructionArguments {
-    pub first_argument: InstructionArgument,
+    pub first_argument: Option<InstructionArgument>,
     pub second_argument: Option<InstructionArgument>,
     pub opcode: Option<u8>,
     pub explicit_size: Option<ArgumentSize>,
 }
 
 impl InstructionArguments {
-    pub fn assert_one_argument(&self) {
+    pub fn get_one_argument(&self) -> &InstructionArgument {
+        let first_argument = match self.first_argument {
+            Some(ref first_argument) => first_argument,
+            None => panic!("Instructions needs one argument"),
+        };
         match self.second_argument {
             Some(_) => panic!("Instruction accepts only one argument"),
             None => (),
-        }
+        };
+        first_argument
     }
 
-    pub fn get_second_argument(&self) -> &InstructionArgument {
-        match self.second_argument {
-            Some(ref second_argument) => (second_argument),
-            None => panic!("Instruction requires two arguments"),
-        }
+    pub fn get_two_arguments(&self) -> (&InstructionArgument, &InstructionArgument) {
+        let first_argument = match self.first_argument {
+            Some(ref first_argument) => first_argument,
+            None => panic!("Instruction needs first_argument"),
+        };
+        let second_argument = match self.second_argument {
+            Some(ref first_argument) => first_argument,
+            None => panic!("Instruction needs second_argument"),
+        };    
+        (first_argument, second_argument)
     }
-
-
 
     pub fn size(&self) -> ArgumentSize {
         match self.explicit_size {
@@ -210,27 +218,37 @@ impl InstructionArguments {
                 match self.second_argument {
                     Some(ref second_argument) => {
                         match self.first_argument {
-                            InstructionArgument::Register { ref register } => {
-                                get_register_size(register)
-                            }
-                            InstructionArgument::Immediate { .. } |
-                            InstructionArgument::EffectiveAddress { .. } => {
-                                match *second_argument {
+                            Some(ref first_argument) => {
+                                match *first_argument {
                                     InstructionArgument::Register { ref register } => {
                                         get_register_size(register)
                                     }
-                                    _ => panic!("Cannot determine instruction argument size"),
+                                    InstructionArgument::Immediate { .. } |
+                                    InstructionArgument::EffectiveAddress { .. } => {
+                                        match *second_argument {
+                                            InstructionArgument::Register { ref register } => {
+                                                get_register_size(register)
+                                            }
+                                            _ => panic!("Cannot determine instruction argument size"),
+                                        }
+                                    }
                                 }
-                            }
+                            },
+                            None => panic!("Instructions with second_argument also need a first_argument"),
                         }
-                    }
+                    },
                     None => {
                         match self.first_argument {
-                            InstructionArgument::Register { ref register } => {
-                                get_register_size(register)
-                            }
-                            InstructionArgument::Immediate { .. } => ArgumentSize::Bit64,
-                            InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
+                            Some(ref first_argument) => {
+                                match *first_argument {
+                                    InstructionArgument::Register { ref register } => {
+                                        get_register_size(register)
+                                    }
+                                    InstructionArgument::Immediate { .. } => ArgumentSize::Bit64,
+                                    InstructionArgument::EffectiveAddress { .. } => ArgumentSize::Bit64,
+                                }
+                            },
+                            None => panic!("Instructions without arguments needs explicit_size set"),
                         }
                     }
                 }
@@ -240,20 +258,27 @@ impl InstructionArguments {
 }
 
 pub struct InstructionArgumentsBuilder {
-    first_argument: InstructionArgument,
+    first_argument: Option<InstructionArgument>,
     second_argument: Option<InstructionArgument>,
     opcode: Option<u8>,
     explicit_size: Option<ArgumentSize>,
 }
 
 impl InstructionArgumentsBuilder {
-    pub fn new(argument: InstructionArgument) -> InstructionArgumentsBuilder {
+    pub fn new() -> InstructionArgumentsBuilder {
         InstructionArgumentsBuilder {
-            first_argument: argument,
+            first_argument: None,
             second_argument: None,
             opcode: None,
             explicit_size: None,
         }
+    }
+
+    pub fn first_argument(mut self,
+                           first_argument: InstructionArgument)
+                           -> InstructionArgumentsBuilder {
+        self.first_argument = Some(first_argument);
+        self
     }
 
     pub fn second_argument(mut self,
@@ -286,10 +311,18 @@ impl InstructionArgumentsBuilder {
 impl fmt::Display for InstructionArguments {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.second_argument {
-            Some(ref second_argument) => write!(f, "{},{}",
-                self.first_argument.format(self.size()),
-                second_argument.format(self.size())),
-            None => write!(f, "{}", self.first_argument.format(self.size())),
+            Some(ref second_argument) => {
+                match self.first_argument {
+                    Some(ref first_argument) => write!(f, "{},{}", first_argument.format(self.size()), second_argument.format(self.size())),
+                    None => panic!("Instructions with second_argument also need a first_argument"),
+                }
+            },
+            None => {
+                match self.first_argument {
+                    Some(ref first_argument) => write!(f, "{}", first_argument.format(self.size())),
+                    None =>  write!(f, ""),
+                }
+            },
         }
     }
 }
