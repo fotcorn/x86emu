@@ -370,14 +370,12 @@ pub fn print_instr_arg(_instruction: &str, _arg: &InstructionArguments) {}
 #[cfg(not(feature  = "print_instructions"))]
 pub fn print_instr_arg_no_size(_instruction: &str, _arg: &InstructionArguments) {}
 
-#[derive(Copy, Clone)]
 pub struct InstructionCache {
     pub instruction: Instruction,
     pub arguments: Option<InstructionArguments>,
     pub size: u64
 }
 
-#[derive(Copy, Clone)]
 pub enum Instruction {
     Adc,
     Add,

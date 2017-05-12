@@ -32,7 +32,7 @@ impl<'a> Decoder<'a> {
             
             let cache_entry = match instruction_cache.entry(instruction_start) {
                 Entry::Occupied(entry) => {
-                    let entry: InstructionCache = *entry.into_mut();
+                    let ref entry: InstructionCache = *entry.into_mut();
                     self.machine_state.rip += entry.size as i64;
                     entry
                 },
@@ -46,7 +46,7 @@ impl<'a> Decoder<'a> {
                         arguments: cache_entry.1,
                         size: instruction_end - instruction_start,
                     };
-                    *entry.insert(cache_entry)
+                    entry.insert(cache_entry)
                 }
             };
 
@@ -1086,7 +1086,7 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    fn execute_instruction(&mut self, cache_entry: InstructionCache) {
+    fn execute_instruction(&mut self, cache_entry: &InstructionCache) {
         match cache_entry.instruction {
             Instruction::Adc => self.cpu.adc(self.machine_state, &cache_entry.arguments.unwrap()),
             Instruction::Add => self.cpu.add(self.machine_state, &cache_entry.arguments.unwrap()),
