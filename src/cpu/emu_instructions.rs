@@ -816,8 +816,86 @@ impl EmulationCPU {
 
     pub fn cpuid(&self, machine_state: &mut MachineState) {
         print_instr("cpuid");
-        let value = machine_state.get_register_value(&Register::RAX);
+        let value = machine_state.get_register_value(&Register::EAX);
         match value {
+            0 => {
+                machine_state.set_register_value(&Register::EAX, 1000);
+                machine_state.set_register_value(&Register::EBX, 0x756e6547);
+                machine_state.set_register_value(&Register::EDX, 0x49656e69);
+                machine_state.set_register_value(&Register::ECX, 0x6c65746e);
+            },
+            1 => {
+                let edx = 0 << 0 | // Onboard x87 FPU
+                          0 << 1 | // Virtual 8086 mode extensions (such as VIF, VIP, PIV)
+                          0 << 2 | // Debugging extensions (CR4 bit 3)
+                          0 << 3 | // Page Size Extension
+                          0 << 4 | // Time Stamp Counter
+                          0 << 5 | // Model-specific registers
+                          1 << 6 | // Physical Address Extension
+                          0 << 7 | // Machine Check Exception
+                          0 << 8 | // CMPXCHG8 (compare-and-swap) instruction
+                          1 << 9 | // Onboard Advanced Programmable Interrupt Controller
+                          0 << 10 | // Reserved
+                          0 << 11 | // SYSENTER and SYSEXIT instructions
+                          0 << 12 | // Memory Type Range Registers
+                          0 << 13 | // Page Global Enable bit in CR4
+                          0 << 14 | // Machine check architecture
+                          1 << 15 | // Conditional move and FCMOV instructions
+                          0 << 16 | // Page Attribute Table
+                          0 << 17 | // 36-bit page size extension
+                          0 << 18 | // Processor Serial Number
+                          0 << 19 | // CLFLUSH instruction (SSE2)
+                          0 << 20 | // Reserved
+                          0 << 21 | // Debug store: save trace of executed jumps
+                          0 << 22 | // Onboard thermal control MSRs for ACPI
+                          0 << 23 | // MMX instructions
+                          0 << 24 | // FXSAVE, FXRESTOR instructions, CR4 bit 9
+                          0 << 25 | // SSE instructions (a.k.a. Katmai New Instructions)
+                          0 << 26 | // SSE2 instructions
+                          0 << 27 | // CPU cache supports self-snoop
+                          0 << 28 | // Hyper-threading
+                          0 << 29 | // Thermal monitor automatically limits temperature
+                          0 << 30 | // IA64 processor emulating x86
+                          0 << 31; // Pending Break Enable (PBE# pin) wakeup support
+
+                let ecx = 0 << 0 | // Prescott New Instructions-SSE3 (PNI)
+                          0 << 1 | // PCLMULQDQ support
+                          0 << 2 | // 64-bit debug store (edx bit 21)
+                          0 << 3 | // MONITOR and MWAIT instructions (SSE3)
+                          0 << 4 | // CPL qualified debug store
+                          0 << 5 | // Virtual Machine eXtensions
+                          0 << 6 | // Safer Mode Extensions (LaGrande)
+                          0 << 7 | // Enhanced SpeedStep
+                          0 << 8 | // Thermal Monitor 2
+                          0 << 9 | // Supplemental SSE3 instructions
+                          0 << 10 | // L1 Context ID
+                          0 << 11 | // Silicon Debug interface
+                          0 << 12 | // Fused multiply-add (FMA3)
+                          0 << 13 | // CMPXCHG16B instruction
+                          0 << 14 | // Can disable sending task priority messages
+                          0 << 15 | // Perfmon & debug capability
+                          0 << 16 | // 
+                          0 << 17 | // Process context identifiers (CR4 bit 17)
+                          0 << 18 | // Direct cache access for DMA writes[12][13]
+                          0 << 19 | // SSE4.1 instructions
+                          0 << 20 | // SSE4.2 instructions
+                          0 << 21 | // x2APIC support
+                          0 << 22 | // MOVBE instruction (big-endian)
+                          0 << 23 | // POPCNT instruction
+                          0 << 24 | // APIC supports one-shot operation using a TSC deadline value
+                          0 << 25 | // AES instruction set
+                          0 << 26 | // XSAVE, XRESTOR, XSETBV, XGETBV
+                          0 << 27 | // XSAVE enabled by OS
+                          0 << 28 | // Advanced Vector Extensions
+                          0 << 29 | // F16C (half-precision) FP support
+                          0 << 30 | // RDRAND (on-chip random number generator) support
+                          0 << 31; // Running on a hypervisor (always 0 on a real CPU, but also with some hypervisors)
+                    
+                machine_state.set_register_value(&Register::EAX, 0);
+                machine_state.set_register_value(&Register::EBX, 0);
+                machine_state.set_register_value(&Register::ECX, ecx);
+                machine_state.set_register_value(&Register::EDX, edx);
+            },
             _ => panic!("CPUID: unsupported input: {}", value),
         }
     }
