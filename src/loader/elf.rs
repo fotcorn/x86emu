@@ -8,9 +8,9 @@ use xmas_elf::symbol_table::Entry;
 
 use machine_state::MachineState;
 use decoder::Decoder;
-use cpu::cpu_trait::CPU;
+use cpu::emu_instructions::EmulationCPU;
 
-pub fn elf(filename: &str, symbol: &str, cpu: &CPU, debug: bool, benchmark: bool) {
+pub fn elf(filename: &str, symbol: &str, debug: bool, benchmark: bool) {
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
@@ -35,7 +35,8 @@ pub fn elf(filename: &str, symbol: &str, cpu: &CPU, debug: bool, benchmark: bool
     machine_state.rip = 0x10000 + offset as i64;
     machine_state.rsp = 0x1000;
 
-    let mut decoder = Decoder::new(cpu, &mut machine_state);
+    let mut cpu = EmulationCPU {};
+    let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
     decoder.execute(debug, benchmark);
 }
 

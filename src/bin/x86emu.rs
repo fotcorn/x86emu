@@ -2,8 +2,6 @@ extern crate clap;
 use clap::{App, Arg};
 
 extern crate x86emu;
-use x86emu::cpu::print::PrintCPU;
-use x86emu::cpu::emu_instructions::EmulationCPU;
 use x86emu::loader::elf::elf;
 use x86emu::loader::linux::linux;
 
@@ -21,12 +19,6 @@ fn main() {
             .short("l")
             .takes_value(true)
             .possible_values(&["linux", "elf"]))
-        .arg(Arg::with_name("cpu")
-            .help("cpu to execute")
-            .long("cpu")
-            .short("c")
-            .takes_value(true)
-            .possible_values(&["emu", "print"]))
         .arg(Arg::with_name("debug")
             .help("run in debug mode (single step, print all registers after every instruction)")
             .long("debug")
@@ -38,7 +30,6 @@ fn main() {
         .get_matches();
 
     let symbol = matches.value_of("symbol").unwrap_or("main");
-    let cpu = matches.value_of("cpu").unwrap_or("print");
     let loader = matches.value_of("loader").unwrap_or("elf");
     let filename = matches.value_of("file").unwrap();
     let debug = matches.is_present("debug");
@@ -46,18 +37,10 @@ fn main() {
 
     match loader {
         "linux" => {
-            match cpu {
-                "print" => linux(filename, &PrintCPU {}, debug),
-                "emu" => linux(filename, &EmulationCPU {}, debug),
-                _ => unreachable!("Values already validated by clap"),
-            };
+            linux(filename, debug);
         }
         "elf" => {
-            match cpu {
-                "print" => elf(filename, symbol, &PrintCPU {}, debug, benchmark),
-                "emu" => elf(filename, symbol, &EmulationCPU {}, debug, benchmark),
-                _ => unreachable!("Values already validated by clap"),
-            };
+            elf(filename, symbol, debug, benchmark);
         }
         _ => unreachable!("Values already validated by clap"),
     }

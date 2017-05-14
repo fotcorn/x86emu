@@ -10,6 +10,8 @@ imul    $260, %ax, %dx
 // 6B           IMUL     r16/32/64   r/m16/32/64     imm8
 imul    $5, %rdx, %rax
 imul    $5, %edx, %eax
+imul    $5, %edx
+imul    $5, %eax
 imul    $5, %dx, %ax
 
 // F6 opcode 5  IMUL 	AX 	AL 	r/m8

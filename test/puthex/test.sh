@@ -6,4 +6,4 @@ gcc -c main.c -o tmp/main.o
 nasm -f elf64 puthex.asm -o tmp/misc.o
 gcc tmp/main.o tmp/misc.o -o tmp/out
 ./tmp/out
-cargo run -- --loader elf --cpu emu tmp/out  --symbol main > /dev/null
+cargo run -- --loader elf tmp/out  --symbol main > /dev/null

@@ -3,8 +3,8 @@ use std::io::Read;
 
 use machine_state::MachineState;
 use decoder::Decoder;
-use cpu::cpu_trait::CPU;
 use utils::convert_i32_to_u8vec;
+use cpu::emu_instructions::EmulationCPU;
 
 const SETUP_HEADER_OFFSET: u64 = 0x1F1;
 const BIT64_OFFSET: u64 = 0x200;
@@ -15,7 +15,7 @@ const LOAD_ADDRESS: u64 = 0x100000;
 /* see <linux kernel source>/Documentation/x86/boot.txt and zero-page.txt
  * for documentation of the 64 bit boot protocol
  */
-pub fn linux(filename: &str, cpu: &CPU, debug: bool) {
+pub fn linux(filename: &str, debug: bool) {
     // load kernel image from disk
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
@@ -48,6 +48,7 @@ pub fn linux(filename: &str, cpu: &CPU, debug: bool) {
     machine_state.rip = (LOAD_ADDRESS + BIT64_OFFSET) as i64;
 
     // start execution
-    let mut decoder = Decoder::new(cpu, &mut machine_state);
+    let mut cpu = EmulationCPU {};
+    let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
     decoder.execute(debug, false);
 }
