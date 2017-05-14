@@ -64,6 +64,12 @@ impl MachineState {
             Register::R14 => self.r14,
             Register::R15 => self.r15,
 
+            Register::CR0 => self.cr0,
+            Register::CR2 => self.cr2,
+            Register::CR3 => self.cr3,
+            Register::CR4 => self.cr4,
+            Register::CR8 => self.cr8,
+
             Register::RIP => self.rip as i64,
 
             // 32 Bit
@@ -157,6 +163,12 @@ impl MachineState {
             Register::R13 => self.r13 = value,
             Register::R14 => self.r14 = value,
             Register::R15 => self.r15 = value,
+
+            Register::CR0 => self.cr0 = value,
+            Register::CR2 => self.cr2 = value,
+            Register::CR3 => self.cr3 = value,
+            Register::CR4 => self.cr4 = value,
+            Register::CR8 => self.cr8 = value,
 
             Register::RIP => self.rip = value,
 

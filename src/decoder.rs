@@ -850,6 +850,28 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(ip_offset);
                         (Instruction::Nop, None)
                     }
+                    0x22 => {
+                        let (mut argument, ip_offset) = self.get_argument(RegisterSize::Bit64,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags | REVERSED_REGISTER_DIRECTION);
+                        let register = match argument.second_argument.unwrap() {
+                            InstructionArgument::Register { register } => {
+                                match register {
+                                    Register::R8 => Register::CR8,
+                                    Register::RAX => Register::CR0,
+                                    Register::RDX => Register::CR2,
+                                    Register::RBX => Register::CR3,
+                                    Register::RSP => Register::CR4,
+                                    _ => panic!("Invalid argument for mov r64, CRn instruciton"),
+                                }
+                            },
+                            _ => panic!("Invalid argument for mov r64, CRn instruciton"),
+                        };
+                        argument.second_argument = Some(InstructionArgument::Register {register: register});
+                        self.inc_rip(ip_offset);
+                        (Instruction::Mov, Some(argument))
+                    }
                     0x40 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                     RegOrOpcode::Register,

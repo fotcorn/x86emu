@@ -30,6 +30,12 @@ pub struct MachineState {
 
     pub rflags: i64,
 
+    pub cr0: i64,
+    pub cr2: i64,
+    pub cr3: i64,
+    pub cr4: i64,
+    pub cr8: i64,
+
     memory: FnvHashMap<u64, Vec<u8>>,
 }
 
@@ -54,6 +60,12 @@ impl MachineState {
             r13: 0,
             r14: 0,
             r15: 0,
+
+            cr0: 0,
+            cr2: 0,
+            cr3: 0,
+            cr4: 0,
+            cr8: 0,
 
             rflags: 0,
             memory: FnvHashMap::default(),

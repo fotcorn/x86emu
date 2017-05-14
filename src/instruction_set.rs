@@ -32,6 +32,12 @@ pub enum Register {
 
     RIP,
 
+    CR0,
+    CR2,
+    CR3,
+    CR4,
+    CR8,
+
     // 32 Bit
     EAX,
     EBX,
@@ -123,7 +129,8 @@ pub fn get_register_size(reg: &Register) -> ArgumentSize {
         Register::RAX | Register::RBX | Register::RCX | Register::RDX | Register::RSP |
         Register::RBP | Register::RSI | Register::RDI | Register::RIP | Register::R8 |
         Register::R9 | Register::R10 | Register::R11 | Register::R12 | Register::R13 |
-        Register::R14 | Register::R15 => ArgumentSize::Bit64,
+        Register::R14 | Register::R15 | Register::CR0 | Register::CR2 | Register::CR3 |
+        Register::CR4 | Register::CR8 => ArgumentSize::Bit64,
 
         Register::EAX | Register::EBX | Register::ECX | Register::EDX | Register::ESP |
         Register::EBP | Register::ESI | Register::EDI | Register::R8D | Register::R9D |
