@@ -164,11 +164,26 @@ impl MachineState {
             Register::R14 => self.r14 = value,
             Register::R15 => self.r15 = value,
 
-            Register::CR0 => self.cr0 = value,
-            Register::CR2 => self.cr2 = value,
-            Register::CR3 => self.cr3 = value,
-            Register::CR4 => self.cr4 = value,
-            Register::CR8 => self.cr8 = value,
+            Register::CR0 => {
+                println!("CR0: {:x}", value);
+                self.cr0 = value
+            },
+            Register::CR2 => {
+                println!("CR2: {:x}", value);
+                self.cr2 = value
+            },
+            Register::CR3 => {
+                println!("CR3: {:x}", value);
+                self.cr3 = value
+            },
+            Register::CR4 => {
+                println!("CR4: {:x}", value);
+                self.cr4 = value
+            },
+            Register::CR8 => {
+                println!("CR5: {:x}", value);
+                self.cr8 = value
+            },
 
             Register::RIP => self.rip = value,
 
