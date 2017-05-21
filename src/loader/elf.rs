@@ -10,7 +10,7 @@ use machine_state::MachineState;
 use decoder::Decoder;
 use cpu::emu_instructions::EmulationCPU;
 
-pub fn elf(filename: &str, symbol: &str, debug: bool, benchmark: bool) {
+pub fn elf(filename: &str, symbol: &str, debug: bool, print_instructions: bool, benchmark: bool) {
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
 
@@ -34,6 +34,8 @@ pub fn elf(filename: &str, symbol: &str, debug: bool, benchmark: bool) {
     machine_state.mem_write(0x10000, code);
     machine_state.rip = 0x10000 + offset as i64;
     machine_state.rsp = 0x1000;
+
+    machine_state.print_instructions = print_instructions;
 
     let mut cpu = EmulationCPU {};
     let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
