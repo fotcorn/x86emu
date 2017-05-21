@@ -4,6 +4,7 @@ pub mod machine_state;
 mod decoder;
 mod instruction_set;
 mod utils;
+mod mmu;
 
 #[macro_use]
 extern crate bitflags;
