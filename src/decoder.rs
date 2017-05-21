@@ -25,7 +25,7 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    pub fn execute(&mut self, debug: bool, benchmark: bool) {
+    pub fn execute(&mut self, benchmark: bool) {
         let mut instruction_cache = FnvHashMap::default();
 
         let start = PreciseTime::now();
@@ -61,7 +61,7 @@ impl<'a> Decoder<'a> {
                 _ => (),
             }
 
-            if debug {
+            if self.machine_state.print_registers {
                 println!("{}", self.machine_state);
             }
         }

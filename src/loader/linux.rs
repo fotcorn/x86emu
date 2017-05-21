@@ -15,7 +15,7 @@ const LOAD_ADDRESS: u64 = 0x100000;
 /* see <linux kernel source>/Documentation/x86/boot.txt and zero-page.txt
  * for documentation of the 64 bit boot protocol
  */
-pub fn linux(filename: &str, debug: bool) {
+pub fn linux(filename: &str) {
     // load kernel image from disk
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
@@ -50,5 +50,5 @@ pub fn linux(filename: &str, debug: bool) {
     // start execution
     let mut cpu = EmulationCPU {};
     let mut decoder = Decoder::new(&mut cpu, &mut machine_state);
-    decoder.execute(debug, false);
+    decoder.execute(false);
 }

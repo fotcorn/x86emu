@@ -37,6 +37,7 @@ pub struct MachineState {
     pub cr8: i64,
 
     pub print_instructions: bool,
+    pub print_registers: bool,
 
     memory: FnvHashMap<u64, Vec<u8>>,
 }
@@ -72,6 +73,7 @@ impl MachineState {
             cr8: 0,
 
             print_instructions: false,
+            print_registers: false,
 
             memory: FnvHashMap::default(),
         }

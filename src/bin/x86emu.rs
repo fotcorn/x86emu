@@ -42,10 +42,10 @@ fn main() {
 
     match loader {
         "linux" => {
-            linux(filename, debug);
+            linux(filename);
         }
         "elf" => {
-            elf(filename, symbol, debug, print_instructions, benchmark);
+            elf(filename, symbol, print_instructions, debug, benchmark);
         }
         _ => unreachable!("Values already validated by clap"),
     }
