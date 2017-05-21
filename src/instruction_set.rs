@@ -385,40 +385,6 @@ fn format_effective_address(arg: &InstructionArgument) -> String {
     }
 }
 
-#[cfg(feature  = "print_instructions")]
-pub fn print_instr(instruction: &str) {
-    println!("{:<6}", instruction);
-}
-
-#[cfg(feature  = "print_instructions")]
-pub fn print_instr_arg_no_size(instruction: &str, arg: &InstructionArguments) {
-    println!("{:<6} {}", instruction, arg);
-}
-
-#[cfg(feature  = "print_instructions")]
-pub fn print_instr_arg(instruction: &str, arg: &InstructionArguments) {
-    match arg.explicit_size {
-        Some(size) => {
-            match size {
-                ArgumentSize::Bit8 => println!("{:<6} {}", instruction.to_owned() + "b", arg),
-                ArgumentSize::Bit16 => println!("{:<6} {}", instruction.to_owned() + "w", arg),
-                ArgumentSize::Bit32 => println!("{:<6} {}", instruction.to_owned() + "l", arg),
-                ArgumentSize::Bit64 => println!("{:<6} {}", instruction.to_owned() + "q", arg),
-            }
-        },
-        None => println!("{:<6} {}", instruction, arg),
-    }
-}
-
-#[cfg(not(feature  = "print_instructions"))]
-pub fn print_instr(_instruction: &str) {}
-
-#[cfg(not(feature  = "print_instructions"))]
-pub fn print_instr_arg(_instruction: &str, _arg: &InstructionArguments) {}
-
-#[cfg(not(feature  = "print_instructions"))]
-pub fn print_instr_arg_no_size(_instruction: &str, _arg: &InstructionArguments) {}
-
 pub struct InstructionCache {
     pub instruction: Instruction,
     pub arguments: Option<InstructionArguments>,
