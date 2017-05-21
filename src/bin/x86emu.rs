@@ -4,6 +4,7 @@ use clap::{App, Arg};
 extern crate x86emu;
 use x86emu::loader::elf::elf;
 use x86emu::loader::linux::linux;
+use x86emu::loader::dump::dump;
 
 fn main() {
     let matches = App::new("x86emu")
@@ -18,7 +19,7 @@ fn main() {
             .long("loader")
             .short("l")
             .takes_value(true)
-            .possible_values(&["linux", "elf"]))
+            .possible_values(&["linux", "elf", "dump"]))
         .arg(Arg::with_name("debug")
             .help("run in debug mode (print all registers after every instruction)")
             .long("debug")
@@ -47,7 +48,9 @@ fn main() {
         "elf" => {
             elf(filename, symbol, print_instructions, debug, benchmark);
         }
+        "dump" => {
+            dump(filename, print_instructions, debug);
+        }
         _ => unreachable!("Values already validated by clap"),
     }
-
 }

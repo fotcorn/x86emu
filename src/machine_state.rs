@@ -1,12 +1,17 @@
 use std::collections::hash_map::{Entry};
 use std::fmt;
+use std::io::prelude::*;
+use std::fs::File;
 
 use fnv::FnvHashMap;
 
 use instruction_set::{Flags, ArgumentSize};
 
+use bincode::{serialize, deserialize, Infinite};
+
 const PAGE_SIZE: u64 = 4096;
 
+#[derive(Serialize, Deserialize)]
 pub struct MachineState {
     pub rip: i64,
 
@@ -224,4 +229,32 @@ impl fmt::Display for MachineState {
                self.rip,
                )
     }
+}
+
+pub fn load_machine_state(file_path: &str) -> MachineState {
+    let mut file = File::open(file_path).unwrap();
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).unwrap();
+    deserialize(&buffer).unwrap()
+}
+
+/// Use like code inside a Decoder instruction block:
+///    let cache_entry = (Instruction::Mov, Some(argument));
+///    let cache_entry = InstructionCache {
+///        instruction: cache_entry.0,
+///        arguments: cache_entry.1,
+///        size: 0,
+///    };
+///    // execute instruction, if we do not do this rip would already be increased
+///    // but the actual instruciton would not have been executed yet.
+///    self.execute_instruction(&cache_entry);
+///    save_machine_state(self.machine_state, "machine_state.bin");
+///    panic!("Dumped!");
+/// In other places (e.g. in emu_instructions after an instruction has been executed)
+/// just use the function directly.
+#[allow(dead_code)]
+pub fn save_machine_state(machine_state: &MachineState, file_path: &str) {
+    let encoded: Vec<u8> = serialize(machine_state, Infinite).unwrap();
+    let mut file = File::create(file_path).unwrap();
+    file.write(&encoded).unwrap();
 }

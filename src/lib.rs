@@ -12,3 +12,7 @@ extern crate zero;
 extern crate xmas_elf;
 extern crate time;
 extern crate fnv;
+
+#[macro_use]
+extern crate serde_derive;
+extern crate bincode;
