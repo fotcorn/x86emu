@@ -1206,7 +1206,11 @@ impl<'a> Decoder<'a> {
             Instruction::Cpuid => self.cpu.cpuid(self.machine_state),
             Instruction::CompareMulOperation => self.cpu.compare_mul_operation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Imul => self.cpu.imul(self.machine_state, Decoder::fetch_argument(cache_entry)),
-            Instruction::Int => println!("int    $0x80"),
+            Instruction::Int => {
+                if self.machine_state.print_instructions {
+                    self.machine_state.print_instr("int    $0x80");
+                }
+            },
             Instruction::Ja => self.cpu.ja(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Jae => self.cpu.jae(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Jb => self.cpu.jb(self.machine_state, Decoder::fetch_argument(cache_entry)),
