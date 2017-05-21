@@ -4,4 +4,4 @@ a.out
 vmlinuz
 tmp/
 linux/
-
+*.bin
