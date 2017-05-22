@@ -820,7 +820,7 @@ impl EmulationCPU {
 
     pub fn cpuid(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("cpuid");
-        let value = machine_state.get_register_value(&Register::EAX);
+        let value = machine_state.get_register_value(&Register::RAX);
         match value {
             0 => {
                 machine_state.set_register_value(&Register::EAX, 1000);
@@ -900,7 +900,15 @@ impl EmulationCPU {
                 machine_state.set_register_value(&Register::ECX, ecx);
                 machine_state.set_register_value(&Register::EDX, edx);
             },
-            _ => panic!("CPUID: unsupported input: {}", value),
+            0x80000000 => {
+                machine_state.set_register_value(&Register::EAX, 0x80000001);
+            },
+            0x80000001 => {
+                let edx = 1 << 29 | // Long mode
+                          1 << 31;  // 3DNow!
+                machine_state.set_register_value(&Register::EDX, edx);
+            }
+            _ => panic!("CPUID: unsupported input: {:x}", value),
         }
     }
 }
