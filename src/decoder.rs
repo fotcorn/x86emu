@@ -828,10 +828,17 @@ impl<'a> Decoder<'a> {
                 (Instruction::Std, None)
             }
             0xFF => {
-                let (argument, ip_offset) = self.get_argument(register_size,
-                                                                RegOrOpcode::Opcode,
-                                                                ImmediateSize::None,
-                                                                decoder_flags);
+                let modrm = self.machine_state.mem_read_byte(rip + 1);
+                let opcode = (modrm & 0b00111000) >> 3;
+                let reg_size = if opcode == 0x2 || opcode == 0x4 {
+                    RegisterSize::Bit64
+                } else {
+                    register_size
+                };
+                let (argument, ip_offset) = self.get_argument(reg_size,
+                                                              RegOrOpcode::Opcode,
+                                                              ImmediateSize::None,
+                                                              decoder_flags);
                 self.inc_rip(ip_offset);
                 (Instruction::RegisterOperation, Some(argument))
             }
