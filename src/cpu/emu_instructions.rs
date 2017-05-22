@@ -829,15 +829,15 @@ impl EmulationCPU {
                 machine_state.set_register_value(&Register::ECX, 0x6c65746e);
             },
             1 => {
-                let edx = 0 << 0 | // Onboard x87 FPU
+                let edx = 1 << 0 | // Onboard x87 FPU
                           0 << 1 | // Virtual 8086 mode extensions (such as VIF, VIP, PIV)
                           0 << 2 | // Debugging extensions (CR4 bit 3)
-                          0 << 3 | // Page Size Extension
+                          1 << 3 | // Page Size Extension
                           0 << 4 | // Time Stamp Counter
-                          0 << 5 | // Model-specific registers
+                          1 << 5 | // Model-specific registers
                           1 << 6 | // Physical Address Extension
                           0 << 7 | // Machine Check Exception
-                          0 << 8 | // CMPXCHG8 (compare-and-swap) instruction
+                          1 << 8 | // CMPXCHG8 (compare-and-swap) instruction
                           1 << 9 | // Onboard Advanced Programmable Interrupt Controller
                           0 << 10 | // Reserved
                           0 << 11 | // SYSENTER and SYSEXIT instructions
@@ -853,9 +853,9 @@ impl EmulationCPU {
                           0 << 21 | // Debug store: save trace of executed jumps
                           0 << 22 | // Onboard thermal control MSRs for ACPI
                           0 << 23 | // MMX instructions
-                          0 << 24 | // FXSAVE, FXRESTOR instructions, CR4 bit 9
-                          0 << 25 | // SSE instructions (a.k.a. Katmai New Instructions)
-                          0 << 26 | // SSE2 instructions
+                          1 << 24 | // FXSAVE, FXRESTOR instructions, CR4 bit 9
+                          1 << 25 | // SSE instructions (a.k.a. Katmai New Instructions)
+                          1 << 26 | // SSE2 instructions
                           0 << 27 | // CPU cache supports self-snoop
                           0 << 28 | // Hyper-threading
                           0 << 29 | // Thermal monitor automatically limits temperature
