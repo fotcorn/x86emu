@@ -878,6 +878,14 @@ impl<'a> Decoder<'a> {
                         argument.second_argument = Some(InstructionArgument::Register {register: register});
                         self.inc_rip(ip_offset);
                         (Instruction::Mov, Some(argument))
+                    },
+                    0x30 => {
+                        self.inc_rip(1);
+                        (Instruction::Wrmsr, None)
+                    }
+                    0x32 => {
+                        self.inc_rip(1);
+                        (Instruction::Rdmsr, None)
                     }
                     0x40 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -1145,6 +1153,15 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(ip_offset);
                         (Instruction::Movzx, Some(argument))
                     }
+                    0xBA => {
+                        // bit manipulation
+                        let (argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Opcode,
+                                                                      ImmediateSize::Bit8,
+                                                                      decoder_flags);
+                        self.inc_rip(ip_offset);
+                        (Instruction::BitManipulation, Some(argument))
+                    }
                     0xBE => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
                                                                             RegOrOpcode::Register,
@@ -1191,6 +1208,7 @@ impl<'a> Decoder<'a> {
             Instruction::Add => self.cpu.add(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::And => self.cpu.and(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Arithmetic => self.cpu.arithmetic(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::BitManipulation => self.cpu.bit_manipulation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Call => self.cpu.call(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Cld => self.cpu.cld(self.machine_state),
             Instruction::Cmova => self.cpu.cmova(self.machine_state, Decoder::fetch_argument(cache_entry)),
@@ -1250,6 +1268,7 @@ impl<'a> Decoder<'a> {
             Instruction::Pushf => self.cpu.pushf(self.machine_state),
             Instruction::RegisterOperation => self.cpu.register_operation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Ret => self.cpu.ret(self.machine_state),
+            Instruction::Rdmsr => self.cpu.rdmsr(self.machine_state),
             Instruction::Sbb => self.cpu.sbb(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Sete => self.cpu.sete(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::ShiftRotate => self.cpu.shift_rotate(self.machine_state, Decoder::fetch_argument(cache_entry)),
@@ -1257,6 +1276,7 @@ impl<'a> Decoder<'a> {
             Instruction::Stos => self.cpu.stos(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Sub => self.cpu.sub(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Test => self.cpu.test(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Wrmsr => self.cpu.wrmsr(self.machine_state),
             Instruction::Xor => self.cpu.xor(self.machine_state, Decoder::fetch_argument(cache_entry)),
         }
     }

@@ -396,6 +396,7 @@ pub enum Instruction {
     Add,
     And,
     Arithmetic,
+    BitManipulation,
     Call,
     Cld,
     Cmova,
@@ -449,6 +450,7 @@ pub enum Instruction {
     Popf,
     Push,
     Pushf,
+    Rdmsr,
     RegisterOperation,
     Ret,
     Sbb,
@@ -458,5 +460,6 @@ pub enum Instruction {
     Stos,
     Sub,
     Test,
+    Wrmsr,
     Xor,
 }

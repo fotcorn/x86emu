@@ -818,6 +818,48 @@ impl EmulationCPU {
         // TODO:  out not implemented
     }
 
+    pub fn wrmsr(&self, machine_state: &mut MachineState) {
+        machine_state.print_instr("wrmsr");
+    }
+
+    pub fn rdmsr(&self, machine_state: &mut MachineState) {
+        machine_state.print_instr("rdmsr");
+    }
+
+    pub fn bit_manipulation(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        let opcode = match arg.opcode {
+            Some(opcode) => opcode,
+            None => panic!("Unsupported argument type for arithmetic"),
+        };
+        match opcode {
+            4 => self.bt(machine_state, arg),
+            5 => self.bts(machine_state, arg),
+            6 => self.btr(machine_state, arg),
+            7 => self.btc(machine_state, arg),
+            _ => panic!("Invalid opcode for bt instructions"),
+        }
+    }
+
+    pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("bt", &arg);
+        println!("bt: noop");
+    }
+
+    pub fn bts(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("bts", &arg);
+        println!("bts: noop");
+    }
+
+    pub fn btr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("btr", &arg);
+        println!("btr: noop");
+    }
+
+    pub fn btc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("btc", &arg);
+        println!("btc: noop");
+    }
+
     pub fn cpuid(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("cpuid");
         let value = machine_state.get_register_value(&Register::RAX);
