@@ -27,18 +27,18 @@ impl MachineState {
             let level2 = (address & 0b0000000000000000000000000111111111000000000000000000000000000000) >> 30;
             let level1 = (address & 0b0000000000000000111111111000000000000000000000000000000000000000) >> 39;
 
-            println!("level1: {:x}", level1);
+            //println!("level1: {:x}", level1);
             let entry = self.mem_read_phys(cr3 + level1 * 8, 8);
             let entry = *zero::read::<u64>(&entry) >> 12 << 12;
-            println!("entry 1: {:x}", entry);
+            //println!("entry 1: {:x}", entry);
 
             let entry = self.mem_read_phys(entry + level2 * 8, 8);
             let entry = *zero::read::<u64>(&entry) >> 12 << 12;
-            println!("entry 2: {:x}", entry);
+            //println!("entry 2: {:x}", entry);
 
             let entry = self.mem_read_phys(entry + level3 * 8, 8);
             let entry = *zero::read::<u64>(&entry) >> 12 << 12;
-            println!("entry 3: {:x}", entry);
+            //println!("entry 3: {:x}", entry);
 
             /*println!("level4: {:x}, {:x}", entry, level4 * 8);
             let entry = self.mem_read_phys(entry + level4 * 8, 8);
@@ -46,8 +46,8 @@ impl MachineState {
             println!("entry 4: {:x}", entry);*/
 
             
-            println!("address: {:x}", address);
-            println!("entry: {:x}", entry + page_address);
+            //println!("address: {:x}", address);
+            //println!("entry: {:x}", entry + page_address);
 
             entry + page_address
         }
