@@ -356,10 +356,20 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::Movsx, Some(argument))
             }
-            0x6A => {
-                let (arg, ip_offset) = self.read_immediate_8bit();
-                self.inc_rip(ip_offset);
-                (Instruction::Push, Some(arg))
+            0x68 => {
+                let immediate = if decoder_flags.contains(OPERAND_16_BIT) {
+                    let immediate = self.get_i16_value(1) as i64;
+                    self.inc_rip(3);
+                    immediate
+                } else {
+                    let immediate = self.get_i32_value(1) as i64;
+                    self.inc_rip(5);
+                    immediate
+                };
+                let argument = InstructionArgumentsBuilder::new().first_argument(
+                    InstructionArgument::Immediate { immediate: immediate }
+                ).finalize();
+                (Instruction::Push, Some(argument))
             }
             0x69 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -380,6 +390,11 @@ impl<'a> Decoder<'a> {
                 argument.second_argument = argument.first_argument;
                 argument.first_argument = Some(InstructionArgument::Immediate { immediate: immediate });
                 (Instruction::Imul, Some(argument))
+            }
+            0x6A => {
+                let (arg, ip_offset) = self.read_immediate_8bit();
+                self.inc_rip(ip_offset);
+                (Instruction::Push, Some(arg))
             }
             0x6B => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
