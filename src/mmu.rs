@@ -1,6 +1,8 @@
 use std::collections::hash_map::{Entry};
 use machine_state::MachineState;
 
+use zero;
+
 const PAGE_SIZE: u64 = 4096;
 
 impl MachineState {
@@ -14,7 +16,37 @@ impl MachineState {
         }
     }
 
+    fn translate_virtual_to_physical_address(&mut self, address: u64) -> u64 {
+        let cr3 = self.cr3 as u64;
+        if cr3 == 0 {
+            address
+        } else {
+            // this code assumes that the operating system is using 2 megabyte pages
+            // todo: check some MSR register what page size is actually used
+            let page_address = address & 0b0000000000000000000000000000000000000000000111111111111111111111;
+            let level3 = (address & 0b0000000000000000000000000000000000111111111000000000000000000000) >> 21;
+            let level2 = (address & 0b0000000000000000000000000111111111000000000000000000000000000000) >> 30;
+            let level1 = (address & 0b0000000000000000111111111000000000000000000000000000000000000000) >> 39;
+
+            let entry = self.mem_read_phys(cr3 + level1 * 8, 8);
+            let entry = *zero::read::<u64>(&entry) >> 12 << 12;
+
+            let entry = self.mem_read_phys(entry + level2 * 8, 8);
+            let entry = *zero::read::<u64>(&entry) >> 12 << 12;
+
+            let entry = self.mem_read_phys(entry + level3 * 8, 8);
+            let entry = *zero::read::<u64>(&entry) >> 12 << 12;
+
+            entry + page_address
+        }
+    }
+
     pub fn mem_read_byte(&mut self, address: u64) -> u8 {
+        let address = self.translate_virtual_to_physical_address(address);
+        self.mem_read_byte_phys(address)
+    }
+
+    fn mem_read_byte_phys(&mut self, address: u64) -> u8 {
         let page_number = address / PAGE_SIZE;
         let page = self.get_page(page_number);
         let page_offset = address % PAGE_SIZE;
@@ -22,6 +54,11 @@ impl MachineState {
     }
 
     pub fn mem_read(&mut self, address: u64, length: u64) -> Vec<u8> {
+        let address = self.translate_virtual_to_physical_address(address);
+        self.mem_read_phys(address, length)
+    }
+
+    fn mem_read_phys(&mut self, address: u64, length: u64) -> Vec<u8> {
         let mut page_number = address / PAGE_SIZE;
         let mut page_offset = address % PAGE_SIZE;
         let mut data_offset = 0;
@@ -48,6 +85,11 @@ impl MachineState {
     }
 
     pub fn mem_write(&mut self, address: u64, data: &[u8]) {
+        let address = self.translate_virtual_to_physical_address(address);
+        self.mem_write_phys(address, data)
+    }
+
+    fn mem_write_phys(&mut self, address: u64, data: &[u8]) {
         const MEMORY_OFFSET: u64 = 0xB8000;
         if address >= MEMORY_OFFSET && address <= (MEMORY_OFFSET + 80 * 25 * 2) && address % 2 == 0{
             println!("VIDEO: {}", data[0] as char);

@@ -356,10 +356,20 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::Movsx, Some(argument))
             }
-            0x6A => {
-                let (arg, ip_offset) = self.read_immediate_8bit();
-                self.inc_rip(ip_offset);
-                (Instruction::Push, Some(arg))
+            0x68 => {
+                let immediate = if decoder_flags.contains(OPERAND_16_BIT) {
+                    let immediate = self.get_i16_value(1) as i64;
+                    self.inc_rip(3);
+                    immediate
+                } else {
+                    let immediate = self.get_i32_value(1) as i64;
+                    self.inc_rip(5);
+                    immediate
+                };
+                let argument = InstructionArgumentsBuilder::new().first_argument(
+                    InstructionArgument::Immediate { immediate: immediate }
+                ).finalize();
+                (Instruction::Push, Some(argument))
             }
             0x69 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -380,6 +390,11 @@ impl<'a> Decoder<'a> {
                 argument.second_argument = argument.first_argument;
                 argument.first_argument = Some(InstructionArgument::Immediate { immediate: immediate });
                 (Instruction::Imul, Some(argument))
+            }
+            0x6A => {
+                let (arg, ip_offset) = self.read_immediate_8bit();
+                self.inc_rip(ip_offset);
+                (Instruction::Push, Some(arg))
             }
             0x6B => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -719,6 +734,10 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(1);
                 (Instruction::Leave, None)
             }
+            0xCB => {
+                self.inc_rip(0);
+                (Instruction::Ret, None)
+            }
             0xD1 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
                                                                 RegOrOpcode::Opcode,
@@ -848,6 +867,22 @@ impl<'a> Decoder<'a> {
                 let rip = self.machine_state.rip as u64;
                 let second_byte = self.machine_state.mem_read_byte(rip);
                 match second_byte {
+                    0x01 => {
+                        let modrm = self.machine_state.mem_read_byte(rip + 1);
+                        let opcode = (modrm & 0b00111000) >> 3;
+                        match opcode {
+                            2 => {
+                                let lgdt = self.machine_state.mem_read(rip + 2, 4);
+                                let lgdt = *zero::read::<i32>(&lgdt);
+                                let argument = InstructionArgumentsBuilder::new()
+                                    .first_argument(InstructionArgument::Immediate{ immediate: lgdt as i64 })
+                                    .finalize();
+                                    self.inc_rip(6);
+                                (Instruction::Lgdt, Some(argument))
+                            },
+                            _ => panic!("0F 01 unsupported opcode")
+                        }
+                    }
                     0x1F => {
                         // NOP with hint
                         let (_, ip_offset) = self.get_argument(register_size,
@@ -878,6 +913,14 @@ impl<'a> Decoder<'a> {
                         argument.second_argument = Some(InstructionArgument::Register {register: register});
                         self.inc_rip(ip_offset);
                         (Instruction::Mov, Some(argument))
+                    },
+                    0x30 => {
+                        self.inc_rip(1);
+                        (Instruction::Wrmsr, None)
+                    }
+                    0x32 => {
+                        self.inc_rip(1);
+                        (Instruction::Rdmsr, None)
                     }
                     0x40 => {
                         let (argument, ip_offset) = self.get_argument(register_size,
@@ -1145,6 +1188,15 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(ip_offset);
                         (Instruction::Movzx, Some(argument))
                     }
+                    0xBA => {
+                        // bit manipulation
+                        let (argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Opcode,
+                                                                      ImmediateSize::Bit8,
+                                                                      decoder_flags);
+                        self.inc_rip(ip_offset);
+                        (Instruction::BitManipulation, Some(argument))
+                    }
                     0xBE => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
                                                                             RegOrOpcode::Register,
@@ -1191,6 +1243,7 @@ impl<'a> Decoder<'a> {
             Instruction::Add => self.cpu.add(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::And => self.cpu.and(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Arithmetic => self.cpu.arithmetic(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::BitManipulation => self.cpu.bit_manipulation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Call => self.cpu.call(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Cld => self.cpu.cld(self.machine_state),
             Instruction::Cmova => self.cpu.cmova(self.machine_state, Decoder::fetch_argument(cache_entry)),
@@ -1237,6 +1290,7 @@ impl<'a> Decoder<'a> {
             Instruction::Js => self.cpu.js(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Lea => self.cpu.lea(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Leave => self.cpu.leave(self.machine_state),
+            Instruction::Lgdt => self.cpu.lgdt(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Mov => self.cpu.mov(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movs => self.cpu.movs(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movsx => self.cpu.movsx(self.machine_state, Decoder::fetch_argument(cache_entry)),
@@ -1250,6 +1304,7 @@ impl<'a> Decoder<'a> {
             Instruction::Pushf => self.cpu.pushf(self.machine_state),
             Instruction::RegisterOperation => self.cpu.register_operation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Ret => self.cpu.ret(self.machine_state),
+            Instruction::Rdmsr => self.cpu.rdmsr(self.machine_state),
             Instruction::Sbb => self.cpu.sbb(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Sete => self.cpu.sete(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::ShiftRotate => self.cpu.shift_rotate(self.machine_state, Decoder::fetch_argument(cache_entry)),
@@ -1257,6 +1312,7 @@ impl<'a> Decoder<'a> {
             Instruction::Stos => self.cpu.stos(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Sub => self.cpu.sub(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Test => self.cpu.test(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Wrmsr => self.cpu.wrmsr(self.machine_state),
             Instruction::Xor => self.cpu.xor(self.machine_state, Decoder::fetch_argument(cache_entry)),
         }
     }

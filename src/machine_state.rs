@@ -38,6 +38,8 @@ pub struct MachineState {
     pub cr4: i64,
     pub cr8: i64,
 
+    pub gdt: i64,
+
     pub print_instructions: bool,
     pub print_registers: bool,
 
@@ -73,6 +75,8 @@ impl MachineState {
             cr3: 0,
             cr4: 0,
             cr8: 0,
+
+            gdt: 0,
 
             print_instructions: false,
             print_registers: false,

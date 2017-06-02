@@ -818,6 +818,61 @@ impl EmulationCPU {
         // TODO:  out not implemented
     }
 
+    pub fn wrmsr(&self, machine_state: &mut MachineState) {
+        machine_state.print_instr("wrmsr");
+        // todo: implement instruction
+    }
+
+    pub fn rdmsr(&self, machine_state: &mut MachineState) {
+        machine_state.print_instr("rdmsr");
+        // todo: implement instruction
+    }
+
+    pub fn bit_manipulation(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        let opcode = match arg.opcode {
+            Some(opcode) => opcode,
+            None => panic!("Unsupported argument type for arithmetic"),
+        };
+        match opcode {
+            4 => self.bt(machine_state, arg),
+            5 => self.bts(machine_state, arg),
+            6 => self.btr(machine_state, arg),
+            7 => self.btc(machine_state, arg),
+            _ => panic!("Invalid opcode for bt instructions"),
+        }
+    }
+
+    pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("bt", &arg);
+        // todo: implement instruction
+    }
+
+    pub fn bts(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("bts", &arg);
+        // todo: implement instruction
+    }
+
+    pub fn btr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("btr", &arg);
+        // todo: implement instruction
+    }
+
+    pub fn btc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("btc", &arg);
+        // todo: implement instruction
+    }
+
+    pub fn lgdt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("lgdt", &arg);
+        let first_argument = arg.get_one_argument();
+        match *first_argument {
+            InstructionArgument::Immediate { immediate } => {
+                machine_state.gdt = immediate as i64;
+            },
+            _ => unreachable!("Invalid instruction argument for lgdt")
+        }
+    }
+
     pub fn cpuid(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("cpuid");
         let value = machine_state.get_register_value(&Register::RAX);
