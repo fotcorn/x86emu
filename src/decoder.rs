@@ -734,6 +734,10 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(1);
                 (Instruction::Leave, None)
             }
+            0xCB => {
+                self.inc_rip(0);
+                (Instruction::Ret, None)
+            }
             0xD1 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
                                                                 RegOrOpcode::Opcode,
