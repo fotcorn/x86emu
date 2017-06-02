@@ -842,22 +842,33 @@ impl EmulationCPU {
 
     pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bt", &arg);
-        println!("bt: noop");
+        // todo: implement instruction
     }
 
     pub fn bts(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bts", &arg);
-        println!("bts: noop");
+        // todo: implement instruction
     }
 
     pub fn btr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btr", &arg);
-        println!("btr: noop");
+        // todo: implement instruction
     }
 
     pub fn btc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btc", &arg);
-        println!("btc: noop");
+        // todo: implement instruction
+    }
+
+    pub fn lgdt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("lgdt", &arg);
+        let first_argument = arg.get_one_argument();
+        match *first_argument {
+            InstructionArgument::Immediate { immediate } => {
+                machine_state.gdt = immediate as i64;
+            },
+            _ => unreachable!("Invalid instruction argument for lgdt")
+        }
     }
 
     pub fn cpuid(&self, machine_state: &mut MachineState) {

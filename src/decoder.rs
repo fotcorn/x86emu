@@ -848,6 +848,22 @@ impl<'a> Decoder<'a> {
                 let rip = self.machine_state.rip as u64;
                 let second_byte = self.machine_state.mem_read_byte(rip);
                 match second_byte {
+                    0x01 => {
+                        let modrm = self.machine_state.mem_read_byte(rip + 1);
+                        let opcode = (modrm & 0b00111000) >> 3;
+                        match opcode {
+                            2 => {
+                                let lgdt = self.machine_state.mem_read(rip + 2, 4);
+                                let lgdt = *zero::read::<i32>(&lgdt);
+                                let argument = InstructionArgumentsBuilder::new()
+                                    .first_argument(InstructionArgument::Immediate{ immediate: lgdt as i64 })
+                                    .finalize();
+                                    self.inc_rip(6);
+                                (Instruction::Lgdt, Some(argument))
+                            },
+                            _ => panic!("0F 01 unsupported opcode")
+                        }
+                    }
                     0x1F => {
                         // NOP with hint
                         let (_, ip_offset) = self.get_argument(register_size,
@@ -1255,6 +1271,7 @@ impl<'a> Decoder<'a> {
             Instruction::Js => self.cpu.js(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Lea => self.cpu.lea(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Leave => self.cpu.leave(self.machine_state),
+            Instruction::Lgdt => self.cpu.lgdt(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Mov => self.cpu.mov(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movs => self.cpu.movs(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movsx => self.cpu.movsx(self.machine_state, Decoder::fetch_argument(cache_entry)),
