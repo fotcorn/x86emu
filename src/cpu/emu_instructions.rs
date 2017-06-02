@@ -820,10 +820,12 @@ impl EmulationCPU {
 
     pub fn wrmsr(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("wrmsr");
+        // todo: implement instruction
     }
 
     pub fn rdmsr(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("rdmsr");
+        // todo: implement instruction
     }
 
     pub fn bit_manipulation(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
