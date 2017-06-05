@@ -847,6 +847,7 @@ impl<'a> Decoder<'a> {
                 (Instruction::Std, None)
             }
             0xFF => {
+                // todo: cleanup code
                 let modrm = self.machine_state.mem_read_byte(rip + 1);
                 let opcode = (modrm & 0b00111000) >> 3;
                 let reg_size = if opcode == 0x2 || opcode == 0x4 {
@@ -854,12 +855,24 @@ impl<'a> Decoder<'a> {
                 } else {
                     register_size
                 };
-                let (argument, ip_offset) = self.get_argument(reg_size,
-                                                              RegOrOpcode::Opcode,
-                                                              ImmediateSize::None,
-                                                              decoder_flags);
-                self.inc_rip(ip_offset);
-                (Instruction::RegisterOperation, Some(argument))
+                if opcode == 0x6 {
+                    let (mut argument, ip_offset) = self.get_argument(reg_size,
+                                                                RegOrOpcode::Register,
+                                                                ImmediateSize::None,
+                                                                decoder_flags);
+                    argument.first_argument = argument.second_argument;
+                    argument.second_argument = None;
+                    self.inc_rip(ip_offset);
+                    (Instruction::Push, Some(argument))
+
+                } else {
+                    let (argument, ip_offset) = self.get_argument(reg_size,
+                                                                RegOrOpcode::Opcode,
+                                                                ImmediateSize::None,
+                                                                decoder_flags);
+                    self.inc_rip(ip_offset);
+                    (Instruction::RegisterOperation, Some(argument))
+                }
             }
             0x0F => {
                 // two byte instructions
