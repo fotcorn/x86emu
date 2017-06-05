@@ -1,5 +1,5 @@
 use instruction_set::{InstructionArgument, InstructionArguments, Register, Flags};
-use machine_state::MachineState;
+use machine_state::{MachineState};
 use instruction_set::{ArgumentSize, get_register_size};
 use utils::{convert_i32_to_u8vec, convert_i64_to_u8vec};
 
@@ -820,6 +820,8 @@ impl EmulationCPU {
 
     pub fn wrmsr(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("wrmsr");
+        // save_machine_state(machine_state, "machine_state.bin");
+        // panic!("machine state saved!");
         // todo: implement instruction
     }
 
