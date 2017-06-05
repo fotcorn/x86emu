@@ -651,6 +651,12 @@ impl<'a> Decoder<'a> {
                 let argument = self.decode_al_immediate();
                 (Instruction::Test, Some(argument))
             }
+            0xAA => {
+                self.inc_rip(1);
+                (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
+                    .repeat(decoder_flags.contains(REPEAT))
+                    .finalize()))
+            }
             0xAB => {
                 self.inc_rip(1);
                 (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
