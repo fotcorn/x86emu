@@ -86,10 +86,7 @@ impl<'a> Decoder<'a> {
                 0xF3 => {
                     decoder_flags |= REPEAT;
                 }
-                0x2E | 0x3E | 0x36 | 0x26 | 0x65 => {
-                    panic!("Segment override prefixes/branch hints not supported")
-                }
-                0x64 => {
+                0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
                     //TODO: do not ignore segment prefix (or probably we should?)
                 }
                 0x66 => {
