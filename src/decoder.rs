@@ -867,7 +867,7 @@ impl<'a> Decoder<'a> {
                 } else {
                     register_size
                 };
-                if opcode == 0x6 {
+                if opcode == 0x6 || opcode == 0x4 {
                     let (mut argument, ip_offset) = self.get_argument(reg_size,
                                                                 RegOrOpcode::Register,
                                                                 ImmediateSize::None,
@@ -875,8 +875,11 @@ impl<'a> Decoder<'a> {
                     argument.first_argument = argument.second_argument;
                     argument.second_argument = None;
                     self.inc_rip(ip_offset);
-                    (Instruction::Push, Some(argument))
-
+                    if opcode == 0x4 {
+                        (Instruction::Jmp, Some(argument))
+                    } else {
+                        (Instruction::Push, Some(argument))
+                    }
                 } else {
                     let (argument, ip_offset) = self.get_argument(reg_size,
                                                                 RegOrOpcode::Opcode,

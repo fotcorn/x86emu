@@ -64,9 +64,7 @@ impl EmulationCPU {
         match *first_argument {
             InstructionArgument::Register { .. } => machine_state.rip = value,
             InstructionArgument::Immediate { .. } => machine_state.rip += value,
-            InstructionArgument::EffectiveAddress { .. } => {
-                panic!("Unsupported argument for jump");
-            }
+            InstructionArgument::EffectiveAddress { .. } => machine_state.rip = value,
         }
     }
 
