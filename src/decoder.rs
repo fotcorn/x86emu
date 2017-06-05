@@ -532,7 +532,7 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::Test, Some(argument))
             }
-                0x88 => {
+            0x88 => {
                 // mov
                 let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
                                                                 RegOrOpcode::Register,
@@ -547,6 +547,15 @@ impl<'a> Decoder<'a> {
                                                                 RegOrOpcode::Register,
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
+                self.inc_rip(ip_offset);
+                (Instruction::Mov, Some(argument))
+            }
+            0x8A => {
+                // mov
+                let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                RegOrOpcode::Register,
+                                                                ImmediateSize::None,
+                                                                decoder_flags | REVERSED_REGISTER_DIRECTION);
                 self.inc_rip(ip_offset);
                 (Instruction::Mov, Some(argument))
             }
