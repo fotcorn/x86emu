@@ -873,6 +873,18 @@ impl EmulationCPU {
         }
     }
 
+    pub fn lidt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("lidt", &arg);
+        let first_argument = arg.get_one_argument();
+        match *first_argument {
+            InstructionArgument::Immediate { immediate } => {
+                machine_state.idt = immediate as i64;
+            },
+            _ => unreachable!("Invalid instruction argument for lidt")
+        }
+    }
+
+
     pub fn cpuid(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("cpuid");
         let value = machine_state.get_register_value(&Register::RAX);

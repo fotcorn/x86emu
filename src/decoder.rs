@@ -887,16 +887,20 @@ impl<'a> Decoder<'a> {
                         let modrm = self.machine_state.mem_read_byte(rip + 1);
                         let opcode = (modrm & 0b00111000) >> 3;
                         match opcode {
-                            2 => {
-                                let lgdt = self.machine_state.mem_read(rip + 2, 4);
-                                let lgdt = *zero::read::<i32>(&lgdt);
+                            2  | 3 => {
+                                let table = self.machine_state.mem_read(rip + 2, 4);
+                                let table = *zero::read::<i32>(&table);
                                 let argument = InstructionArgumentsBuilder::new()
-                                    .first_argument(InstructionArgument::Immediate{ immediate: lgdt as i64 })
+                                    .first_argument(InstructionArgument::Immediate{ immediate: table as i64 })
                                     .finalize();
                                     self.inc_rip(6);
-                                (Instruction::Lgdt, Some(argument))
+                                if opcode == 2 {
+                                    (Instruction::Lgdt, Some(argument))
+                                } else {
+                                    (Instruction::Lidt, Some(argument))
+                                }
                             },
-                            _ => panic!("0F 01 unsupported opcode")
+                            _ => panic!("0F 01 unsupported opcode: {:x}", opcode)
                         }
                     }
                     0x1F => {
@@ -1328,6 +1332,7 @@ impl<'a> Decoder<'a> {
             Instruction::Js => self.cpu.js(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Lea => self.cpu.lea(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Leave => self.cpu.leave(self.machine_state),
+            Instruction::Lidt => self.cpu.lidt(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Lgdt => self.cpu.lgdt(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Mov => self.cpu.mov(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Movs => self.cpu.movs(self.machine_state, Decoder::fetch_argument(cache_entry)),

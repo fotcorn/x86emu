@@ -439,6 +439,7 @@ pub enum Instruction {
     Js,
     Lea,
     Leave,
+    Lidt,
     Lgdt,
     Mov,
     Movs,
