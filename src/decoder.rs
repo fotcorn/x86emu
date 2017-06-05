@@ -81,7 +81,7 @@ impl<'a> Decoder<'a> {
             first_byte = self.machine_state.mem_read_byte(rip);
             match first_byte {
                 0xF0 | 0xF2 => {
-                    panic!("Lock prefixes/Bound prefix not supported")
+                    // todo: do not ignore lock/bound prefix
                 }
                 0xF3 => {
                     decoder_flags |= REPEAT;
