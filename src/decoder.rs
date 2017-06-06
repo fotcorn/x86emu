@@ -899,32 +899,15 @@ impl<'a> Decoder<'a> {
                 // todo: cleanup code
                 let modrm = self.machine_state.mem_read_byte(rip + 1);
                 let opcode = (modrm & 0b00111000) >> 3;
-                let reg_size = if opcode == 0x2 || opcode == 0x4 {
-                    RegisterSize::Bit64
-                } else {
-                    register_size
-                };
-                if opcode == 0x6 || opcode == 0x4 {
-                    let (mut argument, ip_offset) = self.get_argument(reg_size,
-                                                                RegOrOpcode::Register,
-                                                                ImmediateSize::None,
-                                                                decoder_flags);
-                    argument.first_argument = argument.second_argument;
-                    argument.second_argument = None;
-                    self.inc_rip(ip_offset);
-                    if opcode == 0x4 {
-                        (Instruction::Jmp, Some(argument))
-                    } else {
-                        (Instruction::Push, Some(argument))
-                    }
-                } else {
-                    let (argument, ip_offset) = self.get_argument(reg_size,
-                                                                RegOrOpcode::Opcode,
-                                                                ImmediateSize::None,
-                                                                decoder_flags);
-                    self.inc_rip(ip_offset);
-                    (Instruction::RegisterOperation, Some(argument))
-                }
+                let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Register,
+                                                                  ImmediateSize::None,
+                                                                  decoder_flags |
+                                                                  REVERSED_REGISTER_DIRECTION);
+                argument.second_argument = None;
+                argument.opcode = Some(opcode);
+                self.inc_rip(ip_offset);
+                (Instruction::RegisterOperation, Some(argument))
             }
             0x0F => {
                 // two byte instructions
