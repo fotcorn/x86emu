@@ -877,6 +877,16 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::CompareMulOperation, Some(argument))
             }
+            0xFA => {
+                // todo: implement cli instruction
+                self.inc_rip(1);
+                (Instruction::Nop, None)
+            }
+            0xFB => {
+                // todo: implement sti instruction
+                self.inc_rip(1);
+                (Instruction::Nop, None)
+            }
             0xFC => {
                 self.inc_rip(1);
                 (Instruction::Cld, None)
