@@ -660,6 +660,10 @@ impl<'a> Decoder<'a> {
                 let argument = self.decode_al_immediate();
                 (Instruction::Test, Some(argument))
             }
+            0xA9 => {
+                let argument = self.decode_ax_immediate(register_size, decoder_flags);
+                (Instruction::Test, Some(argument))
+            }
             0xAA => {
                 self.inc_rip(1);
                 (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
