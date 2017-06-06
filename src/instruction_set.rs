@@ -464,4 +464,5 @@ pub enum Instruction {
     Test,
     Wrmsr,
     Xor,
+    Scas,
 }

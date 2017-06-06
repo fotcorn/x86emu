@@ -672,6 +672,11 @@ impl EmulationCPU {
         }
     }
 
+    pub fn scas(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("scas", &arg);
+        // todo: implement instruction
+    }
+
     pub fn jmp(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("jmp", &arg);
         self.jmp_iml(machine_state, arg);

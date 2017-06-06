@@ -672,6 +672,19 @@ impl<'a> Decoder<'a> {
                     .repeat(decoder_flags.contains(REPEAT))
                     .finalize()))
             }
+            0xAE => {
+                self.inc_rip(1);
+                (Instruction::Scas, Some(InstructionArgumentsBuilder::new()
+                    .first_argument(InstructionArgument::EffectiveAddress{
+                        base: Some(Register::RDI),
+                        index: None,
+                        scale: None,
+                        displacement: 0,
+                     })
+                    .second_argument(InstructionArgument::Register{ register: Register::AL })
+                    .repeat(decoder_flags.contains(REPEAT))
+                    .finalize()))
+            }
             opcode @ 0xB0...0xB7 => {
                 let immediate = self.machine_state.mem_read_byte(rip + 1) as i64;
                 let argument =
@@ -1369,6 +1382,7 @@ impl<'a> Decoder<'a> {
             Instruction::Test => self.cpu.test(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Wrmsr => self.cpu.wrmsr(self.machine_state),
             Instruction::Xor => self.cpu.xor(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Scas => self.cpu.scas(self.machine_state, Decoder::fetch_argument(cache_entry)),
         }
     }
 
