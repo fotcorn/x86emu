@@ -572,6 +572,16 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::Mov, Some(argument))
             }
+            0x8F => {
+                let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Register,
+                                                                  ImmediateSize::None,
+                                                                  decoder_flags |
+                                                                  REVERSED_REGISTER_DIRECTION);
+                argument.second_argument = None;
+                self.inc_rip(ip_offset);
+                (Instruction::Pop, Some(argument))
+            }
             0x8E => {
                 // mov 16bit segment registers
                 let (argument, ip_offset) =
