@@ -891,6 +891,16 @@ impl EmulationCPU {
         }
     }
 
+    pub fn xchg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        let argument_size = arg.size();
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let arg1 = machine_state.get_value(&first_argument, argument_size);
+        let arg2 = machine_state.get_value(&second_argument, argument_size);
+
+        machine_state.set_value(arg2, &first_argument, argument_size);
+        machine_state.set_value(arg1, &second_argument, argument_size);
+    }
+
     pub fn lgdt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("lgdt", &arg);
         let first_argument = arg.get_one_argument();
