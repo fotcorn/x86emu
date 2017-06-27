@@ -867,6 +867,30 @@ impl EmulationCPU {
         // todo: implement instruction
     }
 
+    pub fn cmpxchg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("cmpxchg", &arg);
+        let argument_size = arg.size();
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let source = machine_state.get_value(&first_argument, argument_size);
+        let destination = machine_state.get_value(&second_argument, argument_size);
+        
+        let accumulator_type = match argument_size {
+            ArgumentSize::Bit8 => Register::AL,
+            ArgumentSize::Bit16 => Register::AX,
+            ArgumentSize::Bit32 => Register::EAX,
+            ArgumentSize::Bit64 => Register::RAX,
+        };
+        let accumulator = machine_state.get_register_value(&accumulator_type);
+
+        if accumulator == destination {
+            machine_state.set_flag(Flags::Zero, true);
+            machine_state.set_value(source, &second_argument, argument_size);
+        } else {
+            machine_state.set_flag(Flags::Zero, false);
+            machine_state.set_register_value(&accumulator_type, destination);
+        }
+    }
+
     pub fn lgdt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("lgdt", &arg);
         let first_argument = arg.get_one_argument();

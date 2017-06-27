@@ -1243,6 +1243,22 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(ip_offset);
                         (Instruction::Imul, Some(argument))
                     }
+                    0xB0 => {
+                        let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.inc_rip(ip_offset);
+                        (Instruction::Cmpxchg, Some(argument))
+                    }
+                    0xB1 => {
+                        let (argument, ip_offset) = self.get_argument(register_size,
+                                                                      RegOrOpcode::Register,
+                                                                      ImmediateSize::None,
+                                                                      decoder_flags);
+                        self.inc_rip(ip_offset);
+                        (Instruction::Cmpxchg, Some(argument))
+                    }
                     0xB6 => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
                                                                             RegOrOpcode::Register,
@@ -1390,6 +1406,7 @@ impl<'a> Decoder<'a> {
             Instruction::Wrmsr => self.cpu.wrmsr(self.machine_state),
             Instruction::Xor => self.cpu.xor(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Scas => self.cpu.scas(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Cmpxchg => self.cpu.cmpxchg(self.machine_state, Decoder::fetch_argument(cache_entry)),
         }
     }
 

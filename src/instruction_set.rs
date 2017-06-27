@@ -465,4 +465,5 @@ pub enum Instruction {
     Wrmsr,
     Xor,
     Scas,
+    Cmpxchg,
 }
