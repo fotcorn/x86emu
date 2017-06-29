@@ -5,3 +5,4 @@ vmlinuz
 tmp/
 linux/
 *.bin
+test/qemu/test
