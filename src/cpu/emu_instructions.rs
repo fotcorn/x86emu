@@ -856,24 +856,47 @@ impl EmulationCPU {
         }
     }
 
+    pub fn bt_impl<F: FnOnce(bool) -> bool>(&self, machine_state: &mut MachineState, arg: &InstructionArguments, bit_manipulation: F) {
+        let argument_size = arg.size();
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let bit_position = machine_state.get_value(&first_argument, argument_size);
+        let mut arg = machine_state.get_value(&second_argument, argument_size);
+
+
+        let bit = (arg & bit_position) >> bit_position == 1;
+
+        machine_state.set_flag(Flags::Carry, bit);
+
+        let changed_bit = bit_manipulation(bit);
+
+        if changed_bit != bit {
+            if changed_bit {
+                arg |= 1 << bit_position;
+            } else {
+                arg &= !(1 << bit_position);
+            }
+            machine_state.set_value(arg, &second_argument, argument_size);
+        }
+    }
+
     pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bt", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | b | b);
     }
 
     pub fn bts(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bts", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | _ | true);
     }
 
     pub fn btr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btr", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | _ | false);
     }
 
     pub fn btc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btc", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | b | !b);
     }
 
     pub fn cmpxchg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
