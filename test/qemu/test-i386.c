@@ -1702,6 +1702,9 @@ void test_vm86(void)
 }
 #endif
 
+
+#ifdef TEST_EXCEPTIONS
+
 /* exception tests */
 #if defined(__i386__) && !defined(REG_EAX)
 #define REG_EAX EAX
@@ -2000,6 +2003,8 @@ void test_single_step(void)
     for(i = 0; i < 4; i++)
         printf("sstep_buf2[%d] = %d\n", i, sstep_buf2[i]);
 }
+
+#endif
 
 /* self modifying code test */
 uint8_t code[] = {
