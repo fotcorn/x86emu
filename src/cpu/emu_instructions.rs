@@ -830,7 +830,16 @@ impl EmulationCPU {
 
     pub fn rdmsr(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("rdmsr");
-        // todo: implement instruction
+        let ecx = machine_state.get_register_value(&Register::RCX);
+        match ecx {
+            0xC0000080 => {
+                machine_state.set_register_value(&Register::RAX, 0x500);
+                machine_state.set_register_value(&Register::RDX, 0x0);
+            }
+            _ => {
+                panic!("RDMSR: unsupported operand: {:x}", ecx);
+            }
+        }
     }
 
     pub fn bit_manipulation(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
