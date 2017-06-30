@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 python filter_gdb.py | \
-sed -e '0,/lea    0x521f(%rip),%rdx/d' | \
 sed -e 's/movs[bwl][wlq]/movsx /g' | \
 sed -e 's/movz[bwl][wlq]/movzx /g' | \
 sed -e 's/movabs/mov   /g' | \
