@@ -35,7 +35,7 @@
 #endif
 //#define LINUX_VM86_IOPL_FIX
 //#define TEST_P4_FLAGS
-#ifdef __SSE__
+/*#ifdef __SSE__
 #define TEST_SSE
 #define TEST_CMOV  1
 #define TEST_FCOMI 1
@@ -43,7 +43,11 @@
 #undef TEST_SSE
 #define TEST_CMOV  1
 #define TEST_FCOMI 1
-#endif
+#endif*/
+
+#undef TEST_SSE
+#define TEST_CMOV  0
+#define TEST_FCOMI 0
 
 #if defined(__x86_64__)
 #define FMT64X "%016lx"
@@ -743,6 +747,8 @@ void test_bsx(void)
 
 /**********************************************/
 
+#if defined(TEST_FPU)
+
 union float64u {
     double d;
     uint64_t l;
@@ -1030,6 +1036,8 @@ void test_floats(void)
         test_fcmov();
     }
 }
+
+#endif
 
 /**********************************************/
 #if !defined(__x86_64__)
@@ -2735,7 +2743,9 @@ int main(int argc, char **argv)
     test_mul();
     test_jcc();
     test_loop();
+#if defined(TEST_FPU)
     test_floats();
+#endif
 #if !defined(__x86_64__)
     test_bcd();
 #endif
