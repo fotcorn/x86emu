@@ -28,11 +28,10 @@ pub fn elf(filename: &str, symbol: &str, print_instructions: bool, print_registe
 
     // get the virtual address of the main function
     let main_symbol_address = get_main_symbol_address(&elf_file, &symbol);
-    let offset = main_symbol_address - code_offset - load_address;
 
     let mut machine_state = MachineState::new();
-    machine_state.mem_write(0x10000, code);
-    machine_state.rip = 0x10000 + offset as i64;
+    machine_state.mem_write(load_address + code_offset, code);
+    machine_state.rip = main_symbol_address as i64;
     machine_state.rsp = 0x1000;
 
     machine_state.print_instructions = print_instructions;
