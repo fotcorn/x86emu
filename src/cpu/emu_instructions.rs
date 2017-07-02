@@ -12,7 +12,13 @@ impl EmulationCPU {
         let (first_argument, second_argument) = arg.get_two_arguments();
         let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
+        let result = self.sub_impl2(machine_state, value1, value2, argument_size);
+        if set {
+            machine_state.set_value(result, &second_argument, argument_size);
+        }
+    }
 
+    fn sub_impl2(&self, machine_state: &mut MachineState, value1: i64, value2: i64, argument_size: ArgumentSize) -> i64 {
         let (result, carry, overflow) = match argument_size {
             ArgumentSize::Bit8 => {
                 let (result, carry) = (value2 as u8).overflowing_sub(value1 as u8);
@@ -38,9 +44,7 @@ impl EmulationCPU {
         machine_state.set_flag(Flags::Carry, carry);
         machine_state.set_flag(Flags::Overflow, overflow);
         machine_state.compute_flags(result, argument_size);
-        if set {
-            machine_state.set_value(result, &second_argument, argument_size);
-        }
+        result
     }
 
     fn and_impl(&self, machine_state: &mut MachineState, arg: &InstructionArguments, set: bool) {
@@ -674,7 +678,24 @@ impl EmulationCPU {
 
     pub fn scas(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("scas", &arg);
-        // todo: implement instruction
+        let argument_size = arg.size();
+        match argument_size {
+            ArgumentSize::Bit8 => (),
+            _ => panic!("scas: only 8bit values supported")
+        }
+        let (source, needle) = arg.get_two_arguments();
+        let source = machine_state.get_value(&source, argument_size);
+        let needle = machine_state.get_value(&needle, argument_size);
+
+        self.sub_impl2(machine_state, source, needle, argument_size);
+
+        let mut source_address = machine_state.get_register_value(&Register::RDI);
+        if machine_state.get_flag(Flags::Direction) {
+            source_address -= 1;
+        } else {
+            source_address += 1;
+        }
+        machine_state.set_register_value(&Register::RDI, source_address);
     }
 
     pub fn jmp(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
