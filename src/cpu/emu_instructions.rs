@@ -676,17 +676,7 @@ impl EmulationCPU {
         }
     }
 
-    pub fn scas(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
-        machine_state.print_instr_arg("scas", &arg);
-        let argument_size = arg.size();
-        match argument_size {
-            ArgumentSize::Bit8 => (),
-            _ => panic!("scas: only 8bit values supported")
-        }
-        let (source, needle) = arg.get_two_arguments();
-        let source = machine_state.get_value(&source, argument_size);
-        let needle = machine_state.get_value(&needle, argument_size);
-
+    fn scas_step(&self, machine_state: &mut MachineState, source: i64, needle: i64, argument_size: ArgumentSize) {
         self.sub_impl2(machine_state, source, needle, argument_size);
 
         let mut source_address = machine_state.get_register_value(&Register::RDI);
@@ -696,6 +686,38 @@ impl EmulationCPU {
             source_address += 1;
         }
         machine_state.set_register_value(&Register::RDI, source_address);
+    }
+
+    pub fn scas(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("scas", &arg);
+        let argument_size = arg.size();
+        match argument_size {
+            ArgumentSize::Bit8 => (),
+            _ => panic!("scas: only 8bit values supported")
+        }
+        let (source_arg, needle) = arg.get_two_arguments();
+        let mut source = machine_state.get_value(&source_arg, argument_size);
+        let needle = machine_state.get_value(&needle, argument_size);
+
+        if arg.repeat {
+            let mut i = machine_state.get_register_value(&Register::RCX);
+            loop {
+                i -= 1;
+                if i <= 0 {
+                    break;
+                }
+                self.scas_step(machine_state, source, needle, argument_size);
+
+                if machine_state.get_flag(Flags::Zero) {
+                    break;
+                }
+
+                source = machine_state.get_value(&source_arg, argument_size);
+            }
+            machine_state.set_register_value(&Register::RCX, i);
+        } else {
+            self.scas_step(machine_state, source, needle, argument_size);
+        }
     }
 
     pub fn jmp(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {

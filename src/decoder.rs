@@ -80,10 +80,11 @@ impl<'a> Decoder<'a> {
             let rip = self.machine_state.rip as u64;
             first_byte = self.machine_state.mem_read_byte(rip);
             match first_byte {
-                0xF0 | 0xF2 => {
+                0xF0 => {
                     // todo: do not ignore lock/bound prefix
                 }
-                0xF3 => {
+                0xF2 | 0xF3 => {
+                    // TODO: there are two different rep prefixes...
                     decoder_flags |= REPEAT;
                 }
                 0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
