@@ -12,7 +12,13 @@ impl EmulationCPU {
         let (first_argument, second_argument) = arg.get_two_arguments();
         let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
+        let result = self.sub_impl2(machine_state, value1, value2, argument_size);
+        if set {
+            machine_state.set_value(result, &second_argument, argument_size);
+        }
+    }
 
+    fn sub_impl2(&self, machine_state: &mut MachineState, value1: i64, value2: i64, argument_size: ArgumentSize) -> i64 {
         let (result, carry, overflow) = match argument_size {
             ArgumentSize::Bit8 => {
                 let (result, carry) = (value2 as u8).overflowing_sub(value1 as u8);
@@ -38,9 +44,7 @@ impl EmulationCPU {
         machine_state.set_flag(Flags::Carry, carry);
         machine_state.set_flag(Flags::Overflow, overflow);
         machine_state.compute_flags(result, argument_size);
-        if set {
-            machine_state.set_value(result, &second_argument, argument_size);
-        }
+        result
     }
 
     fn and_impl(&self, machine_state: &mut MachineState, arg: &InstructionArguments, set: bool) {
@@ -672,9 +676,48 @@ impl EmulationCPU {
         }
     }
 
+    fn scas_step(&self, machine_state: &mut MachineState, source: i64, needle: i64, argument_size: ArgumentSize) {
+        self.sub_impl2(machine_state, source, needle, argument_size);
+
+        let mut source_address = machine_state.get_register_value(&Register::RDI);
+        if machine_state.get_flag(Flags::Direction) {
+            source_address -= 1;
+        } else {
+            source_address += 1;
+        }
+        machine_state.set_register_value(&Register::RDI, source_address);
+    }
+
     pub fn scas(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("scas", &arg);
-        // todo: implement instruction
+        let argument_size = arg.size();
+        match argument_size {
+            ArgumentSize::Bit8 => (),
+            _ => panic!("scas: only 8bit values supported")
+        }
+        let (source_arg, needle) = arg.get_two_arguments();
+        let mut source = machine_state.get_value(&source_arg, argument_size);
+        let needle = machine_state.get_value(&needle, argument_size);
+
+        if arg.repeat {
+            let mut i = machine_state.get_register_value(&Register::RCX);
+            loop {
+                i -= 1;
+                if i <= 0 {
+                    break;
+                }
+                self.scas_step(machine_state, source, needle, argument_size);
+
+                if machine_state.get_flag(Flags::Zero) {
+                    break;
+                }
+
+                source = machine_state.get_value(&source_arg, argument_size);
+            }
+            machine_state.set_register_value(&Register::RCX, i);
+        } else {
+            self.scas_step(machine_state, source, needle, argument_size);
+        }
     }
 
     pub fn jmp(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
@@ -830,7 +873,16 @@ impl EmulationCPU {
 
     pub fn rdmsr(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("rdmsr");
-        // todo: implement instruction
+        let ecx = machine_state.get_register_value(&Register::RCX);
+        match ecx {
+            0xC0000080 => {
+                machine_state.set_register_value(&Register::RAX, 0x500);
+                machine_state.set_register_value(&Register::RDX, 0x0);
+            }
+            _ => {
+                panic!("RDMSR: unsupported operand: {:x}", ecx);
+            }
+        }
     }
 
     pub fn bit_manipulation(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
@@ -847,24 +899,47 @@ impl EmulationCPU {
         }
     }
 
+    pub fn bt_impl<F: FnOnce(bool) -> bool>(&self, machine_state: &mut MachineState, arg: &InstructionArguments, bit_manipulation: F) {
+        let argument_size = arg.size();
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let bit_position = machine_state.get_value(&first_argument, argument_size);
+        let mut arg = machine_state.get_value(&second_argument, argument_size);
+
+
+        let bit = (arg & bit_position) >> bit_position == 1;
+
+        machine_state.set_flag(Flags::Carry, bit);
+
+        let changed_bit = bit_manipulation(bit);
+
+        if changed_bit != bit {
+            if changed_bit {
+                arg |= 1 << bit_position;
+            } else {
+                arg &= !(1 << bit_position);
+            }
+            machine_state.set_value(arg, &second_argument, argument_size);
+        }
+    }
+
     pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bt", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | b | b);
     }
 
     pub fn bts(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bts", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | _ | true);
     }
 
     pub fn btr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btr", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | _ | false);
     }
 
     pub fn btc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btc", &arg);
-        // todo: implement instruction
+        self.bt_impl(machine_state, arg, | b | !b);
     }
 
     pub fn cmpxchg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {

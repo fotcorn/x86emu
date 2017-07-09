@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 cat emu.txt |
 grep -v WARNING | \
-sed -e '0,/lea    0x521f(%rip),%rdx/d' | \
 sed -e 's/jo.*/jo/g' | \
 sed -e 's/jno.*/jno/g' | \
 sed -e 's/jb.*/jb/g' | \
