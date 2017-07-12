@@ -703,12 +703,12 @@ impl EmulationCPU {
         let needle = machine_state.get_value(&needle, argument_size);
 
         if arg.repeat_not_equal {
-            let mut i = machine_state.get_register_value(&Register::RCX);
+            let mut i = machine_state.get_register_value(&Register::RCX) as u64;
             loop {
-                i -= 1;
-                if i <= 0 {
+                if i == 0 {
                     break;
                 }
+                i -= 1;
                 self.scas_step(machine_state, source, needle, argument_size);
 
                 if machine_state.get_flag(Flags::Zero) {
@@ -717,7 +717,9 @@ impl EmulationCPU {
 
                 source = machine_state.get_value(&source_arg, argument_size);
             }
-            machine_state.set_register_value(&Register::RCX, i);
+            machine_state.set_register_value(&Register::RCX, i as i64);
+        } else if arg.repeat_equal {
+            panic!("repe scas not supported");
         } else {
             self.scas_step(machine_state, source, needle, argument_size);
         }
