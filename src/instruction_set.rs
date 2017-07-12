@@ -192,7 +192,8 @@ pub struct InstructionArguments {
     pub third_argument: Option<InstructionArgument>,
     pub opcode: Option<u8>,
     pub explicit_size: Option<ArgumentSize>,
-    pub repeat: bool,
+    pub repeat_equal: bool,
+    pub repeat_not_equal: bool,
 }
 
 impl InstructionArguments {
@@ -271,7 +272,8 @@ pub struct InstructionArgumentsBuilder {
     second_argument: Option<InstructionArgument>,
     opcode: Option<u8>,
     explicit_size: Option<ArgumentSize>,
-    repeat: bool,
+    repeat_equal: bool,
+    repeat_not_equal: bool,
 }
 
 impl InstructionArgumentsBuilder {
@@ -281,7 +283,8 @@ impl InstructionArgumentsBuilder {
             second_argument: None,
             opcode: None,
             explicit_size: None,
-            repeat: false,
+            repeat_equal: false,
+            repeat_not_equal: false,
         }
     }
 
@@ -316,12 +319,14 @@ impl InstructionArgumentsBuilder {
             third_argument: None,
             opcode: self.opcode,
             explicit_size: self.explicit_size,
-            repeat: self.repeat,
+            repeat_equal: self.repeat_equal,
+            repeat_not_equal: self.repeat_not_equal,
         }
     }
 
-    pub fn repeat(mut self, repeat: bool) -> InstructionArgumentsBuilder {
-        self.repeat = repeat;
+    pub fn repeat(mut self, repeat_equal: bool, repeat_not_equal: bool) -> InstructionArgumentsBuilder {
+        self.repeat_equal = repeat_equal;
+        self.repeat_not_equal = repeat_not_equal;
         self
     }
 }

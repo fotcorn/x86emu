@@ -618,7 +618,7 @@ impl EmulationCPU {
         let to =
             machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
                                     ArgumentSize::Bit64);
-        if arg.repeat {
+        if arg.repeat_equal {
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
@@ -651,7 +651,7 @@ impl EmulationCPU {
             ArgumentSize::Bit16 => 2,
             ArgumentSize::Bit8 => 1,
         };
-        if arg.repeat {
+        if arg.repeat_equal {
             machine_state.print_instr("rep movs %ds:(%rsi),%es:(%rdi)");
             let mut length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
@@ -702,7 +702,7 @@ impl EmulationCPU {
         let mut source = machine_state.get_value(&source_arg, argument_size);
         let needle = machine_state.get_value(&needle, argument_size);
 
-        if arg.repeat {
+        if arg.repeat_not_equal {
             let mut i = machine_state.get_register_value(&Register::RCX);
             loop {
                 i -= 1;

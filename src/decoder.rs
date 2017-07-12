@@ -83,9 +83,11 @@ impl<'a> Decoder<'a> {
                 0xF0 => {
                     // todo: do not ignore lock/bound prefix
                 }
-                0xF2 | 0xF3 => {
-                    // TODO: there are two different rep prefixes...
-                    decoder_flags |= REPEAT;
+                0xF2 => {
+                    decoder_flags |= REPEAT_NOT_EQUAL;
+                }
+                0xF3 => {
+                    decoder_flags |= REPEAT_EQUAL;
                 }
                 0x2E | 0x3E | 0x36 | 0x26 | 0x64 | 0x65 => {
                     //TODO: do not ignore segment prefix (or probably we should?)
@@ -662,10 +664,9 @@ impl<'a> Decoder<'a> {
                 (Instruction::Popf, None)
             }
             0xA4 => {
-                println!("{:?}", decoder_flags);
                 self.inc_rip(1);
                 (Instruction::Movs, Some(InstructionArgumentsBuilder::new()
-                    .repeat(decoder_flags.contains(REPEAT))
+                    .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
                     .explicit_size(ArgumentSize::Bit8)
                     .finalize()))
             }
@@ -679,7 +680,7 @@ impl<'a> Decoder<'a> {
                 };
                 self.inc_rip(1);
                 (Instruction::Movs, Some(InstructionArgumentsBuilder::new()
-                    .repeat(decoder_flags.contains(REPEAT))
+                    .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
                     .explicit_size(argument_size)
                     .finalize()))
             }
@@ -694,13 +695,13 @@ impl<'a> Decoder<'a> {
             0xAA => {
                 self.inc_rip(1);
                 (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
-                    .repeat(decoder_flags.contains(REPEAT))
+                    .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
                     .finalize()))
             }
             0xAB => {
                 self.inc_rip(1);
                 (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
-                    .repeat(decoder_flags.contains(REPEAT))
+                    .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
                     .finalize()))
             }
             0xAE => {
@@ -713,7 +714,7 @@ impl<'a> Decoder<'a> {
                         displacement: 0,
                      })
                     .second_argument(InstructionArgument::Register{ register: Register::AL })
-                    .repeat(decoder_flags.contains(REPEAT))
+                    .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
                     .finalize()))
             }
             opcode @ 0xB0...0xB7 => {
@@ -1918,14 +1919,15 @@ bitflags! {
     flags DecoderFlags: u64 {
         const REVERSED_REGISTER_DIRECTION = 1 << 0,
         const ADDRESS_SIZE_OVERRIDE = 1 << 2,
-        const REPEAT = 1 << 3,
-        const NEW_64BIT_REGISTER = 1 << 4,
-        const NEW_8BIT_REGISTER = 1 << 5,
-        const MOD_R_M_EXTENSION = 1 << 6,
-        const SIB_EXTENSION = 1 << 7,
-        const OPERAND_16_BIT = 1 << 8,
-        const OPERAND_64_BIT = 1 << 9,
-        const SIB_DISPLACEMENT_ONLY = 1 << 10,
+        const REPEAT_EQUAL = 1 << 3,
+        const REPEAT_NOT_EQUAL = 1 << 4,
+        const NEW_64BIT_REGISTER = 1 << 5,
+        const NEW_8BIT_REGISTER = 1 << 6,
+        const MOD_R_M_EXTENSION = 1 << 7,
+        const SIB_EXTENSION = 1 << 8,
+        const OPERAND_16_BIT = 1 << 9,
+        const OPERAND_64_BIT = 1 << 10,
+        const SIB_DISPLACEMENT_ONLY = 1 << 11,
     }
 }
 
