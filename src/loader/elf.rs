@@ -18,14 +18,11 @@ pub fn elf(filename: &str, symbol: &str, print_instructions: bool, print_registe
 
     let elf_file = ElfFile::new(&buffer);
 
-    // get address where to load the image
-    let load_address = get_load_address(&elf_file).expect("can not get load address");
-
     // get the virtual address of the main function
     let main_symbol_address = get_main_symbol_address(&elf_file, &symbol);
 
     let mut machine_state = MachineState::new();
-    machine_state.mem_write(load_address, &buffer);
+    load_program_image(&elf_file, &buffer, &mut machine_state);
     machine_state.rip = main_symbol_address as i64;
     machine_state.rsp = 0x1000;
 
@@ -37,17 +34,18 @@ pub fn elf(filename: &str, symbol: &str, print_instructions: bool, print_registe
     decoder.execute(benchmark);
 }
 
-fn get_load_address(elf_file: &ElfFile) -> Option<u64> {
+fn load_program_image(elf_file: &ElfFile, buffer: &[u8], machine_state: &mut MachineState) {
     for sect in elf_file.program_iter() {
         let t = sect.get_type().unwrap();
         match t {
-            program::Type::Load if sect.flags() & program::FLAG_X == program::FLAG_X => {
-                return Some(sect.virtual_addr());
+            program::Type::Load => {
+                let from = sect.offset() as usize;
+                let to = (sect.offset() + sect.file_size()) as usize;
+                machine_state.mem_write(sect.virtual_addr(), &buffer[from..to]);
             }
-            _ => {}
+            _ => ()
         }
     }
-    return None;
 }
 
 fn get_main_symbol_address(elf_file: &ElfFile, symbol_name: &str) -> u64 {
