@@ -952,6 +952,10 @@ impl<'a> Decoder<'a> {
                             _ => panic!("0F 01 unsupported opcode: {:x}", opcode)
                         }
                     }
+                    0x05 => {
+                        self.inc_rip(1);
+                        (Instruction::Syscall, None)
+                    }
                     0x1F => {
                         // NOP with hint
                         let (_, ip_offset) = self.get_argument(register_size,
@@ -1425,6 +1429,7 @@ impl<'a> Decoder<'a> {
             Instruction::Scas => self.cpu.scas(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Cmpxchg => self.cpu.cmpxchg(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Xchg => self.cpu.xchg(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Syscall => self.cpu.syscall(self.machine_state),
         }
     }
 

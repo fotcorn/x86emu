@@ -467,4 +467,5 @@ pub enum Instruction {
     Scas,
     Cmpxchg,
     Xchg,
+    Syscall,
 }

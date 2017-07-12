@@ -1,3 +1,6 @@
+use std::process;
+use std::str;
+
 use instruction_set::{InstructionArgument, InstructionArguments, Register, Flags};
 use machine_state::{MachineState};
 use instruction_set::{ArgumentSize, get_register_size};
@@ -976,6 +979,33 @@ impl EmulationCPU {
         machine_state.set_value(arg1, &second_argument, argument_size);
     }
 
+    pub fn syscall(&self, machine_state: &mut MachineState) {
+        let rax = machine_state.get_register_value(&Register::RAX);
+
+        match rax {
+            /* read */ 0 => (),
+            /* write */ 1 => {
+                let fd = machine_state.get_register_value(&Register::RDI);
+                let buffer = machine_state.get_register_value(&Register::RSI) as u64;
+                let count = machine_state.get_register_value(&Register::RDX) as u64;
+
+                if fd != 1 {
+                    panic!("unsupported file description in write: {}", fd);
+                }
+                let data = machine_state.mem_read(buffer, count);
+                let data = str::from_utf8(&data).unwrap();
+                print!("{}", data);
+            }
+            /* open */ 2 => (),
+            /* close */ 3 => (),
+            /* exit */60 => {
+                process::exit(0);
+            },
+            /* arch_prctl */ 158 => (),
+            _ => panic!("unsupported syscall"),
+        }
+    }
+
     pub fn lgdt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("lgdt", &arg);
         let first_argument = arg.get_one_argument();
@@ -997,7 +1027,6 @@ impl EmulationCPU {
             _ => unreachable!("Invalid instruction argument for lidt")
         }
     }
-
 
     pub fn cpuid(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("cpuid");
