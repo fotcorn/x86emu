@@ -18,19 +18,14 @@ pub fn elf(filename: &str, symbol: &str, print_instructions: bool, print_registe
 
     let elf_file = ElfFile::new(&buffer);
 
-    // get address where to load the text section
+    // get address where to load the image
     let load_address = get_load_address(&elf_file).expect("can not get load address");
-
-    // get the binary code from the .text section
-    let text_section = elf_file.find_section_by_name(".text").expect("text section not found.");
-    let code = text_section.raw_data(&elf_file);
-    let code_offset = text_section.offset();
 
     // get the virtual address of the main function
     let main_symbol_address = get_main_symbol_address(&elf_file, &symbol);
 
     let mut machine_state = MachineState::new();
-    machine_state.mem_write(load_address + code_offset, code);
+    machine_state.mem_write(load_address, &buffer);
     machine_state.rip = main_symbol_address as i64;
     machine_state.rsp = 0x1000;
 
