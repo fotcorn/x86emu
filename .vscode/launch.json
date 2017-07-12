@@ -8,7 +8,7 @@
             "name": "Test out",
             "target": "target/debug/x86emu",
             "cwd": "${workspaceRoot}",
-            "arguments": "--loader elf --cpu emu --symbol _start tmp/out"
+            "arguments": "--loader elf --symbol _start tmp/out"
         },
         {
             "type": "gdb",
