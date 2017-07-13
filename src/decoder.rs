@@ -1242,7 +1242,7 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(5);
                         (Instruction::Jg, Some(argument))
                     },
-                    0x94 => {
+                    opcode @ 0x90...0x9F => {
                         let (mut argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
                                                                         RegOrOpcode::Register,
                                                                         ImmediateSize::None,
@@ -1251,7 +1251,25 @@ impl<'a> Decoder<'a> {
                         argument.first_argument = Some(argument.second_argument.unwrap());
                         argument.second_argument = None;
                         self.inc_rip(ip_offset);
-                        (Instruction::Sete, Some(argument))
+                        match opcode {
+                            0x90 => (Instruction::Seto, Some(argument)),
+                            0x91 => (Instruction::Setno, Some(argument)),
+                            0x92 => (Instruction::Setb, Some(argument)),
+                            0x93 => (Instruction::Setae, Some(argument)),
+                            0x94 => (Instruction::Sete, Some(argument)),
+                            0x95 => (Instruction::Setne, Some(argument)),
+                            0x96 => (Instruction::Setbe, Some(argument)),
+                            0x97 => (Instruction::Seta, Some(argument)),
+                            0x98 => (Instruction::Sets, Some(argument)),
+                            0x99 => (Instruction::Setns, Some(argument)),
+                            0x9A => (Instruction::Setp, Some(argument)),
+                            0x9B => (Instruction::Setnp, Some(argument)),
+                            0x9C => (Instruction::Setl, Some(argument)),
+                            0x9D => (Instruction::Setge, Some(argument)),
+                            0x9E => (Instruction::Setle, Some(argument)),
+                            0x9F => (Instruction::Setg, Some(argument)),
+                            _ => unreachable!(),
+                        }
                     },
                     0xA2 => {
                         self.inc_rip(1);
@@ -1419,7 +1437,6 @@ impl<'a> Decoder<'a> {
             Instruction::Ret => self.cpu.ret(self.machine_state),
             Instruction::Rdmsr => self.cpu.rdmsr(self.machine_state),
             Instruction::Sbb => self.cpu.sbb(self.machine_state, Decoder::fetch_argument(cache_entry)),
-            Instruction::Sete => self.cpu.sete(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::ShiftRotate => self.cpu.shift_rotate(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Std => self.cpu.std(self.machine_state),
             Instruction::Stos => self.cpu.stos(self.machine_state, Decoder::fetch_argument(cache_entry)),
@@ -1431,6 +1448,22 @@ impl<'a> Decoder<'a> {
             Instruction::Cmpxchg => self.cpu.cmpxchg(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Xchg => self.cpu.xchg(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Syscall => self.cpu.syscall(self.machine_state),
+            Instruction::Seto => self.cpu.seto(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setno => self.cpu.setno(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setb => self.cpu.setb(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setae => self.cpu.setae(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Sete => self.cpu.sete(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setne => self.cpu.setne(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setbe => self.cpu.setbe(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Seta => self.cpu.seta(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Sets => self.cpu.sets(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setns => self.cpu.setns(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setp => self.cpu.setp(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setnp => self.cpu.setnp(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setl => self.cpu.setl(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setge => self.cpu.setge(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setle => self.cpu.setle(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Setg => self.cpu.setg(self.machine_state, Decoder::fetch_argument(cache_entry)),
         }
     }
 

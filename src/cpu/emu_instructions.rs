@@ -850,14 +850,111 @@ impl EmulationCPU {
         }
     }
 
-    pub fn sete(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
-        machine_state.print_instr_arg("sete", &arg);
+    fn set_byte(&self, machine_state: &mut MachineState, arg: &InstructionArguments, set: bool) {
         let first_argument = arg.get_one_argument();
-        if machine_state.get_flag(Flags::Zero) {
+        if set {
             machine_state.set_value(1, &first_argument, ArgumentSize::Bit8);
         } else {
             machine_state.set_value(0, &first_argument, ArgumentSize::Bit8);
         }
+    }
+
+    pub fn seto(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("seto", &arg);
+        let set = machine_state.get_flag(Flags::Overflow);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setno(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setno", &arg);
+        let set = !machine_state.get_flag(Flags::Overflow);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setb(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setb", &arg);
+        let set = machine_state.get_flag(Flags::Carry);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setae(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setae", &arg);
+        let set = !machine_state.get_flag(Flags::Carry);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn sete(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("sete", &arg);
+        let set = machine_state.get_flag(Flags::Zero);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setne(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setne", &arg);
+        let set = !machine_state.get_flag(Flags::Zero);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setbe(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setbe", &arg);
+        let set = machine_state.get_flag(Flags::Carry) || machine_state.get_flag(Flags::Zero);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn seta(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("seta", &arg);
+        let set = !machine_state.get_flag(Flags::Carry) && !machine_state.get_flag(Flags::Zero);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn sets(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("sets", &arg);
+        let set = machine_state.get_flag(Flags::Sign);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setns(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setns", &arg);
+        let set = !machine_state.get_flag(Flags::Sign);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setp(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setp", &arg);
+        let set = machine_state.get_flag(Flags::Parity);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setnp(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setnp", &arg);
+        let set = !machine_state.get_flag(Flags::Parity);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setl(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setl", &arg);
+        let set = machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setge(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setge", &arg);
+        let set = machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow);
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setle(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setle", &arg);
+        let set = machine_state.get_flag(Flags::Zero) ||
+                (machine_state.get_flag(Flags::Sign) != machine_state.get_flag(Flags::Overflow));
+        self.set_byte(machine_state, arg, set);
+    }
+
+    pub fn setg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("setg", &arg);
+        let set = !machine_state.get_flag(Flags::Zero) &&
+                (machine_state.get_flag(Flags::Sign) == machine_state.get_flag(Flags::Overflow));
+        self.set_byte(machine_state, arg, set);
     }
 
     pub fn out(&self, machine_state: &mut MachineState) {
