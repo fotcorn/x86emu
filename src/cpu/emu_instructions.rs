@@ -526,7 +526,27 @@ impl EmulationCPU {
 
     pub fn div(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("div", &arg);
-        panic!("Not implemented");
+        let argument_size = arg.size();
+        let divisor = arg.get_one_argument();
+        let divisor = machine_state.get_value(&divisor, argument_size) as u64;
+
+        let (reg_lower, reg_upper, shift) = match argument_size {
+            ArgumentSize::Bit8 => (Register::AL, Register::AH, 8),
+            ArgumentSize::Bit16 => (Register::AX, Register::DX, 16),
+            ArgumentSize::Bit32 => (Register::EAX, Register::EDX, 32),
+            ArgumentSize::Bit64 => (Register::RAX, Register::RDX, 64),
+        };
+
+        let dividend = (machine_state.get_register_value(&reg_lower) as u64) +
+                       ((machine_state.get_register_value(&reg_upper) as u64) << shift);
+
+        let quotient = dividend / divisor;
+        let reminder = dividend % divisor;
+
+        machine_state.set_register_value(&reg_lower, quotient as i64);
+        machine_state.set_register_value(&reg_upper, reminder as i64);
+
+        // todo: set flags (including floating point error flags)
     }
 
     pub fn idiv(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
@@ -1050,7 +1070,7 @@ impl EmulationCPU {
         let (first_argument, second_argument) = arg.get_two_arguments();
         let source = machine_state.get_value(&first_argument, argument_size);
         let destination = machine_state.get_value(&second_argument, argument_size);
-        
+
         let accumulator_type = match argument_size {
             ArgumentSize::Bit8 => Register::AL,
             ArgumentSize::Bit16 => Register::AX,
@@ -1187,7 +1207,7 @@ impl EmulationCPU {
                           0 << 13 | // CMPXCHG16B instruction
                           0 << 14 | // Can disable sending task priority messages
                           0 << 15 | // Perfmon & debug capability
-                          0 << 16 | // 
+                          0 << 16 | //
                           0 << 17 | // Process context identifiers (CR4 bit 17)
                           0 << 18 | // Direct cache access for DMA writes[12][13]
                           0 << 19 | // SSE4.1 instructions
@@ -1203,7 +1223,7 @@ impl EmulationCPU {
                           0 << 29 | // F16C (half-precision) FP support
                           0 << 30 | // RDRAND (on-chip random number generator) support
                           0 << 31; // Running on a hypervisor (always 0 on a real CPU, but also with some hypervisors)
-                    
+
                 machine_state.set_register_value(&Register::EAX, 0);
                 machine_state.set_register_value(&Register::EBX, 0);
                 machine_state.set_register_value(&Register::ECX, ecx);

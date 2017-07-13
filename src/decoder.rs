@@ -32,7 +32,7 @@ impl<'a> Decoder<'a> {
         loop {
             self.counter += 1;
             let instruction_start = self.machine_state.rip as u64;
-            
+
             let cache_entry = match instruction_cache.entry(instruction_start) {
                 Entry::Occupied(entry) => {
                     let ref entry: InstructionCache = *entry.into_mut();
@@ -881,14 +881,21 @@ impl<'a> Decoder<'a> {
                                             decoder_flags)
                     },
                     4 | 5 | 6 | 7 => {
-                        let register = get_register(
+                        /*let register = get_register(
                             0, register_size,decoder_flags.contains(NEW_64BIT_REGISTER), false);
 
                         (InstructionArgumentsBuilder::new().first_argument(
                             InstructionArgument::Register{register: register})
                             .opcode(opcode)
                             .finalize(),
-                        2)
+                        2)*/
+                        let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                          RegOrOpcode::Opcode,
+                                                                          ImmediateSize::None,
+                                                                          decoder_flags);
+                        argument.second_argument = None;
+                        argument.opcode = Some(opcode);
+                        (argument, ip_offset)
                     },
                     _ => unreachable!()
                 };
@@ -1890,7 +1897,7 @@ impl<'a> Decoder<'a> {
                               size: ArgumentSize,
                               rip: u64,
                               decoder_flags: &DecoderFlags) {
-        
+
         let new_first_argument = match argument.first_argument {
             Some(ref first_argument) => {
                 match *first_argument {
