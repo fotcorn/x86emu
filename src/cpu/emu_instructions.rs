@@ -527,9 +527,10 @@ impl EmulationCPU {
         let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&first_argument, argument_size);
-        let result = value - 1;
-        machine_state.compute_flags(result, argument_size);
+        let carry = machine_state.get_flag(Flags::Carry);
+        let result = self.sub_impl2(machine_state, 1, value, argument_size);
         machine_state.set_value(result, &first_argument, argument_size);
+        machine_state.set_flag(Flags::Carry, carry);
     }
 
     pub fn div(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
