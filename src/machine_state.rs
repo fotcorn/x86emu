@@ -114,7 +114,7 @@ impl MachineState {
 
         let byte = result as u8;
         let mut parity = 0;
-        for i in 0..7 {
+        for i in 0..8 {
             parity ^= (byte >> i) & 0b1
         }
         self.set_flag(Flags::Parity, parity != 0b1)
