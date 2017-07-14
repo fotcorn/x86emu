@@ -1,5 +1,8 @@
 use std::process;
 use std::str;
+use std::u64;
+
+use extprim::u128::u128;
 
 use instruction_set::{InstructionArgument, InstructionArguments, Register, Flags};
 use machine_state::{MachineState};
@@ -528,23 +531,26 @@ impl EmulationCPU {
         machine_state.print_instr_arg("div", &arg);
         let argument_size = arg.size();
         let divisor = arg.get_one_argument();
-        let divisor = machine_state.get_value(&divisor, argument_size) as u64;
+        let divisor = u128::new(machine_state.get_value(&divisor, argument_size) as u64);
 
-        let (reg_lower, reg_upper, shift) = match argument_size {
-            ArgumentSize::Bit8 => (Register::AL, Register::AH, 8),
-            ArgumentSize::Bit16 => (Register::AX, Register::DX, 16),
-            ArgumentSize::Bit32 => (Register::EAX, Register::EDX, 32),
-            ArgumentSize::Bit64 => (Register::RAX, Register::RDX, 64),
+        let (reg_lower, reg_upper) = match argument_size {
+            ArgumentSize::Bit8 => (Register::AL, Register::AH),
+            ArgumentSize::Bit16 => (Register::AX, Register::DX),
+            ArgumentSize::Bit32 => (Register::EAX, Register::EDX),
+            ArgumentSize::Bit64 => (Register::RAX, Register::RDX),
         };
 
-        let dividend = (machine_state.get_register_value(&reg_lower) as u64) +
-                       ((machine_state.get_register_value(&reg_upper) as u64) << shift);
+        let dividend = u128::from_parts(machine_state.get_register_value(&reg_upper) as u64,
+                                        machine_state.get_register_value(&reg_lower) as u64);
 
         let quotient = dividend / divisor;
+        if quotient > u128::new(u64::MAX) {
+            panic!("floating point error");
+        }
         let reminder = dividend % divisor;
 
-        machine_state.set_register_value(&reg_lower, quotient as i64);
-        machine_state.set_register_value(&reg_upper, reminder as i64);
+        machine_state.set_register_value(&reg_lower, quotient.low64() as i64);
+        machine_state.set_register_value(&reg_upper, reminder.low64() as i64);
 
         // todo: set flags (including floating point error flags)
     }
