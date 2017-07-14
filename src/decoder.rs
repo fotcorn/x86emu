@@ -920,6 +920,17 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(1);
                 (Instruction::Std, None)
             }
+            0xFE => {
+                let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                                  RegOrOpcode::Opcode,
+                                                                  ImmediateSize::None,
+                                                                  decoder_flags);
+                self.inc_rip(ip_offset);
+                if argument.opcode.unwrap() > 1 {
+                    panic!("Invalid opcode");
+                }
+                (Instruction::RegisterOperation, Some(argument))
+            }
             0xFF => {
                 // todo: cleanup code
                 let modrm = self.machine_state.mem_read_byte(rip + 1);
