@@ -9,6 +9,7 @@ use xmas_elf::symbol_table::Entry;
 use machine_state::MachineState;
 use decoder::Decoder;
 use cpu::emu_instructions::EmulationCPU;
+use utils::convert_i64_to_u8vec;
 
 pub fn elf(filename: &str, symbol: &str, print_instructions: bool, print_registers: bool, benchmark: bool) {
     let mut file = File::open(filename).expect("Cannot open file");
@@ -24,7 +25,9 @@ pub fn elf(filename: &str, symbol: &str, print_instructions: bool, print_registe
     let mut machine_state = MachineState::new();
     load_program_image(&elf_file, &buffer, &mut machine_state);
     machine_state.rip = main_symbol_address as i64;
-    machine_state.rsp = 0x1000;
+
+    machine_state.rsp = 0x7fffffffe018;
+    machine_state.stack_push(&convert_i64_to_u8vec(1));
 
     machine_state.print_instructions = print_instructions;
     machine_state.print_registers = print_registers;
