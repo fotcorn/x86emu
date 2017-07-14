@@ -93,7 +93,7 @@ static inline long i2l(long v)
 
 #define OP add
 #include "test-i386.h"
-
+/*
 #define OP sub
 #include "test-i386.h"
 
@@ -172,11 +172,11 @@ static inline long i2l(long v)
 #define OP_SHIFTD
 #define OP_NOBYTE
 #include "test-i386-shift.h"
-
+*/
 /* XXX: should be more precise ? */
 #undef CC_MASK
 #define CC_MASK (CC_C)
-
+/*
 #define OP bt
 #define OP_NOBYTE
 #include "test-i386-shift.h"
@@ -192,7 +192,7 @@ static inline long i2l(long v)
 #define OP btc
 #define OP_NOBYTE
 #include "test-i386-shift.h"
-
+*/
 /* lea test (modrm support) */
 #define TEST_LEAQ(STR)\
 {\
@@ -2744,6 +2744,7 @@ int main(int argc, char **argv)
         func = *ptr++;
         func();
     }
+    /*
     test_bsx();
     test_mul();
     test_jcc();
@@ -2775,6 +2776,6 @@ int main(int argc, char **argv)
 #ifdef TEST_SSE
     test_sse();
     test_fxsave();
-#endif
+#endif*/
     return 0;
 }

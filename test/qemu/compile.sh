@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-gcc test-i386.c -o test
+diet gcc test-i386.c -o test
+cargo run -- --loader elf test  --symbol _start
