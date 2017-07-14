@@ -228,7 +228,11 @@ impl EmulationCPU {
         let (first_argument, second_argument) = arg.get_two_arguments();
         let value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
+        let result = self.add_impl(machine_state, value1, value2, argument_size);
+        machine_state.set_value(result, &second_argument, argument_size);
+    }
 
+    fn add_impl(&self, machine_state: &mut MachineState, value1: i64, value2: i64, argument_size: ArgumentSize) -> i64 {
         let (result, carry, overflow) = match argument_size {
             ArgumentSize::Bit8 => {
                 let (result, carry) = (value2 as u8).overflowing_add(value1 as u8);
@@ -255,7 +259,7 @@ impl EmulationCPU {
         machine_state.set_flag(Flags::Overflow, overflow);
 
         machine_state.compute_flags(result, argument_size);
-        machine_state.set_value(result, &second_argument, argument_size);
+        result
     }
 
     pub fn or(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
@@ -512,9 +516,10 @@ impl EmulationCPU {
         let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&first_argument, argument_size);
-        let result = value + 1;
-        machine_state.compute_flags(result, argument_size);
+        let carry = machine_state.get_flag(Flags::Carry);
+        let result = self.add_impl(machine_state, value, 1, argument_size);
         machine_state.set_value(result, &first_argument, argument_size);
+        machine_state.set_flag(Flags::Carry, carry);
     }
 
     pub fn dec(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
