@@ -93,7 +93,7 @@ static inline long i2l(long v)
 
 #define OP add
 #include "test-i386.h"
-/*
+
 #define OP sub
 #include "test-i386.h"
 
@@ -108,7 +108,7 @@ static inline long i2l(long v)
 
 #define OP cmp
 #include "test-i386.h"
-
+/*
 #define OP adc
 #define OP_CC
 #include "test-i386.h"
@@ -116,7 +116,7 @@ static inline long i2l(long v)
 #define OP sbb
 #define OP_CC
 #include "test-i386.h"
-
+*/
 #define OP inc
 #define OP_CC
 #define OP1
@@ -126,7 +126,7 @@ static inline long i2l(long v)
 #define OP_CC
 #define OP1
 #include "test-i386.h"
-
+/*
 #define OP neg
 #define OP_CC
 #define OP1
