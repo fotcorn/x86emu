@@ -12,8 +12,7 @@ while True:
     line = lines[i]
     if re.match('.* in ?? ()', line):
         continue
-
-    match = re.match('=> 0x[a-z0-9]+:\t(.*)\n', line)
+    match = re.match('=> 0x[a-zA-Z0-9<>_ \+]+:\t(.*)\n', line)
     if match:  # instruction
         line = match.group(1)
         if line == 'rep stos %rax,%es:(%rdi)':
