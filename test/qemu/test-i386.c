@@ -109,6 +109,7 @@ static inline long i2l(long v)
 #define OP cmp
 #include "test-i386.h"
 /*
+TODO
 #define OP adc
 #define OP_CC
 #include "test-i386.h"
@@ -137,6 +138,7 @@ static inline long i2l(long v)
 #define OP1
 #include "test-i386.h"
 /*
+TODO
 #undef CC_MASK
 #define CC_MASK (CC_C | CC_P | CC_Z | CC_S | CC_O)
 
@@ -177,6 +179,7 @@ static inline long i2l(long v)
 #undef CC_MASK
 #define CC_MASK (CC_C)
 /*
+TODO
 #define OP bt
 #define OP_NOBYTE
 #include "test-i386-shift.h"
@@ -1152,6 +1155,7 @@ void test_xchg(void)
     TEST_XCHG(xchgw, "w", "+m");
     TEST_XCHG(xchgb, "b", "+m");
 /*
+TODO
 #if defined(__x86_64__)
     TEST_XCHG(xaddq, "", "+q");
 #endif
@@ -1201,7 +1205,9 @@ void test_xchg(void)
     TEST_CMPXCHG(cmpxchgw, "w", "+m", 0xfffefdfc);
     TEST_CMPXCHG(cmpxchgb, "b", "+m", 0xfffefdfc);
 
-    /*{
+    /*
+    TODO
+    {
         uint64_t op0, op1, op2;
         long eax, edx;
         long i, eflags;
@@ -1541,6 +1547,7 @@ uint8_t str_buffer[4096];
 }
 
 /*
+TODO
 #define TEST_STRING(OP, REP)\
     TEST_STRING1(OP, "b", "", REP);\
     TEST_STRING1(OP, "w", "", REP);\
@@ -1560,6 +1567,7 @@ void test_string(void)
     int i;
     for(i = 0;i < sizeof(str_buffer); i++)
         str_buffer[i] = i + 0x56;
+   // TODO
    //TEST_STRING(stos, "");
    //TEST_STRING(stos, "rep ");
    //TEST_STRING(lods, ""); /* to verify stos */
@@ -2741,6 +2749,7 @@ extern void *__stop_initcall;
 
 int main(int argc, char **argv)
 {
+    // TODO
     void **ptr;
     void (*func)(void);
 
