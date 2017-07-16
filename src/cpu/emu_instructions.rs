@@ -597,7 +597,6 @@ impl EmulationCPU {
         let argument_size = arg.size();
         let value = machine_state.get_value(&first_argument, argument_size);
         let result = !value;
-        machine_state.compute_flags(result, argument_size);
         machine_state.set_value(result, &first_argument, argument_size);
     }
 

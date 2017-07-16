@@ -126,7 +126,7 @@ static inline long i2l(long v)
 #define OP_CC
 #define OP1
 #include "test-i386.h"
-/*
+
 #define OP neg
 #define OP_CC
 #define OP1
@@ -136,7 +136,7 @@ static inline long i2l(long v)
 #define OP_CC
 #define OP1
 #include "test-i386.h"
-
+/*
 #undef CC_MASK
 #define CC_MASK (CC_C | CC_P | CC_Z | CC_S | CC_O)
 
