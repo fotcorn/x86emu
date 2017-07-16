@@ -1330,6 +1330,14 @@ impl<'a> Decoder<'a> {
                         self.inc_rip(1);
                         (Instruction::Cpuid, None)
                     }
+                    0xA3 => {
+                        let argument = self.decode_reg_reg(register_size, decoder_flags);
+                        (Instruction::Bt, Some(argument))
+                    }
+                    0xAB => {
+                        let argument = self.decode_reg_reg(register_size, decoder_flags);
+                        (Instruction::Bts, Some(argument))
+                    }
                     0xAF => {
                         let (argument, ip_offset) = self.get_argument(register_size,
                                                                     RegOrOpcode::Register,
@@ -1353,6 +1361,10 @@ impl<'a> Decoder<'a> {
                                                                       decoder_flags);
                         self.inc_rip(ip_offset);
                         (Instruction::Cmpxchg, Some(argument))
+                    }
+                    0xB3 => {
+                        let argument = self.decode_reg_reg(register_size, decoder_flags);
+                        (Instruction::Btr, Some(argument))
                     }
                     0xB6 => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1381,6 +1393,10 @@ impl<'a> Decoder<'a> {
                                                                       decoder_flags);
                         self.inc_rip(ip_offset);
                         (Instruction::BitManipulation, Some(argument))
+                    }
+                    0xBB => {
+                        let argument = self.decode_reg_reg(register_size, decoder_flags);
+                        (Instruction::Btc, Some(argument))
                     }
                     0xBE => {
                         let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1429,6 +1445,10 @@ impl<'a> Decoder<'a> {
             Instruction::And => self.cpu.and(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Arithmetic => self.cpu.arithmetic(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::BitManipulation => self.cpu.bit_manipulation(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Bt => self.cpu.bt(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Bts => self.cpu.bts(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Btr => self.cpu.btr(self.machine_state, Decoder::fetch_argument(cache_entry)),
+            Instruction::Btc => self.cpu.btc(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Call => self.cpu.call(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Cld => self.cpu.cld(self.machine_state),
             Instruction::Cmova => self.cpu.cmova(self.machine_state, Decoder::fetch_argument(cache_entry)),
