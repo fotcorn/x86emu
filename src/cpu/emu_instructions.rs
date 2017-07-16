@@ -606,9 +606,7 @@ impl EmulationCPU {
         let first_argument = arg.get_one_argument();
         let argument_size = arg.size();
         let value = machine_state.get_value(&first_argument, argument_size);
-        machine_state.set_flag(Flags::Carry, value != 0);
-        let result = -value;
-        machine_state.compute_flags(result, argument_size);
+        let result = self.sub_impl2(machine_state, value, 0, argument_size);
         machine_state.set_value(result, &first_argument, argument_size);
     }
 
