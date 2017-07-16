@@ -623,12 +623,20 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(1);
                 (Instruction::Nop, None)
             }
-            0x91...0x97 => {
-                let (argument, _) = self.get_argument(register_size,
-                                                                  RegOrOpcode::Register,
-                                                                  ImmediateSize::None,
-                                                                  decoder_flags |
-                                                                  REVERSED_REGISTER_DIRECTION);
+            opcode @ 0x91...0x97 => {
+                let argument = InstructionArgumentsBuilder::new()
+                    .first_argument(InstructionArgument::Register {
+                        register: get_register(0, register_size,
+                                               decoder_flags.contains(NEW_64BIT_REGISTER),
+                                               decoder_flags.contains(NEW_8BIT_REGISTER)),
+                        })
+                        .second_argument(InstructionArgument::Register {
+                            register: get_register(opcode - 0x90,
+                                                   register_size,
+                                                   decoder_flags.contains(NEW_64BIT_REGISTER),
+                                                   decoder_flags.contains(NEW_8BIT_REGISTER)),
+                        })
+                        .finalize();
                 self.inc_rip(1);
                 (Instruction::Xchg, Some(argument))
             }

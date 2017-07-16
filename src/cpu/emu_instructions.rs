@@ -1125,6 +1125,7 @@ impl EmulationCPU {
     }
 
     pub fn xchg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("xchg", &arg);
         let argument_size = arg.size();
         let (first_argument, second_argument) = arg.get_two_arguments();
         let arg1 = machine_state.get_value(&first_argument, argument_size);

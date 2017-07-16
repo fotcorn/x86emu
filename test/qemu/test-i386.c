@@ -1151,7 +1151,7 @@ void test_xchg(void)
     TEST_XCHG(xchgl, "k", "+m");
     TEST_XCHG(xchgw, "w", "+m");
     TEST_XCHG(xchgb, "b", "+m");
-
+/*
 #if defined(__x86_64__)
     TEST_XCHG(xaddq, "", "+q");
 #endif
@@ -1172,7 +1172,7 @@ void test_xchg(void)
     TEST_XCHG(xaddl, "k", "+m");
     TEST_XCHG(xaddw, "w", "+m");
     TEST_XCHG(xaddb, "b", "+m");
-
+*/
 #if defined(__x86_64__)
     TEST_CMPXCHG(cmpxchgq, "", "+q", 0xfbca7654);
 #endif
@@ -1201,7 +1201,7 @@ void test_xchg(void)
     TEST_CMPXCHG(cmpxchgw, "w", "+m", 0xfffefdfc);
     TEST_CMPXCHG(cmpxchgb, "b", "+m", 0xfffefdfc);
 
-    {
+    /*{
         uint64_t op0, op1, op2;
         long eax, edx;
         long i, eflags;
@@ -1223,7 +1223,7 @@ void test_xchg(void)
             printf("cmpxchg8b: eax=" FMTLX " edx=" FMTLX " op1=" FMT64X " CC=%02lx\n",
                    eax, edx, op1, eflags & CC_Z);
         }
-    }
+    }*/
 }
 
 #ifdef TEST_SEGS
@@ -2751,16 +2751,16 @@ int main(int argc, char **argv)
     }
     /*
     test_bsx();
-    test_mul();
-    test_jcc();
+    test_mul();*/
+    test_jcc();/*
     test_loop();
 #if defined(TEST_FPU)
     test_floats();
 #endif
 #if !defined(__x86_64__)
     test_bcd();
-#endif
-    test_xchg();*/
+#endif*/
+    test_xchg();
     test_string();
     //test_misc();
     test_lea();/*
