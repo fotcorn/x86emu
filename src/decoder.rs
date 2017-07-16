@@ -824,10 +824,12 @@ impl<'a> Decoder<'a> {
                                                                 RegOrOpcode::Opcode,
                                                                 ImmediateSize::None,
                                                                 decoder_flags);
+                let size = argument.size();
                 argument.second_argument = Some(argument.first_argument.unwrap());
                 argument.first_argument = Some(InstructionArgument::Register{
                     register: Register::CL
                 });
+                argument.explicit_size = Some(size);
                 self.inc_rip(ip_offset);
                 (Instruction::ShiftRotate, Some(argument))
             }
