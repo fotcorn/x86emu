@@ -1540,6 +1540,7 @@ uint8_t str_buffer[4096];
            (int)(eflags & (CC_C | CC_P | CC_Z | CC_S | CC_O | CC_A)));\
 }
 
+/*
 #define TEST_STRING(OP, REP)\
     TEST_STRING1(OP, "b", "", REP);\
     TEST_STRING1(OP, "w", "", REP);\
@@ -1549,27 +1550,31 @@ uint8_t str_buffer[4096];
     TEST_STRING1(OP, "w", "std", REP);\
     TEST_STRING1(OP, "l", "std", REP);\
     X86_64_ONLY(TEST_STRING1(OP, "q", "std", REP))
+*/
+#define TEST_STRING(OP, REP)\
+    TEST_STRING1(OP, "b", "", REP);\
+    TEST_STRING1(OP, "b", "std", REP);\
 
 void test_string(void)
 {
     int i;
     for(i = 0;i < sizeof(str_buffer); i++)
         str_buffer[i] = i + 0x56;
-   TEST_STRING(stos, "");
-   TEST_STRING(stos, "rep ");
-   TEST_STRING(lods, ""); /* to verify stos */
-   TEST_STRING(lods, "rep ");
-   TEST_STRING(movs, "");
-   TEST_STRING(movs, "rep ");
-   TEST_STRING(lods, ""); /* to verify stos */
+   //TEST_STRING(stos, "");
+   //TEST_STRING(stos, "rep ");
+   //TEST_STRING(lods, ""); /* to verify stos */
+   //TEST_STRING(lods, "rep ");
+   //TEST_STRING(movs, "");
+   //TEST_STRING(movs, "rep ");
+   //TEST_STRING(lods, ""); /* to verify stos */
 
    /* XXX: better tests */
    TEST_STRING(scas, "");
-   TEST_STRING(scas, "repz ");
+   /*TEST_STRING(scas, "repz ");*/
    TEST_STRING(scas, "repnz ");
-   TEST_STRING(cmps, "");
-   TEST_STRING(cmps, "repz ");
-   TEST_STRING(cmps, "repnz ");
+   //TEST_STRING(cmps, "");
+   //TEST_STRING(cmps, "repz ");
+   //TEST_STRING(cmps, "repnz ");
 }
 
 #ifdef TEST_VM86
@@ -2755,10 +2760,10 @@ int main(int argc, char **argv)
 #if !defined(__x86_64__)
     test_bcd();
 #endif
-    test_xchg();
+    test_xchg();*/
     test_string();
-    test_misc();
-    test_lea();
+    //test_misc();
+    test_lea();/*
 #ifdef TEST_SEGS
     test_segs();
     test_code16();
