@@ -578,37 +578,12 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::Mov, Some(argument))
             }
-            0x90 => {
-                self.inc_rip(1);
-                (Instruction::Nop, None)
-            }
             0x8B => {
                 let (argument, ip_offset) = self.get_argument(register_size,
                                                                 RegOrOpcode::Register,
                                                                 ImmediateSize::None,
                                                                 decoder_flags |
                                                                 REVERSED_REGISTER_DIRECTION);
-                self.inc_rip(ip_offset);
-                (Instruction::Mov, Some(argument))
-            }
-            0x8F => {
-                let (mut argument, ip_offset) = self.get_argument(register_size,
-                                                                  RegOrOpcode::Register,
-                                                                  ImmediateSize::None,
-                                                                  decoder_flags |
-                                                                  REVERSED_REGISTER_DIRECTION);
-                argument.second_argument = None;
-                self.inc_rip(ip_offset);
-                (Instruction::Pop, Some(argument))
-            }
-            0x8E => {
-                // mov 16bit segment registers
-                let (argument, ip_offset) =
-                    self.get_argument(RegisterSize::Segment,
-                                        RegOrOpcode::Register,
-                                        ImmediateSize::None,
-                                        // TODO: REVERSED_REGISTER_DIRECTION correct?
-                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
                 self.inc_rip(ip_offset);
                 (Instruction::Mov, Some(argument))
             }
@@ -622,6 +597,40 @@ impl<'a> Decoder<'a> {
                 self.machine_state.rip += ip_offset;
                 self.inc_rip(0);
                 (Instruction::Lea, Some(argument))
+            }
+            0x8E => {
+                // mov 16bit segment registers
+                let (argument, ip_offset) =
+                    self.get_argument(RegisterSize::Segment,
+                                        RegOrOpcode::Register,
+                                        ImmediateSize::None,
+                                        // TODO: REVERSED_REGISTER_DIRECTION correct?
+                                        decoder_flags | REVERSED_REGISTER_DIRECTION);
+                self.inc_rip(ip_offset);
+                (Instruction::Mov, Some(argument))
+            }
+            0x8F => {
+                let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Register,
+                                                                  ImmediateSize::None,
+                                                                  decoder_flags |
+                                                                  REVERSED_REGISTER_DIRECTION);
+                argument.second_argument = None;
+                self.inc_rip(ip_offset);
+                (Instruction::Pop, Some(argument))
+            }
+            0x90 => {
+                self.inc_rip(1);
+                (Instruction::Nop, None)
+            }
+            0x91...0x97 => {
+                let (argument, _) = self.get_argument(register_size,
+                                                                  RegOrOpcode::Register,
+                                                                  ImmediateSize::None,
+                                                                  decoder_flags |
+                                                                  REVERSED_REGISTER_DIRECTION);
+                self.inc_rip(1);
+                (Instruction::Xchg, Some(argument))
             }
             0x98 => {
                 let (register1, register2) = if decoder_flags.contains(OPERAND_16_BIT) {
