@@ -484,32 +484,50 @@ impl EmulationCPU {
 
         let (result, carry, overflow) = match argument_size {
             ArgumentSize::Bit8 => {
-                let (result, carry) = (value2 as u8).overflowing_shl(value1 as u32);
-                let (_, overflow) = (value2 as i8).overflowing_shl(value1 as u32);
-                (result as i64, carry, overflow)
+                if value1 >= 8 {
+                    (0, true, true)
+                } else {
+                    let (result, carry) = (value2 as u8).overflowing_shl(value1 as u32);
+                    let (_, overflow) = (value2 as i8).overflowing_shl(value1 as u32);
+                    (result as i64, carry, overflow)
+                }
             }
             ArgumentSize::Bit16 => {
-                let (result, carry) = (value2 as u16).overflowing_shl(value1 as u32);
-                let (_, overflow) = (value2 as i16).overflowing_shl(value1 as u32);
-                (result as i64, carry, overflow)
+                if value1 >= 16 {
+                    (0, true, true)
+                } else {
+                    let (result, carry) = (value2 as u16).overflowing_shl(value1 as u32);
+                    let (_, overflow) = (value2 as i16).overflowing_shl(value1 as u32);
+                    (result as i64, carry, overflow)
+                }
             }
             ArgumentSize::Bit32 => {
-                let (result, carry) = (value2 as u32).overflowing_shl(value1 as u32);
-                let (_, overflow) = (value2 as i32).overflowing_shl(value1 as u32);
-                (result as i64, carry, overflow)
+                if value1 >= 32 {
+                    (0, true, true)
+                } else {
+                    let (result, carry) = (value2 as u32).overflowing_shl(value1 as u32);
+                    let (_, overflow) = (value2 as i32).overflowing_shl(value1 as u32);
+                    (result as i64, carry, overflow)
+                }
             }
             ArgumentSize::Bit64 => {
-                let (result, carry) = (value2 as u64).overflowing_shl(value1 as u32);
-                let (_, overflow) = (value2 as i64).overflowing_shl(value1 as u32);
-                (result as i64, carry, overflow)
+                if value1 >= 64 {
+                    (0, true, true)
+                } else {
+                    let (result, carry) = (value2 as u64).overflowing_shl(value1 as u32);
+                    let (_, overflow) = (value2 as i64).overflowing_shl(value1 as u32);
+                    (result as i64, carry, overflow)
+                }
             }
         };
+        //println!("{:x} {:x} {:?} {:x}", value1, value2, argument_size, result);
         machine_state.set_flag(Flags::Carry, carry);
-        if value2 == 1 {
+        if value1 == 1 {
             machine_state.set_flag(Flags::Overflow, overflow);
         }
-
-        machine_state.compute_flags(result, argument_size);
+        if value1 != 0 {
+            machine_state.compute_flags(result, argument_size);
+        }
         machine_state.set_value(result, &second_argument, argument_size);
     }
 
