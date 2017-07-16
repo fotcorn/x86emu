@@ -852,10 +852,16 @@ impl<'a> Decoder<'a> {
                 let (argument, ip_offset) = match opcode {
                     0 | 1 => {
                         self.get_argument(RegisterSize::Bit8,
-                                            RegOrOpcode::Opcode,
-                                            ImmediateSize::Bit8,
-                                            decoder_flags)
+                                          RegOrOpcode::Opcode,
+                                          ImmediateSize::Bit8,
+                                          decoder_flags)
                     },
+                    2 | 3 => {
+                        self.get_argument(RegisterSize::Bit8,
+                                          RegOrOpcode::Opcode,
+                                          ImmediateSize::None,
+                                          decoder_flags)
+                    }
                     _ => panic!("no supported"),
                 };
                 self.inc_rip(ip_offset);
