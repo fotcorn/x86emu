@@ -1722,9 +1722,7 @@ impl<'a> Decoder<'a> {
                          ip_offset)
                     }
                     ImmediateSize::None => {
-                        assert!(reg_or_opcode == RegOrOpcode::Register);
-
-                        let second_reg_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
+                        let first_reg_size = if decoder_flags.contains(ADDRESS_SIZE_OVERRIDE) {
                             RegisterSize::Bit32
                         } else {
                             RegisterSize::Bit64
@@ -1735,29 +1733,40 @@ impl<'a> Decoder<'a> {
                             Register::RIP
                         } else {
                             get_register(rm,
-                                         second_reg_size,
+                                         first_reg_size,
                                          decoder_flags.contains(NEW_64BIT_REGISTER),
                                          decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
-                        let register2 = get_register(register_or_opcode,
-                                                     register_size,
-                                                     decoder_flags.contains(MOD_R_M_EXTENSION),
-                                                     decoder_flags.contains(NEW_8BIT_REGISTER));
+                        
+                        (match reg_or_opcode {
+                            RegOrOpcode::Register => {
+                                let register2 = get_register(register_or_opcode,
+                                                            register_size,
+                                                            decoder_flags.contains(MOD_R_M_EXTENSION),
+                                                            decoder_flags.contains(NEW_8BIT_REGISTER));
 
-                        (if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
-                             InstructionArgumentsBuilder::new().first_argument(self.effective_address(sib, register1, displacement, decoder_flags))
-                             .second_argument(
-                                InstructionArgument::Register {
-                                    register: register2,
-                                }).finalize()
-                         } else {
-                             InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
-                                     register: register2,
-                                 })
-                                 .second_argument(self.effective_address(sib, register1, displacement, decoder_flags))
-                                 .finalize()
-                         },
-                         ip_offset)
+                                if decoder_flags.contains(REVERSED_REGISTER_DIRECTION) {
+                                    InstructionArgumentsBuilder::new().first_argument(self.effective_address(sib, register1, displacement, decoder_flags))
+                                    .second_argument(
+                                        InstructionArgument::Register {
+                                            register: register2,
+                                        }).finalize()
+                                } else {
+                                    InstructionArgumentsBuilder::new().first_argument(InstructionArgument::Register {
+                                            register: register2,
+                                        })
+                                        .second_argument(self.effective_address(sib, register1, displacement, decoder_flags))
+                                        .finalize()
+                                }
+                            },
+                            RegOrOpcode::Opcode => {
+                                InstructionArgumentsBuilder::new()
+                                    .first_argument(self.effective_address(sib, register1, displacement, decoder_flags))
+                                    .opcode(register_or_opcode)
+                                    .explicit_size(ArgumentSize::Bit64)
+                                    .finalize()
+                            }
+                        }, ip_offset)
                     }
                 }
             }
