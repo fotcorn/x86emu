@@ -1057,47 +1057,66 @@ impl EmulationCPU {
         }
     }
 
-    pub fn bt_impl<F: FnOnce(bool) -> bool>(&self, machine_state: &mut MachineState, arg: &InstructionArguments, bit_manipulation: F) {
+    /// normalize bit_position,
+    /// get current value of bit at bit_position (after normalization)
+    fn bt_prepare(&self, bit_position: i64, arg: i64, argument_size: ArgumentSize) -> (i64, bool) {
+        let bit_position = match argument_size {
+            ArgumentSize::Bit8 => bit_position % 8,
+            ArgumentSize::Bit16 => bit_position % 16,
+            ArgumentSize::Bit32 => bit_position % 32,
+            ArgumentSize::Bit64 => bit_position % 64,
+        };
+
+        let bit = ((arg >> bit_position) & 1) == 1;
+        (bit_position, bit)
+    }
+
+    pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
+        machine_state.print_instr_arg("bt", &arg);
+        let argument_size = arg.size();
+        let (first_argument, second_argument) = arg.get_two_arguments();
+        let bit_position = machine_state.get_value(&first_argument, argument_size);
+        let arg = machine_state.get_value(&second_argument, argument_size);
+        let (_, bit) = self.bt_prepare(bit_position, arg, argument_size);
+        machine_state.set_flag(Flags::Carry, bit);
+    }
+
+    // bit_manipulation: closure which takes the current bit value and modifies it depending on the instruciton
+    fn btx_impl<F>(&self, machine_state: &mut MachineState, arg: &InstructionArguments, bit_manipulation: F)
+        where F: FnOnce(bool) -> bool
+    {
         let argument_size = arg.size();
         let (first_argument, second_argument) = arg.get_two_arguments();
         let bit_position = machine_state.get_value(&first_argument, argument_size);
         let mut arg = machine_state.get_value(&second_argument, argument_size);
 
-
-        let bit = (arg & bit_position) >> bit_position == 1;
+        let (bit_position, bit) = self.bt_prepare(bit_position, arg, argument_size);
 
         machine_state.set_flag(Flags::Carry, bit);
 
-        let changed_bit = bit_manipulation(bit);
+        let bit = bit_manipulation(bit);
 
-        if changed_bit != bit {
-            if changed_bit {
-                arg |= 1 << bit_position;
-            } else {
-                arg &= !(1 << bit_position);
-            }
-            machine_state.set_value(arg, &second_argument, argument_size);
+        if bit {
+            arg |= 1 << bit_position;
+        } else {
+            arg &= !(1 << bit_position);
         }
-    }
-
-    pub fn bt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
-        machine_state.print_instr_arg("bt", &arg);
-        self.bt_impl(machine_state, arg, | b | b);
+        machine_state.set_value(arg as i64, &second_argument, argument_size);
     }
 
     pub fn bts(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("bts", &arg);
-        self.bt_impl(machine_state, arg, | _ | true);
+        self.btx_impl(machine_state, arg, | _ | true);
     }
 
     pub fn btr(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btr", &arg);
-        self.bt_impl(machine_state, arg, | _ | false);
+        self.btx_impl(machine_state, arg, | _ | false);
     }
 
     pub fn btc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
         machine_state.print_instr_arg("btc", &arg);
-        self.bt_impl(machine_state, arg, | b | !b);
+        self.btx_impl(machine_state, arg, | b | !b);
     }
 
     pub fn cmpxchg(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {

@@ -178,8 +178,7 @@ TODO
 /* XXX: should be more precise ? */
 #undef CC_MASK
 #define CC_MASK (CC_C)
-/*
-TODO
+
 #define OP bt
 #define OP_NOBYTE
 #include "test-i386-shift.h"
@@ -195,7 +194,7 @@ TODO
 #define OP btc
 #define OP_NOBYTE
 #include "test-i386-shift.h"
-*/
+
 /* lea test (modrm support) */
 #define TEST_LEAQ(STR)\
 {\
