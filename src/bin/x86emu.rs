@@ -43,7 +43,7 @@ fn main() {
 
     match loader {
         "linux" => {
-            linux(filename);
+            linux(filename, print_instructions, debug);
         }
         "elf" => {
             elf(filename, symbol, print_instructions, debug, benchmark);

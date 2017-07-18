@@ -15,13 +15,15 @@ const LOAD_ADDRESS: u64 = 0x100000;
 /* see <linux kernel source>/Documentation/x86/boot.txt and zero-page.txt
  * for documentation of the 64 bit boot protocol
  */
-pub fn linux(filename: &str) {
+pub fn linux(filename: &str, print_instructions: bool, print_registers: bool) {
     // load kernel image from disk
     let mut file = File::open(filename).expect("Cannot open file");
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).expect("Failed to read file.");
 
     let mut machine_state = MachineState::new();
+    machine_state.print_instructions = print_instructions;
+    machine_state.print_registers = print_registers;
 
     // create zero page and copy setup header into it
     let setup_header_end: usize = 0x202 + buffer[0x201] as usize;
