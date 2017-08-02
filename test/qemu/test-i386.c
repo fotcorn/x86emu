@@ -137,14 +137,13 @@ TODO
 #define OP_CC
 #define OP1
 #include "test-i386.h"
-/*
-TODO
+
 #undef CC_MASK
 #define CC_MASK (CC_C | CC_P | CC_Z | CC_S | CC_O)
 
 #define OP shl
 #include "test-i386-shift.h"
-
+/*
 #define OP shr
 #include "test-i386-shift.h"
 

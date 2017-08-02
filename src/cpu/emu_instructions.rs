@@ -488,7 +488,8 @@ impl EmulationCPU {
                     (0, true, true)
                 } else {
                     let (result, carry) = (value2 as u8).overflowing_shl(value1 as u32);
-                    let (_, overflow) = (value2 as i8).overflowing_shl(value1 as u32);
+                    // overflow = most significant bit of result == carry
+                    let overflow = ((result & 0x80) >> 7 == 1) != carry;
                     (result as i64, carry, overflow)
                 }
             }
@@ -497,7 +498,8 @@ impl EmulationCPU {
                     (0, true, true)
                 } else {
                     let (result, carry) = (value2 as u16).overflowing_shl(value1 as u32);
-                    let (_, overflow) = (value2 as i16).overflowing_shl(value1 as u32);
+                    // overflow = most significant bit of result == carry
+                    let overflow = ((result & 0x8000) >> 15 == 1) != carry;
                     (result as i64, carry, overflow)
                 }
             }
@@ -506,7 +508,8 @@ impl EmulationCPU {
                     (0, true, true)
                 } else {
                     let (result, carry) = (value2 as u32).overflowing_shl(value1 as u32);
-                    let (_, overflow) = (value2 as i32).overflowing_shl(value1 as u32);
+                    // overflow = most significant bit of result == carry
+                    let overflow = ((result & 0x80000000) >> 31 == 1) != carry;
                     (result as i64, carry, overflow)
                 }
             }
@@ -515,12 +518,13 @@ impl EmulationCPU {
                     (0, true, true)
                 } else {
                     let (result, carry) = (value2 as u64).overflowing_shl(value1 as u32);
-                    let (_, overflow) = (value2 as i64).overflowing_shl(value1 as u32);
+                    // overflow = most significant bit of result == carry
+                    let overflow = ((result & 0x8000000000000000) >> 63 == 1) != carry;
                     (result as i64, carry, overflow)
                 }
             }
         };
-        //println!("{:x} {:x} {:?} {:x}", value1, value2, argument_size, result);
+
         machine_state.set_flag(Flags::Carry, carry);
         if value1 == 1 {
             machine_state.set_flag(Flags::Overflow, overflow);
