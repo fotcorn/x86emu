@@ -487,7 +487,9 @@ impl EmulationCPU {
                 if value1 >= 8 {
                     (0, true, true)
                 } else {
-                    let (result, carry) = (value2 as u8).overflowing_shl(value1 as u32);
+                    let result = (value2 as u8) << (value1 as u32);
+                    let bit_position = 8 - value1;
+                    let carry = ((value2 as u8) >> bit_position) & 1 == 1;
                     // overflow = most significant bit of result == carry
                     let overflow = ((result & 0x80) >> 7 == 1) != carry;
                     (result as i64, carry, overflow)
@@ -497,7 +499,9 @@ impl EmulationCPU {
                 if value1 >= 16 {
                     (0, true, true)
                 } else {
-                    let (result, carry) = (value2 as u16).overflowing_shl(value1 as u32);
+                    let result = (value2 as u16) << (value1 as u32);
+                    let bit_position = 16 - value1;
+                    let carry = ((value2 as u16) >> bit_position) & 1 == 1;
                     // overflow = most significant bit of result == carry
                     let overflow = ((result & 0x8000) >> 15 == 1) != carry;
                     (result as i64, carry, overflow)
@@ -507,7 +511,9 @@ impl EmulationCPU {
                 if value1 >= 32 {
                     (0, true, true)
                 } else {
-                    let (result, carry) = (value2 as u32).overflowing_shl(value1 as u32);
+                    let result = (value2 as u32) << (value1 as u32);
+                    let bit_position = 32 - value1;
+                    let carry = ((value2 as u32) >> bit_position) & 1 == 1;
                     // overflow = most significant bit of result == carry
                     let overflow = ((result & 0x80000000) >> 31 == 1) != carry;
                     (result as i64, carry, overflow)
@@ -517,7 +523,9 @@ impl EmulationCPU {
                 if value1 >= 64 {
                     (0, true, true)
                 } else {
-                    let (result, carry) = (value2 as u64).overflowing_shl(value1 as u32);
+                    let result = (value2 as u64) << (value1 as u32);
+                    let bit_position = 64 - value1;
+                    let carry = ((value2 as u64) >> bit_position) & 1 == 1;
                     // overflow = most significant bit of result == carry
                     let overflow = ((result & 0x8000000000000000) >> 63 == 1) != carry;
                     (result as i64, carry, overflow)
