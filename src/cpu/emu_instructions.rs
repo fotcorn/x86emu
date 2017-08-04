@@ -492,15 +492,18 @@ impl EmulationCPU {
                 } else {
                     let result = (value2 as u8) << (value1 as u32);
                     let bit_position = 8 - value1;
-                    let carry = ((value2 as u64) >> bit_position) & 1 == 1;
+                    let carry = ((value2 as u8) >> bit_position) & 1 == 1;
                     // overflow = most significant bit of result == carry
                     let overflow = ((result & 0x80) >> 7 == 1) != carry;
                     (result as i64, carry, overflow)
                 }
             }
             ArgumentSize::Bit16 => {
-                if value1 >= 16 {
+                value1 = value1 % 0x20;
+                if value1 > 16 {
                     (0, false, false)
+                } else if value1 == 16 {
+                    (0, value2 & 1 == 1, false)
                 } else {
                     let result = (value2 as u16) << (value1 as u32);
                     let bit_position = 16 - value1;
@@ -511,8 +514,11 @@ impl EmulationCPU {
                 }
             }
             ArgumentSize::Bit32 => {
-                if value1 >= 32 {
+                value1 = value1 % 0x20;
+                if value1 > 32 {
                     (0, false, false)
+                } else if value1 == 32 {
+                    (0, value2 & 1 == 1, false)
                 } else {
                     let result = (value2 as u32) << (value1 as u32);
                     let bit_position = 32 - value1;
@@ -523,8 +529,10 @@ impl EmulationCPU {
                 }
             }
             ArgumentSize::Bit64 => {
-                if value1 >= 64 {
+                if value1 > 64 {
                     (0, false, false)
+                } else if value1 == 64 {
+                    (0, value2 & 1 == 1, false)
                 } else {
                     let result = (value2 as u64) << (value1 as u32);
                     let bit_position = 64 - value1;
