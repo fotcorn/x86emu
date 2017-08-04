@@ -479,17 +479,20 @@ impl EmulationCPU {
         machine_state.print_instr_arg("shl", &arg);
         let argument_size = arg.size();
         let (first_argument, second_argument) = arg.get_two_arguments();
-        let value1 = machine_state.get_value(&first_argument, argument_size);
+        let mut value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
 
         let (result, carry, overflow) = match argument_size {
             ArgumentSize::Bit8 => {
-                if value1 >= 8 {
-                    (0, true, true)
+                value1 = value1 % 0x20;
+                if value1 > 8 {
+                    (0, false, false)
+                } else if value1 == 8 {
+                    (0, value2 & 1 == 1, false)
                 } else {
                     let result = (value2 as u8) << (value1 as u32);
                     let bit_position = 8 - value1;
-                    let carry = ((value2 as u8) >> bit_position) & 1 == 1;
+                    let carry = ((value2 as u64) >> bit_position) & 1 == 1;
                     // overflow = most significant bit of result == carry
                     let overflow = ((result & 0x80) >> 7 == 1) != carry;
                     (result as i64, carry, overflow)
@@ -497,7 +500,7 @@ impl EmulationCPU {
             }
             ArgumentSize::Bit16 => {
                 if value1 >= 16 {
-                    (0, true, true)
+                    (0, false, false)
                 } else {
                     let result = (value2 as u16) << (value1 as u32);
                     let bit_position = 16 - value1;
@@ -509,7 +512,7 @@ impl EmulationCPU {
             }
             ArgumentSize::Bit32 => {
                 if value1 >= 32 {
-                    (0, true, true)
+                    (0, false, false)
                 } else {
                     let result = (value2 as u32) << (value1 as u32);
                     let bit_position = 32 - value1;
@@ -521,7 +524,7 @@ impl EmulationCPU {
             }
             ArgumentSize::Bit64 => {
                 if value1 >= 64 {
-                    (0, true, true)
+                    (0, false, false)
                 } else {
                     let result = (value2 as u64) << (value1 as u32);
                     let bit_position = 64 - value1;
@@ -533,11 +536,11 @@ impl EmulationCPU {
             }
         };
 
-        machine_state.set_flag(Flags::Carry, carry);
         if value1 == 1 {
             machine_state.set_flag(Flags::Overflow, overflow);
         }
         if value1 != 0 {
+            machine_state.set_flag(Flags::Carry, carry);
             machine_state.compute_flags(result, argument_size);
         }
         machine_state.set_value(result, &second_argument, argument_size);
