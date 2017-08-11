@@ -143,13 +143,14 @@ TODO
 
 #define OP shl
 #include "test-i386-shift.h"
-/*
+
 #define OP shr
 #include "test-i386-shift.h"
 
 #define OP sar
 #include "test-i386-shift.h"
-
+/*
+TODO
 #define OP rol
 #include "test-i386-shift.h"
 
