@@ -625,12 +625,67 @@ impl EmulationCPU {
         machine_state.print_instr_arg("sar", &arg);
         let argument_size = arg.size();
         let (first_argument, second_argument) = arg.get_two_arguments();
-        let value1 = machine_state.get_value(&first_argument, argument_size);
+        let mut value1 = machine_state.get_value(&first_argument, argument_size);
         let value2 = machine_state.get_value(&second_argument, argument_size);
-        let result = value2 >> value1;
-        machine_state.compute_flags(result, argument_size);
+
+        let (result, carry) = match argument_size {
+            ArgumentSize::Bit8 => {
+                value1 = value1 % 0x20;
+                if value1 > 8 {
+                    (0, false)
+                } else if value1 == 8 {
+                    (0, value2 & 0x80 == 0x80)
+                } else {
+                    let result = (value2 as i8) >> (value1 as u32);
+                    let carry = ((value2 as u8) >> (value1 - 1)) & 1 == 1;
+                    (result as i64, carry)
+                }
+            }
+            ArgumentSize::Bit16 => {
+                value1 = value1 % 0x20;
+                if value1 > 16 {
+                    (0, false)
+                } else if value1 == 16 {
+                    (0, value2 & 0x8000 == 0x8000)
+                } else {
+                    let result = (value2 as i16) >> (value1 as u32);
+                    let carry = ((value2 as u16) >> (value1 - 1)) & 1 == 1;
+                    (result as i64, carry)
+                }
+            }
+            ArgumentSize::Bit32 => {
+                value1 = value1 % 0x20;
+                if value1 > 32 {
+                    (0, false)
+                } else if value1 == 32 {
+                    (0, value2 & 0x80000000 == 0x80000000)
+                } else {
+                    let result = (value2 as i32) >> (value1 as u32);
+                    let carry = ((value2 as u32) >> (value1 - 1)) & 1 == 1;
+                    (result as i64, carry,)
+                }
+            }
+            ArgumentSize::Bit64 => {
+                if value1 > 64 {
+                    (0, false)
+                } else if value1 == 64 {
+                    (0, value2 as u64 & 0x8000000000000000 == 0x8000000000000000)
+                } else {
+                    let result = (value2 as i64) >> (value1 as u32);
+                    let carry = ((value2 as u64) >> (value1 - 1)) & 1 == 1;
+                    (result as i64, carry)
+                }
+            }
+        };
+
+        if value1 == 1 {
+            machine_state.set_flag(Flags::Overflow, false);
+        }
+        if value1 != 0 {
+            machine_state.set_flag(Flags::Carry, carry);
+            machine_state.compute_flags(result, argument_size);
+        }
         machine_state.set_value(result, &second_argument, argument_size);
-        // TODO:  sar does not preserve highest byte; sets O/C flags
     }
 
     pub fn inc(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
