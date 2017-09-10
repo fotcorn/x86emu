@@ -574,7 +574,8 @@ impl EmulationCPU {
                     (0, value2 & 0x80 == 0x80, false)
                 } else {
                     let result = (value2 as u8) >> (value1 as u32);
-                    let carry = ((value2 as u8) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u8).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry, value2 & 0x80 == 0x80)
                 }
             }
@@ -586,7 +587,8 @@ impl EmulationCPU {
                     (0, value2 & 0x8000 == 0x8000, false)
                 } else {
                     let result = (value2 as u16) >> (value1 as u32);
-                    let carry = ((value2 as u16) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u16).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry, value2 & 0x8000 == 0x8000)
                 }
             }
@@ -598,7 +600,8 @@ impl EmulationCPU {
                     (0, value2 & 0x80000000 == 0x80000000, false)
                 } else {
                     let result = (value2 as u32) >> (value1 as u32);
-                    let carry = ((value2 as u32) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u32).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry, value2 & 0x80000000 == 0x80000000)
                 }
             }
@@ -609,7 +612,8 @@ impl EmulationCPU {
                     (0, value2 as u64 & 0x8000000000000000 == 0x8000000000000000, false)
                 } else {
                     let result = (value2 as u64) >> (value1 as u32);
-                    let carry = ((value2 as u64) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u64).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry, value2 as u64 & 0x8000000000000000 == 0x8000000000000000)
                 }
             }
@@ -641,7 +645,8 @@ impl EmulationCPU {
                     (0, value2 & 0x80 == 0x80)
                 } else {
                     let result = (value2 as i8) >> (value1 as u32);
-                    let carry = ((value2 as u8) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u8).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry)
                 }
             }
@@ -653,7 +658,8 @@ impl EmulationCPU {
                     (0, value2 & 0x8000 == 0x8000)
                 } else {
                     let result = (value2 as i16) >> (value1 as u32);
-                    let carry = ((value2 as u16) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u16).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry)
                 }
             }
@@ -665,7 +671,8 @@ impl EmulationCPU {
                     (0, value2 & 0x80000000 == 0x80000000)
                 } else {
                     let result = (value2 as i32) >> (value1 as u32);
-                    let carry = ((value2 as u32) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u32).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry,)
                 }
             }
@@ -676,7 +683,8 @@ impl EmulationCPU {
                     (0, value2 as u64 & 0x8000000000000000 == 0x8000000000000000)
                 } else {
                     let result = (value2 as i64) >> (value1 as u32);
-                    let carry = ((value2 as u64) >> (value1 - 1)) & 1 == 1;
+                    let (carry, _) = (value2 as u64).overflowing_shr((value1 - 1) as u32);
+                    let carry = carry & 1 == 1;
                     (result as i64, carry)
                 }
             }
