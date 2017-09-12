@@ -78,6 +78,11 @@ impl<'a> Decoder<'a> {
 
         loop {
             let rip = self.machine_state.rip as u64;
+
+            if rip == 0 {
+                panic!("Instruction pointer is set to 0, aborting...");
+            }
+
             first_byte = self.machine_state.mem_read_byte(rip);
             match first_byte {
                 0xF0 => {
@@ -1737,7 +1742,7 @@ impl<'a> Decoder<'a> {
                                          decoder_flags.contains(NEW_64BIT_REGISTER),
                                          decoder_flags.contains(NEW_8BIT_REGISTER))
                         };
-                        
+
                         (match reg_or_opcode {
                             RegOrOpcode::Register => {
                                 let register2 = get_register(register_or_opcode,
