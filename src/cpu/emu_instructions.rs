@@ -845,10 +845,16 @@ impl EmulationCPU {
             machine_state.get_value(&InstructionArgument::Register { register: Register::RDI },
                                     ArgumentSize::Bit64);
         if arg.repeat_equal {
-            let mut length =
+            let length =
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
-            length *= 8; // 8 bytes per repeat
+            let length = match arg.explicit_size.unwrap() {
+                ArgumentSize::Bit8 => length,
+                ArgumentSize::Bit16 => length * 2,
+                ArgumentSize::Bit32 => length * 4,
+                ArgumentSize::Bit64 => length * 8,
+            };
+
             machine_state.print_instr("rep stos %rax,%es:(%rdi)");
             if machine_state.get_flag(Flags::Direction) {
                 panic!("stos NOOP");
@@ -859,8 +865,9 @@ impl EmulationCPU {
             }
         } else {
             machine_state.print_instr("stos %ds:(%rsi),%es:(%rdi)");
+            panic!("stos NOOP");
+            // TODO:  stos: NOOP
         }
-        // TODO:  stos: NOOP
     }
 
 
