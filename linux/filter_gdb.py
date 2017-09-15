@@ -33,6 +33,15 @@ while True:
                     print('rep stos %eax,%es:(%rdi)')
                     line = match.group(1)
                     break
+        if line == 'rep stos %al,%es:(%rdi)':
+            while True:
+                i += 1
+                line = lines[i]
+                match = re.match('=> 0x[a-z0-9]+:\t(.*)\n', line)
+                if match and match.group(1) != 'rep stos %al,%es:(%rdi)':
+                    print('rep stos %al,%es:(%rdi)')
+                    line = match.group(1)
+                    break
     else:  # register value
         b = False
         # skip some uninteresting registers
