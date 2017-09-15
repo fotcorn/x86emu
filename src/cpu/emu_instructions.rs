@@ -1459,9 +1459,13 @@ impl EmulationCPU {
                 machine_state.set_register_value(&Register::EAX, 0x80000001);
             },
             0x80000001 => {
-                let edx = 1 << 29 | // Long mode
-                          1 << 31;  // 3DNow!
-                machine_state.set_register_value(&Register::EDX, edx);
+                // let edx = 1 << 29 | // Long mode
+                //           1 << 31;  // 3DNow!
+                // machine_state.set_register_value(&Register::EDX, edx);
+                machine_state.set_register_value(&Register::RAX, 0x663);
+                machine_state.set_register_value(&Register::RBX, 0x0);
+                machine_state.set_register_value(&Register::RCX, 0x5);
+                machine_state.set_register_value(&Register::RDX, 0x2193fbfd);
             }
             _ => panic!("CPUID: unsupported input: {:x}", value),
         }
