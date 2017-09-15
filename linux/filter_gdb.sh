@@ -5,6 +5,9 @@ sed -e 's/movz[bwl][wlq]/movzx /g' | \
 sed -e 's/movabs/mov   /g' | \
 sed -e 's/leaveq/leave/g' | \
 sed -e 's/retq/ret/g' | \
+sed -e 's/pushq/push /g' | \
+sed -e 's/pushfq/pushf /g' | \
+sed -e 's/popfq/popf /g' | \
 sed -e 's/repz ret/ret/g' | \
 sed -e 's/xchg   %ax,%ax/nop/g' | \
 sed -e 's/jo.*/jo/g' | \
