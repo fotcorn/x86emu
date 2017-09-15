@@ -849,13 +849,24 @@ impl EmulationCPU {
                 machine_state.get_value(&InstructionArgument::Register { register: Register::RCX },
                                         ArgumentSize::Bit64);
             let length = match arg.explicit_size.unwrap() {
-                ArgumentSize::Bit8 => length,
-                ArgumentSize::Bit16 => length * 2,
-                ArgumentSize::Bit32 => length * 4,
-                ArgumentSize::Bit64 => length * 8,
+                ArgumentSize::Bit8 => {
+                    machine_state.print_instr("rep stos %al,%es:(%rdi)");
+                    length
+                },
+                ArgumentSize::Bit16 => {
+                    machine_state.print_instr("rep stos %ax,%es:(%rdi)");
+                    length * 2
+                },
+                ArgumentSize::Bit32 => {
+                    machine_state.print_instr("rep stos %eax,%es:(%rdi)");
+                    length * 4
+                },
+                ArgumentSize::Bit64 => {
+                    machine_state.print_instr("rep stos %rax,%es:(%rdi)");
+                    length * 8
+                },
             };
 
-            machine_state.print_instr("rep stos %rax,%es:(%rdi)");
             if machine_state.get_flag(Flags::Direction) {
                 panic!("stos NOOP");
             } else {
