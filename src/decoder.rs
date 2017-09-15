@@ -815,7 +815,7 @@ impl<'a> Decoder<'a> {
             }
             0xCB => {
                 self.inc_rip(0);
-                (Instruction::Ret, None)
+                (Instruction::Lret, None)
             }
             0xD1 => {
                 let (mut argument, ip_offset) = self.get_argument(register_size,
@@ -1515,6 +1515,7 @@ impl<'a> Decoder<'a> {
             Instruction::Pushf => self.cpu.pushf(self.machine_state),
             Instruction::RegisterOperation => self.cpu.register_operation(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::Ret => self.cpu.ret(self.machine_state),
+            Instruction::Lret => self.cpu.lret(self.machine_state),
             Instruction::Rdmsr => self.cpu.rdmsr(self.machine_state),
             Instruction::Sbb => self.cpu.sbb(self.machine_state, Decoder::fetch_argument(cache_entry)),
             Instruction::ShiftRotate => self.cpu.shift_rotate(self.machine_state, Decoder::fetch_argument(cache_entry)),

@@ -804,6 +804,13 @@ impl EmulationCPU {
         machine_state.rip = value;
     }
 
+    pub fn lret(&self, machine_state: &mut MachineState) {
+        machine_state.print_instr("lret");
+        let value = machine_state.stack_pop();
+        machine_state.stack_pop(); // Code segment
+        machine_state.rip = value;
+    }
+
     pub fn leave(&self, machine_state: &mut MachineState) {
         machine_state.print_instr("leave");
         let value = machine_state.get_register_value(&Register::RBP);

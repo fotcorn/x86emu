@@ -218,7 +218,7 @@ impl InstructionArguments {
         let second_argument = match self.second_argument {
             Some(ref first_argument) => first_argument,
             None => panic!("Instruction needs second_argument"),
-        };    
+        };
         (first_argument, second_argument)
     }
 
@@ -465,6 +465,7 @@ pub enum Instruction {
     Rdmsr,
     RegisterOperation,
     Ret,
+    Lret,
     Sbb,
     ShiftRotate,
     Std,
