@@ -1352,25 +1352,15 @@ impl EmulationCPU {
     }
 
     pub fn lgdt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
-        machine_state.print_instr_arg("lgdt", &arg);
+        machine_state.print_instr_arg_no_size("lgdt", &arg);
         let first_argument = arg.get_one_argument();
-        match *first_argument {
-            InstructionArgument::Immediate { immediate } => {
-                machine_state.gdt = immediate as i64;
-            },
-            _ => unreachable!("Invalid instruction argument for lgdt")
-        }
+        machine_state.gdt = machine_state.get_value(first_argument, ArgumentSize::Bit64);
     }
 
     pub fn lidt(&self, machine_state: &mut MachineState, arg: &InstructionArguments) {
-        machine_state.print_instr_arg("lidt", &arg);
+        machine_state.print_instr_arg_no_size("lidt", &arg);
         let first_argument = arg.get_one_argument();
-        match *first_argument {
-            InstructionArgument::Immediate { immediate } => {
-                machine_state.idt = immediate as i64;
-            },
-            _ => unreachable!("Invalid instruction argument for lidt")
-        }
+        machine_state.idt = machine_state.get_value(first_argument, ArgumentSize::Bit64);
     }
 
     pub fn cpuid(&self, machine_state: &mut MachineState) {

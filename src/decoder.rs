@@ -998,12 +998,13 @@ impl<'a> Decoder<'a> {
                         let opcode = (modrm & 0b00111000) >> 3;
                         match opcode {
                             2  | 3 => {
-                                let table = self.machine_state.mem_read(rip + 2, 4);
-                                let table = *zero::read::<i32>(&table);
-                                let argument = InstructionArgumentsBuilder::new()
-                                    .first_argument(InstructionArgument::Immediate{ immediate: table as i64 })
-                                    .finalize();
-                                    self.inc_rip(6);
+                                let (mut argument, ip_offset) = self.get_argument(register_size,
+                                                                                  RegOrOpcode::Opcode,
+                                                                                  ImmediateSize::Bit32,
+                                                                                  decoder_flags | REVERSED_REGISTER_DIRECTION);
+                                argument.first_argument = Some(argument.second_argument.unwrap());
+                                argument.second_argument = None;
+                                self.inc_rip(ip_offset - 4);
                                 if opcode == 2 {
                                     (Instruction::Lgdt, Some(argument))
                                 } else {
