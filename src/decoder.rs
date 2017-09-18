@@ -806,6 +806,14 @@ impl<'a> Decoder<'a> {
                 self.inc_rip(ip_offset);
                 (Instruction::Mov, Some(argument))
             }
+            0xC0 => {
+                let (argument, ip_offset) = self.get_argument(RegisterSize::Bit8,
+                                                              RegOrOpcode::Opcode,
+                                                              ImmediateSize::Bit8,
+                                                              decoder_flags);
+                self.inc_rip(ip_offset);
+                (Instruction::ShiftRotate, Some(argument))
+            }
             0xC1 => {
                 let (argument, ip_offset) = self.get_argument(register_size,
                                                                 RegOrOpcode::Opcode,
