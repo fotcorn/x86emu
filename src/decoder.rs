@@ -724,11 +724,10 @@ impl<'a> Decoder<'a> {
             0xAB => {
                 self.inc_rip(1);
                 let argument_size = match register_size {
-                    RegisterSize::Bit8 => ArgumentSize::Bit8,
                     RegisterSize::Bit16 => ArgumentSize::Bit16,
                     RegisterSize::Bit32 => ArgumentSize::Bit32,
                     RegisterSize::Bit64 => ArgumentSize::Bit64,
-                    RegisterSize::Segment => panic!("Unsupported register size"),
+                    RegisterSize::Bit8 | RegisterSize::Segment => panic!("Unsupported register size"),
                 };
                 (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
                     .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
@@ -746,6 +745,19 @@ impl<'a> Decoder<'a> {
                      })
                     .second_argument(InstructionArgument::Register{ register: Register::AL })
                     .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
+                    .finalize()))
+            }
+            0xAF => {
+                self.inc_rip(1);
+                let argument_size = match register_size {
+                    RegisterSize::Bit16 => ArgumentSize::Bit16,
+                    RegisterSize::Bit32 => ArgumentSize::Bit32,
+                    RegisterSize::Bit64 => ArgumentSize::Bit64,
+                    RegisterSize::Bit8 | RegisterSize::Segment => panic!("Unsupported register size"),
+                };
+                (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
+                    .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
+                    .explicit_size(argument_size)
                     .finalize()))
             }
             opcode @ 0xB0...0xB7 => {
