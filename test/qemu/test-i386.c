@@ -1545,8 +1545,6 @@ uint8_t str_buffer[4096];
            (int)(eflags & (CC_C | CC_P | CC_Z | CC_S | CC_O | CC_A)));\
 }
 
-/*
-TODO
 #define TEST_STRING(OP, REP)\
     TEST_STRING1(OP, "b", "", REP);\
     TEST_STRING1(OP, "w", "", REP);\
@@ -1556,10 +1554,6 @@ TODO
     TEST_STRING1(OP, "w", "std", REP);\
     TEST_STRING1(OP, "l", "std", REP);\
     X86_64_ONLY(TEST_STRING1(OP, "q", "std", REP))
-*/
-#define TEST_STRING(OP, REP)\
-    TEST_STRING1(OP, "b", "", REP);\
-    TEST_STRING1(OP, "b", "std", REP);\
 
 void test_string(void)
 {
@@ -1577,7 +1571,7 @@ void test_string(void)
 
    /* XXX: better tests */
    TEST_STRING(scas, "");
-   /*TEST_STRING(scas, "repz ");*/
+   TEST_STRING(scas, "repz ");
    TEST_STRING(scas, "repnz ");
    //TEST_STRING(cmps, "");
    //TEST_STRING(cmps, "repz ");
