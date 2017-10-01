@@ -755,7 +755,7 @@ impl<'a> Decoder<'a> {
                     RegisterSize::Bit64 => ArgumentSize::Bit64,
                     RegisterSize::Bit8 | RegisterSize::Segment => panic!("Unsupported register size"),
                 };
-                (Instruction::Stos, Some(InstructionArgumentsBuilder::new()
+                (Instruction::Scas, Some(InstructionArgumentsBuilder::new()
                     .repeat(decoder_flags.contains(REPEAT_EQUAL), decoder_flags.contains(REPEAT_NOT_EQUAL))
                     .explicit_size(argument_size)
                     .finalize()))

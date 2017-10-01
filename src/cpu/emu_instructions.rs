@@ -946,7 +946,7 @@ impl EmulationCPU {
         let mut source = machine_state.get_value(&source_arg, argument_size);
         let needle = machine_state.get_value(&needle, argument_size);
 
-        if arg.repeat_not_equal {
+        if arg.repeat_not_equal || arg.repeat_equal {
             let mut i = machine_state.get_register_value(&Register::RCX) as u64;
             loop {
                 if i == 0 {
@@ -955,10 +955,10 @@ impl EmulationCPU {
                 i -= 1;
                 self.scas_step(machine_state, source, needle, argument_size);
 
-                if machine_state.get_flag(Flags::Zero) {
+                if arg.repeat_not_equal && machine_state.get_flag(Flags::Zero) ||
+                   arg.repeat_equal && !machine_state.get_flag(Flags::Zero) {
                     break;
                 }
-
                 source = machine_state.get_value(&source_arg, argument_size);
             }
             machine_state.set_register_value(&Register::RCX, i as i64);
