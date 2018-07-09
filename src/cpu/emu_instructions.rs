@@ -1359,13 +1359,16 @@ impl EmulationCPU {
                 let data = str::from_utf8(&data).unwrap();
                 print!("{}", data);
             }
-            /* open */ 2 => (),
-            /* close */ 3 => (),
-            /* exit */60 => {
+            /* sys_open */ 2 => (),
+            /* sys_close */ 3 => (),
+            /* sys_ioctl */ 16 => (),
+            /* sys_writev */ 20 => (),
+            /* sys_exit */60 => {
                 process::exit(0);
             },
             /* arch_prctl */ 158 => (),
-            _ => panic!("unsupported syscall"),
+            /* sys_set_tid_address */ 218 => (),
+            _ => panic!("unsupported syscall: {}", rax),
         }
     }
 
