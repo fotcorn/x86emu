@@ -99,7 +99,7 @@ impl MachineState {
         let mut page_offset = address % PAGE_SIZE;
         let mut data_offset = 0;
         loop {
-            let mut page = self.get_page(page_number);
+            let page = self.get_page(page_number);
 
             loop {
                 if data_offset >= data.len() {
