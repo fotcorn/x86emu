@@ -1,5 +1,4 @@
 use std::process;
-use std::str;
 use std::u64;
 
 use extprim::u128::u128;
@@ -1345,29 +1344,32 @@ impl EmulationCPU {
     pub fn syscall(&self, machine_state: &mut MachineState) {
         let rax = machine_state.get_register_value(&Register::RAX);
 
-        match rax {
-            /* read */ 0 => (),
-            /* write */ 1 => {
-                let fd = machine_state.get_register_value(&Register::RDI);
-                let buffer = machine_state.get_register_value(&Register::RSI) as u64;
-                let count = machine_state.get_register_value(&Register::RDX) as u64;
+        let p1 = machine_state.get_register_value(&Register::RDI) as u64;
+        let p2 = machine_state.get_register_value(&Register::RSI) as u64;
+        let p3 = machine_state.get_register_value(&Register::RDX) as u64;
+        // let p4 = machine_state.get_register_value(&Register::RCX) as u64;
+        // let p5 = machine_state.get_register_value(&Register::R8) as u64;
+        // let p6 = machine_state.get_register_value(&Register::R9) as u64;
 
-                if fd != 1 {
-                    panic!("unsupported file description in write: {}", fd);
+        match rax {
+            /* read */ /*0 => (),*/
+            /* write */ 1 => {
+                let data = machine_state.mem_read(p2, p3);
+                unsafe {
+                    let ret = syscall!(WRITE, p1, data.as_ptr(), p3);
+                    machine_state.set_register_value(&Register::RAX, ret as i64);
                 }
-                let data = machine_state.mem_read(buffer, count);
-                let data = str::from_utf8(&data).unwrap();
-                print!("{}", data);
             }
             /* sys_open */ 2 => (),
             /* sys_close */ 3 => (),
             /* sys_ioctl */ 16 => (),
             /* sys_writev */ 20 => (),
-            /* sys_exit */60 => {
+            /* sys_exit */ 60 => {
                 process::exit(0);
             },
             /* arch_prctl */ 158 => (),
             /* sys_set_tid_address */ 218 => (),
+            /* sys_exit_group */ 231 => (),
             _ => panic!("unsupported syscall: {}", rax),
         }
     }
